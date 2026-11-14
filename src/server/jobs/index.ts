@@ -25,6 +25,7 @@ import {
   type OrphanCleanupSummary,
   type SlaAlertSummary,
 } from "@/modules/requests";
+import { generatePeriodicReports, type PeriodicReportGenerationSummary } from "@/modules/periodic-reports";
 import {
   purgeWebhookDeliveries,
   runWebhookDeliveries,
@@ -73,6 +74,8 @@ export interface DailyJobSummary {
   approvalDeadlines: DailyStep<ApprovalDeadlineSummary>;
   /** 5.3.2. */
   stageDeadlines: DailyStep<StageDeadlineSummary>;
+  /** SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 2. */
+  periodicReports: DailyStep<PeriodicReportGenerationSummary>;
   events: DailyStep<OutboxRunSummary>;
   emails: DailyStep<EmailRunSummary>;
   purgedEvents: DailyStep<number>;
@@ -134,6 +137,9 @@ export async function runDailyJob(now: Date = new Date()): Promise<DailyJobSumma
   const approvalDeadlines = await step(() => recordApprovalDeadlineAlerts(now));
   // Late stages too (SPEC 2026-11-06-aprofundamento-configurabilidade, 5.3.2).
   const stageDeadlines = await step(() => recordStageDeadlineAlerts(now));
+  // The periodic reports of the kinds on, before the events, so their notices go out in this run
+  // (SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 2).
+  const periodicReports = await step(() => generatePeriodicReports());
   const events = await step(() => runOutbox(consumers, { maxBatches: 20 }));
   // After the events, so the emails they record go out in the same run.
   const emails = await step(() => runEmailDeliveries({ maxBatches: 20 }));
@@ -158,6 +164,7 @@ export async function runDailyJob(now: Date = new Date()): Promise<DailyJobSumma
     recurringRequests,
     approvalDeadlines,
     stageDeadlines,
+    periodicReports,
     events,
     emails,
     purgedEvents,

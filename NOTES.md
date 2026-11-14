@@ -3074,3 +3074,13 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Backup:** `serviceflow-2026-11-14-pre-deploy-2.dump`, cifrado pelo EFS. **Conferência parcial:** a restauração no PostgreSQL 17 local falhou nas duas tabelas dos avisos por uma opção de coluna própria do Neon (`pg_attver`), que o 17 não reconhece; as outras 65 tabelas bateram com a produção, e as duas que faltaram estavam vazias. Causa, resultado e o que fazer nos próximos deploys estão na seção 21 da SPEC de backup.
 - **Migrations no Neon:** `20261114200000_user_imports` e `20261114300000_periodic_reports`; `prisma migrate status` em dia (60); contagens da produção iguais às de antes, mais as três tabelas novas vazias.
 - **URL do Neon:** lida do arquivo da responsável (o mesmo caminho da manhã), passada só aos processos; nada gravado no repositório.
+
+## SF-248 — Geração dos relatórios pelo job (2026-11-14)
+
+- **Regra (esclarecimento na SPEC, 5.3):** etapa `periodicReports` do job diário, antes dos eventos (para o aviso da SF-250 sair na mesma execução). O dia é o do banco no fuso da organização. Para cada tipo ligado, o período completo mais recente, para a organização e cada setor ativo naquele momento que ainda não tem o relatório; cada um com os números daquele momento. Períodos mais antigos não são gerados de novo. Sem tipo ligado, a etapa não lê nem grava nada.
+- **Uma vez por período:** a gravação usa `createMany` com `skipDuplicates` (`ON CONFLICT DO NOTHING`) sobre o índice único `NULLS NOT DISTINCT` da SF-246; um relatório gravado por outra execução conta como "já existia". Conferido com três execuções simultâneas (integração).
+- **Números do momento:** conferido mudando uma solicitação depois da geração; o relatório guardado não muda.
+- **Teste ajustado:** o dublê `insert` do teste unitário foi tipado pela porta (`vi.fn<PeriodicReportGenerationStore["insert"]>`), para o typecheck aceitar a leitura das chamadas.
+- **Resultados:** typecheck e lint OK; unitários 1834/1834; integração 771/771 (inclui as suítes que rodam o job diário inteiro).
+- **CA-REL-02** marcado na SPEC.
+- **Linhas:** 280 `added` em TS (aplicação 123, testes 157).

@@ -2581,7 +2581,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-248 — Geração pelo job, uma vez por período
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. Etapa `periodicReports` do job diário, antes dos eventos: para cada tipo ligado, o período completo mais recente da organização e de cada setor ativo, gravado com `skipDuplicates` sobre o índice único; sem tipo ligado, nada é lido nem gravado; CA-REL-02 verificado.
 - **Objetivo:** Seção 5.3, parte C.
 - **Arquivos/módulos esperados:** Job e módulo de relatórios periódicos.
 - **Dependências:** SF-247.
