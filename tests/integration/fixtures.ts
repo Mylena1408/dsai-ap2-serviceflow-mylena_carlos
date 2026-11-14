@@ -75,6 +75,8 @@ export async function resetTestFixtures(): Promise<void> {
     prisma.webhookEndpoint.deleteMany(),
     prisma.apiRateWindow.deleteMany(),
     prisma.apiToken.deleteMany(),
+    prisma.sectorHoliday.deleteMany(),
+    prisma.sectorCalendar.deleteMany(),
     prisma.businessHoliday.deleteMany(),
     prisma.businessCalendar.deleteMany(),
     prisma.user.deleteMany(),

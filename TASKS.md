@@ -2621,7 +2621,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-252 — Calendário do setor: migrations e domínio
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. Migration `20261114500000_sector_calendars` (`SectorCalendar` e `SectorHoliday` com os `CHECK`s do calendário da organização; `Request.slaCalendarSectorId` só em horas úteis; auditoria `SECTOR_CALENDAR` e `SECTOR_HOLIDAY`); domínio do calendário efetivo do setor (expediente próprio ou o da organização, fuso da organização, feriados somados) e leitura no banco; decisões K8 e K9 confirmadas pela responsável; CA-CAL-04 verificado.
 - **Objetivo:** Seção 6.3, parte D.
 - **Arquivos/módulos esperados:** `prisma/`, módulo do calendário.
 - **Dependências:** Parte C concluída.

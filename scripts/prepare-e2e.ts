@@ -105,6 +105,8 @@ async function prepareDatabase(): Promise<void> {
       database.webhookEndpoint.deleteMany(),
       database.apiRateWindow.deleteMany(),
       database.apiToken.deleteMany(),
+      database.sectorHoliday.deleteMany(),
+      database.sectorCalendar.deleteMany(),
       database.businessHoliday.deleteMany(),
       database.businessCalendar.deleteMany(),
       database.user.deleteMany(),

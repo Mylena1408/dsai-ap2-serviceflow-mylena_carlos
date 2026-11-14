@@ -172,3 +172,12 @@
 
 51. Commit `56f95f7` (SF-250). Contagem: 90.087 `added` (SF-250 somou 511).
 52. SF-251: ativação por tipo na seção "Relatórios", com auditoria só quando muda; E2E `periodic-reports.spec.ts` da parte C; CA-REL-01 marcado, parte C concluída. Unitários 1866/1866, integração 779/779, build OK, E2E 56/56.
+
+> faça o commit do sf-251 e siga para o sf-252
+
+53. Commit `f3eae8d` (SF-251). Antes da parte D, perguntas sobre K8, K9 e feriados sem expediente próprio; respostas: as três recomendadas.
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+54. Contagem em `f3eae8d`: 90.525 `added` (aplicação 45.063, testes 45.215, scripts 247), líquido 88.037.
+55. SF-252: migration `20261114500000_sector_calendars` e domínio do calendário efetivo do setor; CA-CAL-04. Unitários 1873/1873, integração 784/784, build OK.

@@ -25,6 +25,18 @@ export type { CalendarOverview } from "./application/calendar-admin";
 /** For other modules' infrastructure: reads the calendar with their transaction client. */
 export { loadBusinessCalendar } from "./infrastructure/prisma-calendar";
 
+// A sector's calendar (SPEC 2026-11-09-comunicacao-e-calendarios, part D; SF-252).
+export {
+  calendarSectorAtOpening,
+  hasOwnCalendar,
+  parseSectorHoursInput,
+  sectorBusinessCalendar,
+  type SectorCalendarParts,
+  type SectorHours,
+} from "./domain/sector-calendar";
+/** For other modules' infrastructure: a sector's effective calendar, read with their transaction client. */
+export { loadSectorBusinessCalendar, loadSectorCalendarParts } from "./infrastructure/prisma-sector-calendar";
+
 export function getCalendarOverview(database: PrismaClient = prisma): Promise<admin.CalendarOverview> {
   return admin.getCalendarOverview(createPrismaCalendarReader(database));
 }

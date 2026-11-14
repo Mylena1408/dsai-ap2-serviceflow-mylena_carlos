@@ -157,12 +157,14 @@ Nenhum destes recursos estava previsto em SPEC anterior; esta SPEC é o registro
 3. **Cópia na abertura:** a solicitação guarda de qual calendário veio o prazo (o do setor ou o da organização); pausas, retomadas e mudanças de prioridade usam esse mesmo calendário; o encaminhamento para outro setor não troca o calendário (o prazo continua o combinado na abertura).
 4. **Sem calendário próprio:** o setor segue o da organização, inclusive as mudanças futuras dele.
 
+- *Esclarecimentos registrados em 2026-11-14 (SF-252):* antes da parte D, a responsável confirmou as decisões recomendadas K8 (o encaminhamento mantém o calendário da abertura) e K9 (o administrador configura qualquer setor; o gestor, o próprio) e decidiu um ponto que a SPEC não dizia: **expediente e feriados do setor são independentes**; um setor pode só acrescentar feriados e seguir o horário da organização, e os feriados da organização valem sempre para todos os setores. **Dados:** `SectorCalendar` (um por setor: dias da semana, início e fim do expediente, com os mesmos `CHECK`s do calendário da organização; o fuso é sempre o da organização, regra 2) e `SectorHoliday` (dia, nome, se repete todo ano; um por dia em cada setor). A solicitação ganha `slaCalendarSectorId`: o setor cujo calendário contou o prazo na abertura, ou vazio quando foi o da organização; o banco confere que só uma solicitação em horas úteis o tem. As já abertas ficam vazias e continuam no calendário da organização (CA-CAL-01 e decisão K4). **Calendário efetivo de um setor:** os dias e o horário do setor, se ele os tiver, senão os da organização; o fuso da organização; os feriados da organização mais os do setor. Um setor "tem calendário próprio" quando tem expediente ou algum feriado. Se o expediente próprio for apagado depois, as pausas e mudanças de prioridade das solicitações que o usavam passam a contar com o horário da organização e os feriados que o setor ainda tiver (assim como hoje uma mudança no calendário da organização vale para as pausas seguintes). A auditoria ganha as entidades `SECTOR_CALENDAR` e `SECTOR_HOLIDAY`.
+
 ### 6.4 Critérios de aceitação
 
 - [ ] **CA-CAL-01** — Setores sem calendário próprio se comportam exatamente como hoje.
 - [ ] **CA-CAL-02** — Administrador e gestor configuram o calendário e os feriados do setor, com auditoria.
 - [ ] **CA-CAL-03** — Solicitações abertas depois usam o calendário do setor, inclusive nas pausas e mudanças de prioridade; as já abertas não mudam.
-- [ ] **CA-CAL-04** — Migration aditiva; nenhuma dependência nova.
+- [x] **CA-CAL-04** — Migration aditiva; nenhuma dependência nova. *Verificado em 2026-11-14 (SF-252): `20261114500000_sector_calendars` só acrescenta (dois tipos de auditoria, duas tabelas, uma coluna vazia nas solicitações, índices, chaves e `CHECK`s); as solicitações existentes ficam com a coluna vazia, no calendário da organização; `package.json` sem mudança (teste das migrations, integração).*
 
 ## 7. Parte E — Complementos
 

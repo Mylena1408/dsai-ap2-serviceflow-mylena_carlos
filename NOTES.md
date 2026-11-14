@@ -3123,3 +3123,16 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Tropeço:** um comando com dois heredocs seguidos (um deles com aspas triplas do Python) não foi interpretado pelo shell e nada foi gravado; refiz os arquivos com o Write e o script de edição salvo na pasta temporária.
 - **Resultados:** typecheck e lint OK; unitários 1866/1866; integração 779/779; `next build` OK; E2E completo 56/56.
 - **CA-REL-01** marcado (CA-REL-02 a 04 já estavam); parte C revisada e concluída.
+
+## Contagem de linhas em `f3eae8d` (SF-251, 2026-11-14)
+
+- `sh scripts/cloc-diff.sh`: 90.525 `added` (aplicação 45.063, testes 45.215, scripts 247); líquido 88.037. O SF-251 somou 438 (aplicação 188, testes 250). Faltam 9.475 para as 100.000.
+
+## SF-252 — Calendário do setor: banco e domínio (2026-11-14)
+
+- **Decisões revistas antes da parte D (memória do projeto):** a responsável confirmou K8 (o encaminhamento mantém o calendário da abertura) e K9 (administrador em qualquer setor, gestor no próprio) e decidiu um ponto em aberto: expediente e feriados do setor são independentes (feriados do setor somam aos da organização, mesmo sem expediente próprio). Registrado na SPEC (6.3).
+- **Banco (migration `20261114500000_sector_calendars`, aditiva):** `SectorCalendar` (um por setor, sem fuso: o da organização) com o mesmo `CHECK` do calendário da organização; `SectorHoliday` (único por setor e dia, nome de 1 a 80 sem espaços nas pontas); `Request.slaCalendarSectorId` com `CHECK` "só em horas úteis" e FK `Restrict`; auditoria `SECTOR_CALENDAR` ("Calendário de <setor>") e `SECTOR_HOLIDAY` ("<nome> (<setor>)"). Aplicada só no banco de teste local; **falta o Neon** (junto com a do SF-250).
+- **Domínio:** `sectorBusinessCalendar` devolve o próprio calendário da organização quando o setor não tem nada seu (CA-CAL-01: mesmas mudanças futuras); senão, dias e janela do setor (ou da organização), fuso da organização e os feriados das duas listas, sem repetir. `calendarSectorAtOpening` diz o que a abertura guarda (o setor só em horas úteis e com calendário próprio). `parseSectorHoursInput` reaproveita as regras da organização sem o fuso. A abertura passa a usar isso no SF-254.
+- **Limpezas dos testes:** as duas tabelas novas entraram em `tests/integration/fixtures.ts` e `scripts/prepare-e2e.ts`, antes de usuários e setores.
+- **Resultados:** typecheck e lint OK; unitários 1873/1873; integração 784/784; `next build` OK; sem dependência nova.
+- **CA-CAL-04** marcado.

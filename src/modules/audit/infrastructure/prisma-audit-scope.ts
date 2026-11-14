@@ -279,6 +279,36 @@ async function loadState(
       const row = await transaction.periodicReportSetting.findUnique({ where: { id }, select: { kind: true, isEnabled: true } });
       return row && { label: row.kind === "WEEKLY" ? "Relatório semanal" : "Relatório mensal", state: { isEnabled: row.isEnabled } };
     }
+    // SPEC 2026-11-09-comunicacao-e-calendarios, 6.3 item 1: a sector's hours and holidays, named by the sector.
+    case "SECTOR_CALENDAR": {
+      const row = await transaction.sectorCalendar.findUnique({
+        where: { id },
+        select: { sectorId: true, weekdays: true, startMinute: true, endMinute: true, sector: { select: { name: true } } },
+      });
+      return (
+        row && {
+          label: `Calendário de ${row.sector.name}`,
+          state: {
+            sectorId: row.sectorId,
+            weekdays: [...row.weekdays].sort((a, b) => a - b).map((day) => WEEKDAY_LABELS[day] ?? String(day)),
+            startTime: timeOfMinute(row.startMinute),
+            endTime: timeOfMinute(row.endMinute),
+          },
+        }
+      );
+    }
+    case "SECTOR_HOLIDAY": {
+      const row = await transaction.sectorHoliday.findUnique({
+        where: { id },
+        select: { sectorId: true, day: true, name: true, yearly: true, sector: { select: { name: true } } },
+      });
+      return (
+        row && {
+          label: `${row.name} (${row.sector.name})`,
+          state: { sectorId: row.sectorId, day: row.day.toISOString().slice(0, 10), name: row.name, yearly: row.yearly },
+        }
+      );
+    }
     case "HOLIDAY": {
       const row = await transaction.businessHoliday.findUnique({ where: { id }, select: { day: true, name: true, yearly: true } });
       return row && { label: row.name, state: { day: row.day.toISOString().slice(0, 10), name: row.name, yearly: row.yearly } };

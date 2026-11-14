@@ -54,6 +54,9 @@ export const AUDIT_ENTITY_TYPES = [
   "USER_IMPORT",
   // 5.3 item 3.
   "PERIODIC_REPORT_SETTING",
+  // 6.3 item 1.
+  "SECTOR_CALENDAR",
+  "SECTOR_HOLIDAY",
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -96,6 +99,8 @@ export const PERSONAL_FIELDS: Readonly<Record<AuditEntityType, readonly string[]
   ANNOUNCEMENT: [],
   USER_IMPORT: [],
   PERIODIC_REPORT_SETTING: [],
+  SECTOR_CALENDAR: [],
+  SECTOR_HOLIDAY: [],
 };
 
 /** Passwords, hashes, secrets and tokens never enter a record, whatever the entity. */
@@ -139,6 +144,8 @@ export const AUDIT_ENTITY_LABELS: Record<AuditEntityType, string> = {
   ANNOUNCEMENT: "Aviso",
   USER_IMPORT: "Importação de usuários",
   PERIODIC_REPORT_SETTING: "Relatório periódico",
+  SECTOR_CALENDAR: "Calendário do setor",
+  SECTOR_HOLIDAY: "Feriado do setor",
 };
 
 /** Names of the recorded fields; an unknown field shows its own name. */
@@ -399,6 +406,9 @@ export const AUDITED_FIELDS: Readonly<Record<AuditEntityType, readonly string[]>
   USER_IMPORT: ["createdCount", "skippedCount", "errorCount"],
   // 5.3 item 3: on or off.
   PERIODIC_REPORT_SETTING: ["isEnabled"],
+  // 6.3 items 1 and 2: the same fields as the organization's calendar and holidays (the time zone is the organization's).
+  SECTOR_CALENDAR: ["sectorId", "weekdays", "startTime", "endTime"],
+  SECTOR_HOLIDAY: ["sectorId", "day", "name", "yearly"],
 };
 
 export type AuditActorRole = "ADMIN" | "REQUESTER" | "ATTENDANT" | "MANAGER";

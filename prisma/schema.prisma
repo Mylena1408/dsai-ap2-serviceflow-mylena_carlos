@@ -104,6 +104,9 @@ enum AuditEntityType {
   USER_IMPORT
   /// 5.3 item 3.
   PERIODIC_REPORT_SETTING
+  /// SPEC 2026-11-09-comunicacao-e-calendarios, 6.3 item 1.
+  SECTOR_CALENDAR
+  SECTOR_HOLIDAY
 }
 
 /// SPEC 2026-11-02-api-externa-webhooks, 5.2 (decision A2).
@@ -181,23 +184,28 @@ model Sector {
   createdAt             DateTime         @default(now()) @db.Timestamptz
   updatedAt             DateTime         @updatedAt @db.Timestamptz
 
-  users             User[]
-  services          Service[]
-  requests          Request[]
-  requestsSentAway  RequestSectorEvent[]   @relation("RequestSectorEventFrom")
-  requestsReceived  RequestSectorEvent[]   @relation("RequestSectorEventTo")
-  cannedResponses   CannedResponse[]
+  users               User[]
+  services            Service[]
+  requests            Request[]
+  requestsSentAway    RequestSectorEvent[]   @relation("RequestSectorEventFrom")
+  requestsReceived    RequestSectorEvent[]   @relation("RequestSectorEventTo")
+  cannedResponses     CannedResponse[]
   /// SPEC 2026-11-06-aprofundamento-configurabilidade, 4.4: requests whose pending level is this sector.
-  pendingApprovals  Request[]              @relation("RequestApprovalPendingSector")
+  pendingApprovals    Request[]              @relation("RequestApprovalPendingSector")
   /// SPEC 2026-11-06-aprofundamento-configurabilidade, 7.
-  escalationRules   SectorEscalationRule[]
+  escalationRules     SectorEscalationRule[]
   /// SPEC 2026-11-08-atendimento-dia-a-dia, 3.4.
-  tags              SectorTag[]
+  tags                SectorTag[]
   /// SPEC 2026-11-09-comunicacao-e-calendarios, 3.3 item 2.
-  announcements     Announcement[]
+  announcements       Announcement[]
   /// 5.1 item 1.
-  periodicReports   PeriodicReport[]
-  lastDistributedTo User?                  @relation("SectorLastDistributedTo", fields: [lastDistributedToId], references: [id], onDelete: SetNull)
+  periodicReports     PeriodicReport[]
+  /// 6.1 items 1 and 2: the sector's own business hours and holidays.
+  calendar            SectorCalendar?
+  holidays            SectorHoliday[]
+  /// 6.3 item 3: requests whose deadline was counted with this sector's calendar.
+  slaCalendarRequests Request[]              @relation("RequestSlaCalendarSector")
+  lastDistributedTo   User?                  @relation("SectorLastDistributedTo", fields: [lastDistributedToId], references: [id], onDelete: SetNull)
 }
 
 model Category {
@@ -249,6 +257,8 @@ model User {
   slaPauses                RequestSlaPause[]          @relation("RequestSlaPauseActor")
   slaResumes               RequestSlaPause[]          @relation("RequestSlaResumeActor")
   holidaysCreated          BusinessHoliday[]          @relation("BusinessHolidayCreator")
+  sectorCalendarsUpdated   SectorCalendar[]           @relation("SectorCalendarUpdater")
+  sectorHolidaysCreated    SectorHoliday[]            @relation("SectorHolidayCreator")
   calendarUpdates          BusinessCalendar[]         @relation("BusinessCalendarUpdater")
   fieldValuesUpdated       RequestFieldValue[]        @relation("RequestFieldValueUpdater")
   fieldUpdateEvents        RequestFieldUpdateEvent[]  @relation("RequestFieldUpdateEventActor")
@@ -396,6 +406,9 @@ model Request {
   approvalState                ApprovalState?
   /// Copy of Service.slaBusinessHours at the opening (SPEC 2026-11-03-pausa-sla-calendario, 5.2).
   slaBusinessHours             Boolean         @default(false)
+  /// SPEC 2026-11-09-comunicacao-e-calendarios, 6.3 item 3: the sector whose calendar counted the deadline at the
+  /// opening; null for the organization's. Only with slaBusinessHours (CHECK in the migration).
+  slaCalendarSectorId          String?         @db.Uuid
   /// Start of the current SLA pause; null when not paused (5.3).
   slaPausedAt                  DateTime?       @db.Timestamptz
   /// SPEC 2026-11-06-aprofundamento-configurabilidade, 4.3 and 4.4: copy of the level sectors at the
@@ -414,6 +427,7 @@ model Request {
   assignee              User?                      @relation("RequestAssignee", fields: [assigneeId], references: [id], onDelete: Restrict)
   service               Service                    @relation(fields: [serviceId], references: [id], onDelete: Restrict)
   sector                Sector                     @relation(fields: [sectorId], references: [id], onDelete: Restrict)
+  slaCalendarSector     Sector?                    @relation("RequestSlaCalendarSector", fields: [slaCalendarSectorId], references: [id], onDelete: Restrict)
   approvalPendingSector Sector?                    @relation("RequestApprovalPendingSector", fields: [approvalPendingSectorId], references: [id], onDelete: Restrict)
   events                RequestStatusEvent[]
   attachments           RequestAttachment[]
@@ -1794,4 +1808,35 @@ model PeriodicReportSetting {
   updatedById String             @db.Uuid
 
   updatedBy User @relation("PeriodicReportSettingUpdater", fields: [updatedById], references: [id], onDelete: Restrict)
+}
+
+/// SPEC 2026-11-09-comunicacao-e-calendarios, 6.1 item 1 and 6.3 item 2: the business hours of a sector, with the same
+/// rules as the organization's (CHECK in the migration); the time zone is always the organization's.
+model SectorCalendar {
+  id          String   @id @default(uuid()) @db.Uuid
+  sectorId    String   @unique @db.Uuid
+  weekdays    Int[]
+  startMinute Int
+  endMinute   Int
+  updatedAt   DateTime @db.Timestamptz
+  updatedById String   @db.Uuid
+
+  sector    Sector @relation(fields: [sectorId], references: [id], onDelete: Restrict)
+  updatedBy User   @relation("SectorCalendarUpdater", fields: [updatedById], references: [id], onDelete: Restrict)
+}
+
+/// 6.1 item 2: a day without business hours in one sector, on top of the organization's holidays.
+model SectorHoliday {
+  id          String   @id @default(uuid()) @db.Uuid
+  sectorId    String   @db.Uuid
+  day         DateTime @db.Date
+  name        String
+  yearly      Boolean  @default(false)
+  createdAt   DateTime @default(now()) @db.Timestamptz
+  createdById String   @db.Uuid
+
+  sector    Sector @relation(fields: [sectorId], references: [id], onDelete: Restrict)
+  createdBy User   @relation("SectorHolidayCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  @@unique([sectorId, day])
 }

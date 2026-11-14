@@ -57,6 +57,7 @@ function persistedRequest(requesterId: string, sectorId: string) {
     slaBreachNotifiedAt: null,
     completedLate: null,
     slaBusinessHours: false,
+    slaCalendarSectorId: null,
     slaPausedAt: null,
     approvalSectorIdsSnapshot: [],
     approvalLevel: null,
