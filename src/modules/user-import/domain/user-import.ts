@@ -86,11 +86,25 @@ export function decodeImportFile(bytes: Uint8Array): { ok: true; text: string } 
   }
 }
 
-/** 4.3 item 1: the header with exactly the four columns, then from 1 to 500 lines; values trimmed. */
+/**
+ * The text kept between the preview and the application (SF-242): line breaks as LF, so the text a form sends back
+ * (with CRLF) is the previewed one, byte for byte.
+ */
+export function normalizeImportText(text: string): string {
+  return text.split("\r\n").join("\n").split("\r").join("\n");
+}
+
+/** 4.3 item 1: the file as bytes, at most 200 KB of UTF-8, read as text. */
 export function readImportFile(bytes: Uint8Array): ImportFileResult {
   const decoded = decodeImportFile(bytes);
   if (!decoded.ok) return decoded;
-  const parsed = parseCsv(decoded.text);
+  return readImportText(decoded.text);
+}
+
+/** 4.3 item 1: the header with exactly the four columns, then from 1 to 500 lines; values trimmed. */
+export function readImportText(text: string): ImportFileResult {
+  if (new TextEncoder().encode(text).byteLength > MAX_IMPORT_BYTES) return { ok: false, error: "too_big" };
+  const parsed = parseCsv(text);
   if (!parsed.ok) return { ok: false, error: parsed.error, line: parsed.line };
   const [header, ...records] = parsed.records;
   if (!header) return { ok: false, error: "no_header" };

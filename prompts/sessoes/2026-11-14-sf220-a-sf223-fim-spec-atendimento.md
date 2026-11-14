@@ -107,3 +107,10 @@
 > faça a contagem de linhas de código executaveis pelo cloc --diff
 
 31. `sh scripts/cloc-diff.sh` no HEAD `f4bad83`: 86.633 linhas `added` (src 43.116, tests 43.273, scripts 244); faltam 13.367 para 100.000.
+
+> faça o commit do SF-241 e siga para o SF-242
+
+32. Commit `40b6759` (SF-241).
+33. SF-242: prévia da importação (caso de uso, leitura no banco, texto e resumo para a aplicação). Unitários 1791/1791, integração 750/750.
+
+> terminou?

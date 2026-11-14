@@ -3011,3 +3011,12 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Resultados:** typecheck e lint OK; unitários 1785/1785 (34 novos). Sem banco nem tela, a integração e o E2E não foram rodados nesta tarefa.
 - **Linhas:** 524 `added` em TS (aplicação 340, testes 184).
 - **Contagem (`scripts/cloc-diff.sh`, HEAD `f4bad83`, antes do commit da SF-241):** 86.633 linhas `added` sobre a `baseline-ap2` (src 43.116, tests 43.273, scripts 244); faltam 13.367 para 100.000.
+
+## SF-242 — Prévia da importação de usuários (2026-11-14)
+
+- **Regra (esclarecimento na SPEC, 4.3):** só o administrador. A prévia lê o arquivo, consulta o banco do momento (e-mails do arquivo já em uso e setores ativos) e devolve cada linha com os valores e o resultado, mais os totais; arquivo recusado volta com o motivo e a linha. Nada é gravado nem auditado.
+- **Arquivo entre a prévia e a aplicação:** como na configuração portátil, a prévia devolve o texto (quebras de linha normalizadas para LF, porque um formulário devolve CRLF) e o resumo SHA-256; a aplicação (SF-243) confere o resumo e refaz a avaliação com o banco daquele momento (regra 4). O domínio ganhou `readImportText` (o mesmo limite de 200 KB vale para o texto devolvido) e `normalizeImportText`.
+- **Banco:** a coluna `email` é `citext`, então a consulta `in` já ignora maiúsculas; só os e-mails do arquivo são consultados.
+- **Tropeço corrigido:** o arquivo da leitura no banco não foi criado na primeira tentativa porque a pasta `infrastructure` ainda não existia (o shell não cria pastas no redirecionamento); o typecheck acusou e o arquivo foi criado com a ferramenta Write.
+- **Resultados:** typecheck e lint OK; unitários 1791/1791; integração 750/750. A tela chega na SF-245; a CA-IMP-02 será marcada lá.
+- **Linhas:** 241 `added` em TS (aplicação 100, testes 141).

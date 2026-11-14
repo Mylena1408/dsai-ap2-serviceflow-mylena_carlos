@@ -2521,7 +2521,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-242 — Prévia linha a linha
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. `previewUserImport`: só o administrador; cada linha com o resultado contra o banco do momento (e-mails em uso sem diferenciar maiúsculas, setores ativos) e os totais; o texto do arquivo com quebras de linha normalizadas e o resumo SHA-256 para a aplicação; nada gravado nem auditado. A tela chega na SF-245.
 - **Objetivo:** Seção 4.1 e 4.3, parte B.
 - **Arquivos/módulos esperados:** Módulo de importação.
 - **Dependências:** SF-241.
