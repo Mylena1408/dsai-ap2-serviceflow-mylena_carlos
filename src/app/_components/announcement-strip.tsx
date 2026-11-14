@@ -38,8 +38,9 @@ export function stripHeading(announcement: Pick<AnnouncementStripItem, "level" |
 export function AnnouncementStripView({ announcements }: { announcements: readonly AnnouncementStripItem[] }) {
   if (announcements.length === 0) return null;
 
+  // Its own name: the administration also has a section "Avisos".
   return (
-    <section aria-label="Avisos" className="announcement-strip">
+    <section aria-label="Avisos em vigor" className="announcement-strip">
       {announcements.map((announcement) => {
         const colors = STRIP_COLORS[announcement.level];
         const heading = stripHeading(announcement);

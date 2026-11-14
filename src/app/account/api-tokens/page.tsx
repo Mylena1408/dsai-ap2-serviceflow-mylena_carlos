@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { AnnouncementStrip } from "@/app/_components/announcement-strip";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { API_CALLS_PER_MINUTE, MAX_ACTIVE_API_TOKENS, listOwnApiTokens } from "@/modules/api-tokens";
@@ -42,6 +43,8 @@ export default async function ApiTokensPage({ searchParams }: ApiTokensPageProps
 
   return (
     <>
+      {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 2: rendered with the page, so it is fresh on each visit. */}
+      <AnnouncementStrip />
       <header className="app-topbar account-topbar">
         <Link className="brand-link" href={home}>
           <span aria-hidden="true" className="brand-mark">S</span>

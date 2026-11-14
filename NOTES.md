@@ -2991,3 +2991,13 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Leitura:** a consulta reaproveita o filtro de público da faixa (`audienceWhere`) e estreita pelos 90 dias e pela maior antecedência; as regras do domínio (`announcementHistory`) decidem.
 - **Resultados:** typecheck e lint OK; unitários 1751/1751; `next build` OK (`/announcements` dinâmica); integração 748/748; E2E completo 53/53 (13,2 min), em sequência. Sem avisos cadastrados, os menus e as telas do E2E não mudaram.
 - **Linhas:** 406 `added` em TS (aplicação 210, testes 196); fora da meta, 6 de CSS.
+
+## SF-240 — Telas e E2E da parte A; fim da parte A (2026-11-14)
+
+- **E2E** `tests/e2e/announcements.spec.ts`: sem avisos, o menu do solicitante não tem "Avisos" nem faixa; o administrador cria um aviso em andamento, uma manutenção na antecedência e um aviso futuro, apaga o futuro; o solicitante vê a manutenção programada antes da informação, sem "Dispensar" na manutenção, dispensa a informação (que não volta depois de recarregar) e a encontra na página "Avisos" pelo menu; o administrador encerra o aviso e a auditoria mostra "Criou", "Alterou" e "Removeu". O teste apaga os próprios avisos no fim, porque a faixa aparece em todas as telas dos testes seguintes.
+- **Defeito 1 (achado pelo E2E, da SF-236):** a faixa no layout raiz não aparecia ao entrar como solicitante. No App Router, o layout raiz não é renderizado de novo nas navegações dentro da aplicação (conferido na documentação desta versão; um `template.tsx` na raiz também não resolveria, porque só é montado de novo quando muda o segmento do topo). A faixa passou para o layout de cada área (como o contador de notificações) e para o topo das páginas fora delas (administração, contas, "Serviços do setor", "Avisos"). Dentro de uma área, a faixa e o link "Avisos" se atualizam ao entrar, ao recarregar e ao dispensar; registrado na SPEC (correção da SF-240).
+- **Defeito 2 (achado pelo E2E):** na administração havia duas regiões chamadas "Avisos" (a faixa e a seção do cadastro); a faixa passou a se chamar "Avisos em vigor".
+- **Teste ajustado:** o próprio E2E abria o bloco "Novo aviso" com um clique que o fechava quando o navegador o mantinha aberto depois de um envio; passou a abrir só se estiver fechado.
+- **Resultados:** typecheck e lint OK; unitários 1751/1751; `next build` OK; integração 748/748; E2E completo 54/54 (12,1 min), em sequência.
+- **Parte A concluída:** CA-AVI-01 a 05 verificados, com a revisão do E2E registrada na SPEC.
+- **Linhas:** 155 `added` em TS (aplicação 30, testes 125).

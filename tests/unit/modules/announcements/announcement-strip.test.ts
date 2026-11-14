@@ -100,7 +100,7 @@ describe("the strip on the screen", () => {
         announcements: [item({ id: "w", level: "WARNING", title: "Sistema lento", body: "Estamos verificando." }), item({ id: "i", title: "Novo catálogo" })],
       }),
     );
-    expect(html).toContain('<section aria-label="Avisos" class="announcement-strip">');
+    expect(html).toContain('<section aria-label="Avisos em vigor" class="announcement-strip">');
     expect(html).toContain('role="alert"');
     expect(html).toContain("<strong>Atenção:</strong> <strong>Sistema lento</strong>");
     expect(html).toContain("<p>Estamos verificando.</p>");

@@ -47,6 +47,7 @@ import { listSectorTags } from "@/modules/tags";
 import { SectorTagsPanel } from "@/app/_components/sector-tags";
 import { listAnnouncementsForAdmin } from "@/modules/announcements";
 import { AnnouncementsSection } from "./_sections/announcements/announcements-section";
+import { AnnouncementStrip } from "@/app/_components/announcement-strip";
 import { listServiceChecklists } from "@/modules/checklists";
 import { ServiceChecklistsPanel } from "@/app/_components/service-checklists";
 import { getTimeReport } from "@/modules/time-entries";
@@ -208,6 +209,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   return (
     <main className="page-shell">
+      {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 2: rendered with the page, so it is fresh on each visit. */}
+      <AnnouncementStrip />
       <header className="page-header">
         <div className="page-intro">
           <p className="eyebrow">Espaço de trabalho</p>

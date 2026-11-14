@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AnnouncementStrip } from "@/app/_components/announcement-strip";
 import { redirect } from "next/navigation";
 import { SignOutButton } from "@/modules/auth";
 import { getAnnouncementHistory, type AnnouncementHistoryItem } from "@/modules/announcements";
@@ -29,6 +30,8 @@ export default async function AnnouncementsPage() {
 
   return (
     <>
+      {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 2: rendered with the page, so it is fresh on each visit. */}
+      <AnnouncementStrip />
       <header className="app-topbar account-topbar">
         <Link className="brand-link" href={homeByRole[actor.role]}>
           <span aria-hidden="true" className="brand-mark">S</span>

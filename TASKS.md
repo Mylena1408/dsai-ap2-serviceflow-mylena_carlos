@@ -2501,7 +2501,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-240 — Telas e E2E da parte A
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. E2E `announcements.spec.ts` (cadastro, faixa, dispensa, manutenção, página "Avisos" e auditoria); dois defeitos achados por ele e corrigidos (a faixa no layout raiz não aparecia ao entrar e passou para os layouts das áreas e o topo das páginas avulsas; a região da faixa ganhou o nome "Avisos em vigor"); revisão de CA-AVI-01 a 05. Parte A concluída.
 - **Objetivo:** Parte A.
 - **Arquivos/módulos esperados:** Telas da parte A.
 - **Dependências:** SF-235 a SF-239.

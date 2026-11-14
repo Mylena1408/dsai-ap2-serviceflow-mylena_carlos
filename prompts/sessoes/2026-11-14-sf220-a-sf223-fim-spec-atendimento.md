@@ -90,3 +90,8 @@
 24. O agente apontou que os commits trazem a migration dos avisos e que o deploy da Vercel não aplica migrations; a responsável escolheu "Backup e migration antes" e informou o caminho do arquivo da URL direta do Neon.
 25. Backup `serviceflow-2026-11-14-pre-deploy.dump` (PostgreSQL 18), conferido por restauração local (65 tabelas iguais); migration aplicada no Neon (58, em dia; contagens iguais mais as duas tabelas novas vazias); push `74ca33a..aa38f77`.
 26. SF-239: página "Avisos" (`/announcements`), link condicional nos menus e na faixa. Build OK; unitários 1751/1751, integração 748/748, E2E 53/53.
+
+> sim,commit sf-239 e siga para a sf-240
+
+27. Commit `72f959a` (SF-239).
+28. SF-240: E2E `announcements.spec.ts`; dois defeitos achados por ele e corrigidos (faixa no layout raiz que não aparecia ao entrar; duas regiões "Avisos"); revisão de CA-AVI-01 a 05. Build OK; unitários 1751/1751, integração 748/748, E2E 54/54. Parte A concluída.

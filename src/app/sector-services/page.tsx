@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AnnouncementStrip } from "@/app/_components/announcement-strip";
 import { redirect } from "next/navigation";
 import { SignOutButton } from "@/modules/auth";
 import { listCategoriesForCatalog } from "@/modules/categories";
@@ -54,6 +55,8 @@ export default async function SectorServicesPage({ searchParams }: SectorService
 
   return (
     <>
+      {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 2: rendered with the page, so it is fresh on each visit. */}
+      <AnnouncementStrip />
       <header className="app-topbar">
         <Link className="brand-link" href={home}>
           <span className="brand-mark" aria-hidden="true">S</span>

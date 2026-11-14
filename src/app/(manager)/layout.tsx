@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SignOutButton } from "@/modules/auth";
 import { NotificationsLink } from "@/app/_components/notifications";
+import { AnnouncementStrip } from "@/app/_components/announcement-strip";
 import { AnnouncementsLink } from "@/app/_components/announcement-history";
 import { SectorServicesLink } from "@/app/_components/sector-services-link";
 import type { ReactNode } from "react";
@@ -11,6 +12,8 @@ export default function ManagerLayout({
 }: Readonly<{ children: ReactNode }>) {
   return (
     <>
+      {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 2: the area's layout is rendered when the person enters it. */}
+      <AnnouncementStrip />
       <header className="app-topbar">
         <Link className="brand-link" href="/approvals">
           <span className="brand-mark" aria-hidden="true">S</span>
