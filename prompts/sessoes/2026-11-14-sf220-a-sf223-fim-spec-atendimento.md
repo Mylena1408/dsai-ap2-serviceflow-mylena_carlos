@@ -95,3 +95,15 @@
 
 27. Commit `72f959a` (SF-239).
 28. SF-240: E2E `announcements.spec.ts`; dois defeitos achados por ele e corrigidos (faixa no layout raiz que não aparecia ao entrar; duas regiões "Avisos"); revisão de CA-AVI-01 a 05. Build OK; unitários 1751/1751, integração 748/748, E2E 54/54. Parte A concluída.
+
+> faça os commits do sf-240 e o push dos 3 commits
+
+29. Commit `f4bad83` (SF-240) e push `aa38f77..f4bad83` (sem migration).
+
+> comece o SF-241
+
+30. SF-241: módulo `user-import` (leitura do CSV e regras de cada linha); escapes `\u` restaurados depois de a ferramenta Write gravá-los como caracteres invisíveis. Unitários 1785/1785.
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+31. `sh scripts/cloc-diff.sh` no HEAD `f4bad83`: 86.633 linhas `added` (src 43.116, tests 43.273, scripts 244); faltam 13.367 para 100.000.

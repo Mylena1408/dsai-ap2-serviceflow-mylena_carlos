@@ -2511,7 +2511,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-241 — Formato do CSV e domínio da importação
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. Módulo `src/modules/user-import`: leitura do CSV (UTF-8 até 200 KB, separador do cabeçalho, aspas, sem avaliar fórmulas), cabeçalho com exatamente as quatro colunas, 1 a 500 linhas, e o resultado de cada linha (criar, ignorar ou erro com todos os motivos); regras da CA-IMP-02.
 - **Objetivo:** Seção 4.3, parte B.
 - **Arquivos/módulos esperados:** Módulo novo de importação de usuários.
 - **Dependências:** Parte A concluída.

@@ -3001,3 +3001,13 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Resultados:** typecheck e lint OK; unitários 1751/1751; `next build` OK; integração 748/748; E2E completo 54/54 (12,1 min), em sequência.
 - **Parte A concluída:** CA-AVI-01 a 05 verificados, com a revisão do E2E registrada na SPEC.
 - **Linhas:** 155 `added` em TS (aplicação 30, testes 125).
+
+## SF-241 — Importação de usuários: formato do CSV e regras (2026-11-14)
+
+- **Início da parte B.** Módulo novo `src/modules/user-import`, só com o domínio (sem banco nem tela): `parseCsv` (separador do cabeçalho, aspas do RFC 4180, campos com separador e quebra de linha, linhas em branco ignoradas, aspa sem fechamento recusa o arquivo), `readImportFile` (até 200 KB de UTF-8 estrito, BOM aceito, cabeçalho com exatamente `nome`, `email`, `perfil`, `setor` em qualquer ordem, de 1 a 500 linhas) e `classifyImportRows` (criar, ignorar porque o e-mail existe, ou erro com todos os motivos da linha).
+- **Decisões (esclarecimento na SPEC, 4.3):** coluna desconhecida recusa o arquivo inteiro, para que uma coluna como `senha` nunca passe em silêncio. Perfil pelo nome em português ou pelo código. Setor pelo nome entre os ativos (inativo conta como não encontrado). E-mail repetido no arquivo: vale a primeira ocorrência. O nome tem limite de 120 caracteres na importação, como a SPEC pede; o cadastro atual (`nameSchema`, sem limite) não muda (CA-IMP-01). Células que começam com `=`, `+`, `-`, `@` são guardadas como texto e nunca avaliadas.
+- **Senha inutilizável (para a SF-243):** o login recusa qualquer valor que não comece com `$argon2id$` (`verifyPassword`), como já acontece com o `!anonimizado` da anonimização.
+- **Defeito de ferramenta, corrigido:** a ferramenta Write gravou os escapes `\u0300`, `\u036f` e `\uFEFF` como os próprios caracteres invisíveis. O código funcionava (o typecheck não pegou), mas ficava frágil; uma checagem de caracteres acima de U+2000 achou, e os escapes foram restaurados com `chr(92)` num Python inline. Registrado na memória do agente junto com os outros casos de barra invertida.
+- **Resultados:** typecheck e lint OK; unitários 1785/1785 (34 novos). Sem banco nem tela, a integração e o E2E não foram rodados nesta tarefa.
+- **Linhas:** 524 `added` em TS (aplicação 340, testes 184).
+- **Contagem (`scripts/cloc-diff.sh`, HEAD `f4bad83`, antes do commit da SF-241):** 86.633 linhas `added` sobre a `baseline-ap2` (src 43.116, tests 43.273, scripts 244); faltam 13.367 para 100.000.
