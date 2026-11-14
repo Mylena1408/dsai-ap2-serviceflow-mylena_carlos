@@ -153,3 +153,8 @@
 > comece o SF-248
 
 45. SF-248: etapa `periodicReports` do job diário (uma vez por período e escopo, números do momento, nada sem tipo ligado); CA-REL-02. Unitários 1834/1834, integração 771/771.
+
+> faça o commit do sf-248 e siga para o sf-249
+
+46. Commit `0983c13` (SF-248).
+47. SF-249: páginas "Relatórios" do gestor e seção da administração; CA-REL-03. E2E completo 54/55: a falha foi `field-formats.spec.ts`, cuja verificação `not.toContain("529")` casou por acaso com um UUID; corrigida para conferir a forma dos itens do endereço e os valores digitados. Build OK; unitários 1846/1846, integração 774/774.

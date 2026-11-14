@@ -83,7 +83,11 @@ test("decimal and formatted fields: configuration, refusals, formatted answers a
   await page.getByRole("button", { name: "Enviar solicitação" }).click();
 
   await expect(page).toHaveURL(/error=fields/);
-  expect(page.url()).not.toContain("529");
+  // No typed value reaches the address: each entry of "fields" is only "<field id>.<error code>". (Looking for "529"
+  // alone failed by chance once, when a random UUID in the address had those digits.)
+  const entries = new URL(page.url()).searchParams.get("fields")!.split(",");
+  for (const entry of entries) expect(entry).toMatch(/^[0-9a-f-]{36}\.[a-z_]+$/);
+  for (const typed of ["529.982.247-24", "529.982", "10,255", "3201-7000"]) expect(decodeURIComponent(page.url())).not.toContain(typed);
   await expect(page.locator(".custom-field").filter({ has: value })).toContainText("Use no máximo 2 casas decimais.");
   await expect(page.locator(".custom-field").filter({ has: cpf })).toContainText("Informe um CPF válido.");
   await expect(page.locator(".custom-field").filter({ has: phone })).toContainText("Informe o telefone com DDD, com 10 ou 11 dígitos.");

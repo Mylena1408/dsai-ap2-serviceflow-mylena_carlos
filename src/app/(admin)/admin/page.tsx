@@ -4,7 +4,7 @@ import { SignOutButton } from "@/modules/auth";
 import {
   listCategories,
 } from "@/modules/categories";
-import { AuthenticationError, AuthorizationError } from "@/server/errors";
+import { ApplicationError, AuthenticationError, AuthorizationError } from "@/server/errors";
 import { requireConfigurationAdministrator } from "@/server/authorization";
 import { listEscalationRuleOverview, listSectors } from "@/modules/sectors";
 import { getTeamLoad } from "@/modules/requests";
@@ -49,6 +49,8 @@ import { listAnnouncementsForAdmin } from "@/modules/announcements";
 import { AnnouncementsSection } from "./_sections/announcements/announcements-section";
 import { listUserImports } from "@/modules/user-import";
 import { UserImportSection } from "./_sections/user-import/user-import-section";
+import { getPeriodicReport, listPeriodicReports } from "@/modules/periodic-reports";
+import { PeriodicReportsSection } from "./_sections/periodic-reports/periodic-reports-section";
 import { AnnouncementStrip } from "@/app/_components/announcement-strip";
 import { listServiceChecklists } from "@/modules/checklists";
 import { ServiceChecklistsPanel } from "@/app/_components/service-checklists";
@@ -85,6 +87,9 @@ type AdminPageProps = {
     open?: string;
     /** SPEC 2026-11-09-comunicacao-e-calendarios, 3.3: the announcements' message. */
     announcementResult?: string;
+    /** SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 3: the reports' scope filter and the report to open. */
+    scope?: string;
+    report?: string;
   }>;
 };
 
@@ -121,12 +126,27 @@ const adminSections = [
   { id: "analytics", label: "Análises" },
   // SPEC 2026-11-08-atendimento-dia-a-dia, 5.3 item 4.
   { id: "time", label: "Horas" },
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 3.
+  { id: "periodic-reports", label: "Relatórios" },
   { id: "audit", label: "Auditoria" },
   { id: "api-tokens", label: "Acesso à API" },
   { id: "webhooks", label: "Webhooks" },
 ] as const;
 
 type AdminSection = (typeof adminSections)[number]["id"];
+
+/** One report when `report` names one this person reads; an unknown one shows the list with a message. */
+async function loadReportsScreen(scope: string | undefined, report: string | undefined) {
+  if (report) {
+    try {
+      return { report: await getPeriodicReport(report), list: null, missing: false };
+    } catch (error) {
+      if (!(error instanceof ApplicationError) || (error.code !== "NOT_FOUND" && error.code !== "VALIDATION_ERROR")) throw error;
+      return { report: null, list: await listPeriodicReports({ scope }), missing: true };
+    }
+  }
+  return { report: null, list: await listPeriodicReports({ scope }), missing: false };
+}
 
 function selectedAdminSection(section?: string): AdminSection {
   return adminSections.find((item) => item.id === section)?.id ?? "overview";
@@ -153,7 +173,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     throw error;
   }
 
-  const [{ entity, error, notice, section, period, from, to, sector, type, actor, page, knowledge, absence, schedule, service, edit, fields, tag, checklist, open, announcementResult }, sectors, categories, users, services, documentRequirements, serviceFields, serviceStages, permissions] =
+  const [{ entity, error, notice, section, period, from, to, sector, type, actor, page, knowledge, absence, schedule, service, edit, fields, tag, checklist, open, announcementResult, scope, report }, sectors, categories, users, services, documentRequirements, serviceFields, serviceStages, permissions] =
     await Promise.all([
       searchParams,
       listSectors(),
@@ -204,6 +224,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const announcementOverview = selectedSection === "announcements" ? await listAnnouncementsForAdmin() : null;
   // SPEC 2026-11-09-comunicacao-e-calendarios, 4.1 item 4.
   const userImports = selectedSection === "user-import" ? await listUserImports() : null;
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 3: one report when asked, otherwise the list.
+  const reportsScreen = selectedSection === "periodic-reports" ? await loadReportsScreen(scope, report) : null;
   // SPEC 2026-11-08-atendimento-dia-a-dia, 4.1 item 1: read only when the section is open.
   const serviceChecklists = selectedSection === "checklists" ? await listServiceChecklists() : null;
   // SPEC 2026-11-08-atendimento-dia-a-dia, 5.3 item 4: read only when the section is open.
@@ -351,6 +373,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       {sectorTags ? <SectorTagsPanel area="admin" message={tag} sectors={sectorTags} /> : null}
       {announcementOverview ? <AnnouncementsSection message={announcementResult} overview={announcementOverview} /> : null}
       {userImports ? <UserImportSection history={userImports} /> : null}
+      {reportsScreen ? <PeriodicReportsSection list={reportsScreen.list} missing={reportsScreen.missing} report={reportsScreen.report} /> : null}
       {serviceChecklists ? <ServiceChecklistsPanel area="admin" message={checklist} open={open} services={serviceChecklists} /> : null}
       {timeReport ? (
         <section className="admin-section" aria-labelledby="admin-time-heading">

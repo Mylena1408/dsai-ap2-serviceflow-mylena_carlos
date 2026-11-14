@@ -3084,3 +3084,13 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Resultados:** typecheck e lint OK; unitários 1834/1834; integração 771/771 (inclui as suítes que rodam o job diário inteiro).
 - **CA-REL-02** marcado na SPEC.
 - **Linhas:** 280 `added` em TS (aplicação 123, testes 157).
+
+## SF-249 — Página "Relatórios" (2026-11-14)
+
+- **Regra (esclarecimento na SPEC, 5.3):** gestor em `/approvals/reports` (só o seu setor) e `/approvals/reports/{id}`; administrador na seção "Relatórios" da administração (todos e os da organização, filtro de escopo: todos, organização ou um setor). Lista dos 100 mais recentes, do período mais novo para o mais antigo, a organização antes dos setores por nome. Relatório de outro escopo ou inexistente: "não encontrado". Atendente e solicitante: sem página.
+- **CA-REL-01 nas telas:** a seção da administração aparece sempre (é onde a ativação vai ficar, SF-251); o link "Relatórios" do gestor só aparece com algum relatório do seu setor (`PeriodicReportsLink`, com `unstable_rethrow` como a faixa dos avisos).
+- **Tela:** o relatório mostra os números guardados com "—" onde não há dado (sem prazo, sem avaliação, sem conclusão) e as etiquetas só quando houver.
+- **Teste antigo corrigido (fora do escopo, registrado):** o E2E `field-formats.spec.ts` (SF-163) conferia que o CPF digitado não chega ao endereço com `not.toContain("529")`; nesta rodada um UUID aleatório do endereço tinha "529" e o teste falhou por coincidência. A verificação passou a conferir que cada item do parâmetro `fields` é só "id.código" e que os valores digitados (com pontos, vírgula e hífen, que um UUID nunca tem) não aparecem; a garantia continua a mesma, sem depender da sorte. O teste corrigido passou sozinho; os outros 54 do E2E completo já tinham passado na mesma rodada.
+- **Resultados:** typecheck e lint OK; unitários 1846/1846; `next build` OK (duas rotas novas); integração 774/774; E2E completo 54/55 (a falha acima) e o teste corrigido 1/1.
+- **CA-REL-03** marcado na SPEC.
+- **Linhas:** 482 `added` em TS (aplicação 238, testes 244, contando a correção do teste antigo).

@@ -4,6 +4,7 @@ import { NotificationsLink } from "@/app/_components/notifications";
 import { AnnouncementStrip } from "@/app/_components/announcement-strip";
 import { AnnouncementsLink } from "@/app/_components/announcement-history";
 import { SectorServicesLink } from "@/app/_components/sector-services-link";
+import { PeriodicReportsLink } from "@/app/_components/periodic-reports";
 import type { ReactNode } from "react";
 
 // Manager area (SPEC 2026-11-01-aprovacoes, 5.1 and 5.7).
@@ -25,6 +26,8 @@ export default function ManagerLayout({
           <Link href="/approvals/analytics">Análises</Link>
           {/* SPEC 2026-11-08-atendimento-dia-a-dia, 5.3 item 4. */}
           <Link href="/approvals/time">Horas</Link>
+          {/* SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 3: only with a report of the sector. */}
+          <PeriodicReportsLink />
           {/* SPEC 2026-11-06-aprofundamento-configurabilidade, 4.3.5. */}
           <Link href="/approvals/absences">Ausências</Link>
           {/* SPEC 2026-11-07-operacao-e-automacao, 4.3 item 7. */}

@@ -2591,7 +2591,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-249 — Página "Relatórios" com escopo e histórico
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. `/approvals/reports` e `/approvals/reports/{id}` para o gestor (só o seu setor; link no menu só com relatório), seção "Relatórios" da administração com filtro de escopo e o relatório aberto; números com "—" onde não há dado; CA-REL-03 verificado.
 - **Objetivo:** Seção 5.1, parte C (decisão K3).
 - **Arquivos/módulos esperados:** Página nova.
 - **Dependências:** SF-248.
