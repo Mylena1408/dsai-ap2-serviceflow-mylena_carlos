@@ -158,3 +158,12 @@
 
 46. Commit `0983c13` (SF-248).
 47. SF-249: páginas "Relatórios" do gestor e seção da administração; CA-REL-03. E2E completo 54/55: a falha foi `field-formats.spec.ts`, cuja verificação `not.toContain("529")` casou por acaso com um UUID; corrigida para conferir a forma dos itens do endereço e os valores digitados. Build OK; unitários 1846/1846, integração 774/774.
+
+> faça o commit do sf-249 e siga para o sf-250
+
+48. Commit `d74be6e` (SF-249). Pergunta à responsável sobre quem recebe o aviso do relatório; resposta: "Só gestores".
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+49. Contagem em `d74be6e`: 89.576 `added` (aplicação 44.669, testes 44.660, scripts 247), líquido 87.088.
+50. SF-250: migration `20261114400000_report_notifications` (aviso aponta para solicitação ou relatório, `CHECK`; categoria `REPORTS`); aviso aos gestores do setor na mesma transação do relatório, e-mail pela categoria "Relatórios", que só aparece para gestores com relatório ligado; CA-REL-04. Unitários 1859/1859, integração 777 (asserção antiga ajustada), build OK. Migration ainda não aplicada no Neon.

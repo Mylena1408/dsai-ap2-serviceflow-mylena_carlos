@@ -5,7 +5,7 @@ import { validateInput } from "@/server/validation";
 import { entityIdSchema } from "@/shared/validation";
 import { wantsEmail } from "../domain/email";
 import { plannedNotifications, type NotifiableEvent } from "../domain/recipients";
-import type { NotificationRecord, NotificationRequestState, NotificationStore } from "./ports";
+import type { NotificationRecord, NotificationRequestState, NotificationStore, NotificationTarget } from "./ports";
 
 export const RECENT_NOTIFICATIONS = 50;
 
@@ -123,8 +123,8 @@ export async function markAllNotificationsRead(store: NotificationStore): Promis
   await store.markAllRead(actor.id);
 }
 
-/** Marks the reader's notification as read and returns its request id (null if not theirs). */
-export async function openNotification(notificationId: unknown, store: NotificationStore): Promise<string | null> {
+/** Marks the reader's notification as read and returns what it points to (null if not theirs). */
+export async function openNotification(notificationId: unknown, store: NotificationStore): Promise<NotificationTarget | null> {
   const actor = await requireCurrentActor();
   const id = validateInput(entityIdSchema, notificationId);
   return store.markRead(id, actor.id);

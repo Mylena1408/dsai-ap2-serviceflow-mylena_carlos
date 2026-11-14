@@ -43,6 +43,8 @@ enum NotificationCategory {
   SLA
   STAGES
   APPROVALS
+  /// SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4 (SF-250): offered to managers only.
+  REPORTS
 }
 
 enum EmailDeliveryStatus {
@@ -618,21 +620,26 @@ model OutboxEvent {
   @@index([processedAt, failedAt, availableAt])
 }
 
+/// A notice points to a request or, since SF-250, to a periodic report: exactly one of the two (CHECK in the migration).
 model RequestNotification {
   id          String    @id @default(uuid()) @db.Uuid
   recipientId String    @db.Uuid
-  requestId   String    @db.Uuid
+  requestId   String?   @db.Uuid
+  reportId    String?   @db.Uuid
   eventId     String?   @db.Uuid
   type        String
   createdAt   DateTime  @db.Timestamptz
   readAt      DateTime? @db.Timestamptz
 
-  recipient User           @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Restrict)
-  request   Request        @relation(fields: [requestId], references: [id], onDelete: Restrict)
-  event     OutboxEvent?   @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  recipient User            @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Restrict)
+  request   Request?        @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  report    PeriodicReport? @relation(fields: [reportId], references: [id], onDelete: Restrict)
+  event     OutboxEvent?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
   email     EmailDelivery?
 
   @@unique([eventId, recipientId])
+  /// One notice per report and person (SF-250).
+  @@unique([reportId, recipientId])
   @@index([recipientId, readAt, createdAt])
 }
 
@@ -1770,7 +1777,8 @@ model PeriodicReport {
   generatedAt DateTime           @db.Timestamptz
   metrics     Json
 
-  sector Sector? @relation(fields: [sectorId], references: [id], onDelete: Restrict)
+  sector        Sector?               @relation(fields: [sectorId], references: [id], onDelete: Restrict)
+  notifications RequestNotification[]
 
   @@index([periodStart])
   @@index([sectorId])

@@ -26,7 +26,9 @@ export type NotificationType =
   | "sector.received"
   | "sector.changed"
   | "document.added"
-  | "sla.paused";
+  | "sla.paused"
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4 (SF-250): the only kind that points to a report, not a request.
+  | "report.ready";
 
 // Text of each notification (SPEC 2026-10-31-eventos-outbox-jobs, section 8.2), shared by the
 // in-app list and the emails (SPEC 2026-11-01-notificacoes-email-preferencias, 5.4). Messages are
@@ -57,6 +59,8 @@ const MESSAGES: Record<NotificationType, (service: string, stage?: string) => st
   "document.added": (service) => `Novo documento em ${service}`,
   // SPEC 2026-11-03-pausa-sla-calendario, 5.6.
   "sla.paused": (service) => `Aguardando sua resposta: ${service}`,
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4: here the "service" is the report's period.
+  "report.ready": (period) => `Relatório disponível: ${period}`,
   // The stage name is missing once the event is purged (after 30 days).
   "stage.changed": (service, stage) =>
     stage ? `Sua solicitação passou para a etapa ${stage}: ${service}` : `Sua solicitação mudou de etapa: ${service}`,
@@ -64,6 +68,7 @@ const MESSAGES: Record<NotificationType, (service: string, stage?: string) => st
 
 export interface MessageSource {
   type: NotificationType;
+  /** The service of the request; for "report.ready", the report's period ("Semana de 09/11 a 15/11/2026"). */
   serviceName: string;
   stageName?: string;
   /** SPEC 2026-11-06-aprofundamento-configurabilidade, 7.3 item 4: the rule that warned. */
@@ -92,4 +97,6 @@ export const NOTIFICATION_CATEGORY_LABELS = {
   SLA: "Prazos próximos e vencidos",
   STAGES: "Mudanças de etapa",
   APPROVALS: "Aprovações",
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4: offered to managers only.
+  REPORTS: "Relatórios periódicos do setor",
 } as const;

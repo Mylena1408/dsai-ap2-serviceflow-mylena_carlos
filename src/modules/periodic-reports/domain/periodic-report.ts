@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { periodicReportLabel } from "@/shared/periods";
 import { addDays, isoWeekdayOf } from "@/shared/time";
 
 // Periodic reports (SPEC 2026-11-09-comunicacao-e-calendarios, part C; decisions K3 and K7; SF-246): the periods, the
@@ -44,18 +45,8 @@ export function latestCompletePeriod(kind: PeriodicReportKind, today: string): R
   return { firstDay: previousMonthStart(thisMonth), lastDay: addDays(thisMonth, -1) };
 }
 
-const MONTHS = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
-
-/** "Semana de 03/11 a 09/11/2026" or "Novembro de 2026". */
-export function periodLabel(kind: PeriodicReportKind, period: ReportPeriod): string {
-  const [year, month, day] = period.firstDay.split("-");
-  if (kind === "MONTHLY") {
-    const name = MONTHS[Number(month) - 1]!;
-    return `${name.charAt(0).toUpperCase()}${name.slice(1)} de ${year}`;
-  }
-  const [lastYear, lastMonth, lastDay] = period.lastDay.split("-");
-  return `Semana de ${day}/${month} a ${lastDay}/${lastMonth}/${lastYear}`;
-}
+/** "Semana de 03/11 a 09/11/2026" or "Novembro de 2026"; in the shared layer, as a notice names the report too (SF-250). */
+export const periodLabel: (kind: PeriodicReportKind, period: ReportPeriod) => string = periodicReportLabel;
 
 /** The numbers of a period (5.1 item 1), as kept: never a request, a person or a text. */
 export const periodicReportMetricsSchema = z

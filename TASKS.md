@@ -2601,7 +2601,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-250 — Categoria "Relatórios", aviso e e-mail
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. Migration `20261114400000_report_notifications` (o aviso aponta para uma solicitação ou um relatório, exatamente um dos dois por `CHECK`; um aviso por relatório e pessoa; categoria `REPORTS`); cada relatório novo de um setor avisa, na mesma transação, os gestores ativos do setor, com e-mail para quem ligou "Relatórios" (números principais e link); a categoria só aparece para gestores com relatório ligado; CA-REL-04 verificado.
 - **Objetivo:** Seção 5.1, parte C (decisão K3).
 - **Arquivos/módulos esperados:** Notificações e preferências.
 - **Dependências:** SF-249.

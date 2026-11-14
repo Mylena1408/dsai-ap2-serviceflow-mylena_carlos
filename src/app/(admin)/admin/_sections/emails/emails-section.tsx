@@ -28,6 +28,8 @@ const TYPE_LABELS: Record<NotificationType, string> = {
   "sector.changed": "Encaminhada a outro setor",
   "document.added": "Novo documento",
   "sla.paused": "Aguardando resposta",
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4 (SF-250).
+  "report.ready": "Relatório disponível",
 };
 
 const STATUS_LABELS: Record<EmailDeliveryRecord["status"], string> = {
@@ -41,6 +43,8 @@ const REASON_LABELS: Record<string, string> = {
   not_configured: "e-mail não configurado",
   recipient_inactive: "pessoa inativa",
   recipient_without_area: "perfil sem área de notificações",
+  // SF-250: no longer a manager of the report's sector when the email was due.
+  report_not_readable: "sem acesso ao relatório",
 };
 
 function errorLabel(code: string): string {

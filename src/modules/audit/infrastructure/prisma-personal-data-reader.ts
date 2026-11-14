@@ -1,5 +1,6 @@
 import { API_TOKEN_SCOPE_LABELS } from "@/modules/api-tokens";
 import type { NotificationType } from "@/shared/notifications";
+import { periodicReportLabel } from "@/shared/periods";
 import type { Prisma, PrismaClient } from "@prisma/client";
 import type { PersonalDataReader } from "../application/ports";
 import { planAuditEntry } from "../domain/audit";
@@ -8,6 +9,8 @@ import { planAuditEntry } from "../domain/audit";
 // only what the file shows: no password hash, and no internal note written by someone else.
 
 const RECENT_NOTIFICATIONS = 200;
+
+const dayOf = (date: Date) => date.toISOString().slice(0, 10);
 
 export function createPrismaPersonalDataReader(database: PrismaClient): PersonalDataReader {
   return {
@@ -99,7 +102,14 @@ export function createPrismaPersonalDataReader(database: PrismaClient): Personal
           where: { recipientId: userId },
           orderBy: [{ createdAt: "desc" }, { id: "desc" }],
           take: RECENT_NOTIFICATIONS,
-          select: { createdAt: true, readAt: true, type: true, request: { select: { serviceNameSnapshot: true } } },
+          select: {
+            createdAt: true,
+            readAt: true,
+            type: true,
+            request: { select: { serviceNameSnapshot: true } },
+            // SF-250: a report's notice names its period.
+            report: { select: { kind: true, periodStart: true, periodEnd: true } },
+          },
         }),
         database.userPermission.findMany({
           where: { userId },
@@ -186,7 +196,11 @@ export function createPrismaPersonalDataReader(database: PrismaClient): Personal
           createdAt: notification.createdAt,
           readAt: notification.readAt,
           type: notification.type as NotificationType,
-          serviceName: notification.request.serviceNameSnapshot,
+          serviceName: notification.request
+            ? notification.request.serviceNameSnapshot
+            : notification.report
+              ? periodicReportLabel(notification.report.kind, { firstDay: dayOf(notification.report.periodStart), lastDay: dayOf(notification.report.periodEnd) })
+              : "",
         })),
         permissions,
         apiTokens: apiTokens.map((token) => ({ ...token, scope: API_TOKEN_SCOPE_LABELS[token.scope] })),

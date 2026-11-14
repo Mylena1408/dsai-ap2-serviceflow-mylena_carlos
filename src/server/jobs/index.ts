@@ -2,6 +2,7 @@ import { purgeApiRateWindows, purgeEndedApiTokens } from "@/modules/api-tokens";
 import { purgeAuditEntries } from "@/modules/audit";
 import { purgeProcessedEvents, runOutbox, type EventConsumer, type OutboxRunSummary } from "@/modules/events";
 import {
+  noticeReportManagers,
   notificationConsumer,
   purgeEmailDeliveries,
   purgeReadNotifications,
@@ -139,7 +140,8 @@ export async function runDailyJob(now: Date = new Date()): Promise<DailyJobSumma
   const stageDeadlines = await step(() => recordStageDeadlineAlerts(now));
   // The periodic reports of the kinds on, before the events, so their notices go out in this run
   // (SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 2).
-  const periodicReports = await step(() => generatePeriodicReports());
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4 (SF-250): each new report of a sector warns its managers.
+  const periodicReports = await step(() => generatePeriodicReports({ onWritten: noticeReportManagers }));
   const events = await step(() => runOutbox(consumers, { maxBatches: 20 }));
   // After the events, so the emails they record go out in the same run.
   const emails = await step(() => runEmailDeliveries({ maxBatches: 20 }));

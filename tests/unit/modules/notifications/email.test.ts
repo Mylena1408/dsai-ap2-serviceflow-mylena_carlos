@@ -14,7 +14,8 @@ import {
 
 describe("notification categories (SF-092)", () => {
   it("puts every notification type in exactly one category of table 5.1 (CA-MAIL-02)", () => {
-    expect(NOTIFICATION_CATEGORIES).toEqual(["STATUS", "ASSIGNMENT", "COMMENTS", "SLA", "STAGES", "APPROVALS"]);
+    // "REPORTS" added by SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4.
+    expect(NOTIFICATION_CATEGORIES).toEqual(["STATUS", "ASSIGNMENT", "COMMENTS", "SLA", "STAGES", "APPROVALS", "REPORTS"]);
     expect(Object.fromEntries(NOTIFICATION_CATEGORIES.map((category) => [category, typesOfCategory(category)]))).toEqual({
       // "sector.*" added by SPEC 2026-11-03-transferencia-entre-setores, 5.6; "sla.paused" by
       // SPEC 2026-11-03-pausa-sla-calendario, 5.6.
@@ -30,6 +31,7 @@ describe("notification categories (SF-092)", () => {
       STAGES: ["stage.changed", "stage.overdue"],
       // "approval.overdue" added by SPEC 2026-11-06-aprofundamento-configurabilidade, 4.3.6.
       APPROVALS: ["approval.requested", "approval.approved", "approval.rejected", "approval.overdue"],
+      REPORTS: ["report.ready"],
     });
     const listed = NOTIFICATION_CATEGORIES.flatMap(typesOfCategory);
     expect(listed).toHaveLength(NOTIFICATION_TYPES.length);

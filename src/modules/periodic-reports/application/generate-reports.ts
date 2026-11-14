@@ -20,8 +20,11 @@ export interface PeriodicReportGenerationStore extends PeriodicReportCountsReade
   activeSectorIds(): Promise<string[]>;
   /** The scopes (null for the organization) that already have the report of this kind and period. */
   existingScopes(kind: PeriodicReportKind, period: ReportPeriod): Promise<Array<string | null>>;
-  /** Writes the report unless the same one exists; true when written. */
-  insert(report: { kind: PeriodicReportKind; period: ReportPeriod; sectorId: string | null; metrics: PeriodicReportMetrics }): Promise<boolean>;
+  /**
+   * Writes the report unless the same one exists, with the notices of its readers in the same transaction (5.1 item 4;
+   * SF-250). `written` is false when it already existed; `notices` counts the notices written with it.
+   */
+  insert(report: { kind: PeriodicReportKind; period: ReportPeriod; sectorId: string | null; metrics: PeriodicReportMetrics }): Promise<{ written: boolean; notices: number }>;
 }
 
 export interface PeriodicReportGenerationSummary {
@@ -30,11 +33,13 @@ export interface PeriodicReportGenerationSummary {
   generated: number;
   /** Already there before, or written by another run meanwhile. */
   alreadyThere: number;
+  /** Notices to the sectors' managers written with the reports (SF-250). */
+  notices: number;
 }
 
 export async function generatePeriodicReports(store: PeriodicReportGenerationStore): Promise<PeriodicReportGenerationSummary> {
   const enabled = new Set(await store.enabledKinds());
-  const summary: PeriodicReportGenerationSummary = { periods: [], generated: 0, alreadyThere: 0 };
+  const summary: PeriodicReportGenerationSummary = { periods: [], generated: 0, alreadyThere: 0, notices: 0 };
   // 5.3 item 3: nothing on, nothing read or written.
   if (enabled.size === 0) return summary;
 
@@ -49,8 +54,10 @@ export async function generatePeriodicReports(store: PeriodicReportGenerationSto
         continue;
       }
       const metrics = await computeReportMetrics(sectorId, period, store);
-      if (await store.insert({ kind, period, sectorId, metrics })) summary.generated += 1;
+      const { written, notices } = await store.insert({ kind, period, sectorId, metrics });
+      if (written) summary.generated += 1;
       else summary.alreadyThere += 1;
+      summary.notices += notices;
     }
   }
   return summary;

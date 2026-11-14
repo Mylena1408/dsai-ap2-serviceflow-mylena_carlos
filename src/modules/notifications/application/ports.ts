@@ -3,10 +3,13 @@ import type { NotificationType } from "../domain/recipients";
 
 export interface NotificationRecord {
   id: string;
-  requestId: string;
+  /** Null for a report's notice ("report.ready"), which has `reportId` instead (SF-250). */
+  requestId: string | null;
+  reportId?: string | null;
   type: NotificationType;
   createdAt: Date;
   readAt: Date | null;
+  /** The request's service; for a report's notice, its period. */
   serviceName: string;
   /** Stage entered, for "stage.changed" while its event is still kept (SPEC de fluxos, 5.5). */
   stageName?: string;
@@ -73,17 +76,25 @@ export interface NotificationStore {
   countUnread(recipientId: string): Promise<number>;
   listRecent(recipientId: string, limit: number): Promise<NotificationRecord[]>;
   markAllRead(recipientId: string): Promise<void>;
-  /** Marks one notification of this recipient as read; returns its request id, or null. */
-  markRead(notificationId: string, recipientId: string): Promise<string | null>;
+  /** Marks one notification of this recipient as read; returns what it points to, or null. */
+  markRead(notificationId: string, recipientId: string): Promise<NotificationTarget | null>;
   purgeRead(before: Date): Promise<number>;
 }
 
+/** What opening a notice leads to: its request or, since SF-250, a periodic report. */
+export type NotificationTarget = { kind: "request"; id: string } | { kind: "report"; id: string };
+
 /** Email preferences (SPEC 2026-11-01-notificacoes-email-preferencias, 5.1). */
 export interface NotificationPreferenceStore {
+  /**
+   * SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4 (SF-250): whether a report kind is on, to offer "Relatórios"
+   * to managers. Optional for older doubles: absent = off.
+   */
+  reportKindEnabled?(): Promise<boolean>;
   /** Categories with email on; a category without a row is off. */
   enabledCategories(userId: string): Promise<Set<NotificationCategory>>;
-  /** Writes the choice of every category of this user at once. */
-  save(userId: string, choices: Record<NotificationCategory, boolean>, at: Date): Promise<void>;
+  /** Writes the choice of every category given (the ones offered to this user) at once. */
+  save(userId: string, choices: Partial<Record<NotificationCategory, boolean>>, at: Date): Promise<void>;
 }
 
 /** One email to send (SPEC 2026-11-01-notificacoes-email-preferencias, 5.3). */
@@ -101,8 +112,27 @@ export interface EmailTransport {
 export interface PendingEmailDelivery extends EmailDeliveryState {
   id: string;
   /** Read at sending time: the current address, state and profile (5.3.4). */
-  recipient: { email: string; isActive: boolean; role: "ADMIN" | "REQUESTER" | "ATTENDANT" | "MANAGER" };
-  notification: { type: NotificationType; requestId: string; serviceName: string; stageName?: string; ruleName?: string };
+  recipient: { email: string; isActive: boolean; role: "ADMIN" | "REQUESTER" | "ATTENDANT" | "MANAGER"; sectorId?: string | null };
+  notification: {
+    type: NotificationType;
+    /** Null for a report's notice, which carries `report` instead (SF-250). */
+    requestId: string | null;
+    serviceName: string;
+    stageName?: string;
+    ruleName?: string;
+    report?: ReportEmailSource;
+  };
+}
+
+/** SPEC 2026-11-09-comunicacao-e-calendarios, 5.3 item 4: only the main numbers and the link. */
+export interface ReportEmailSource {
+  id: string;
+  /** Null for the organization's report (which no notice points to today). */
+  sectorId: string | null;
+  opened: number;
+  completed: number;
+  cancelled: number;
+  onTimePercentage: number | null;
 }
 
 export interface EmailDeliveryStore {

@@ -1,5 +1,5 @@
 import { failureCode } from "@/modules/events";
-import { buildNotificationEmail, type EmailRecipientRole } from "../domain/email-content";
+import { buildNotificationEmail, buildReportEmail, type EmailRecipientRole } from "../domain/email-content";
 import { nextDeliveryState, type EmailDeliveryOutcome } from "../domain/email";
 import type { EmailDeliveryStore, EmailTransport, PendingEmailDelivery } from "./ports";
 
@@ -31,10 +31,18 @@ async function deliver(delivery: PendingEmailDelivery, sender: EmailSender | nul
   if (!delivery.recipient.isActive) return { kind: "skipped", reason: "recipient_inactive" };
   if (!AREA_ROLES.has(delivery.recipient.role)) return { kind: "skipped", reason: "recipient_without_area" };
 
-  const content = buildNotificationEmail(
-    { ...delivery.notification, recipientRole: delivery.recipient.role as EmailRecipientRole },
-    sender.baseUrl,
-  );
+  const { report } = delivery.notification;
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 3 (SF-250): a report's email goes only to who still reads it
+  // when it is sent: a manager of that sector.
+  if (delivery.notification.type === "report.ready") {
+    const readable = report && report.sectorId !== null && delivery.recipient.role === "MANAGER" && delivery.recipient.sectorId === report.sectorId;
+    if (!readable) return { kind: "skipped", reason: "report_not_readable" };
+  }
+
+  const content =
+    delivery.notification.type === "report.ready" && report
+      ? buildReportEmail({ period: delivery.notification.serviceName, report }, sender.baseUrl)
+      : buildNotificationEmail({ ...delivery.notification, recipientRole: delivery.recipient.role as EmailRecipientRole }, sender.baseUrl);
 
   try {
     await sender.transport.send({ to: delivery.recipient.email, ...content });

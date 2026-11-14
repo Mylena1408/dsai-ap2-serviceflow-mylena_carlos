@@ -19,7 +19,7 @@ describe("open notification route", () => {
   });
 
   it("redirects with a relative Location to the request page of each profile", async () => {
-    notifications.openNotification.mockResolvedValue("request-1");
+    notifications.openNotification.mockResolvedValue({ kind: "request", id: "request-1" });
 
     authorization.requireCurrentActor.mockResolvedValueOnce({ id: "r", role: "REQUESTER" });
     const requester = await call();
@@ -28,6 +28,14 @@ describe("open notification route", () => {
 
     authorization.requireCurrentActor.mockResolvedValueOnce({ id: "a", role: "ATTENDANT" });
     expect((await call()).headers.get("location")).toBe("/queue/request-1");
+  });
+
+  it("leads a report's notice to the manager's report page, and anyone else to their list (SF-250)", async () => {
+    notifications.openNotification.mockResolvedValue({ kind: "report", id: "report-1" });
+    authorization.requireCurrentActor.mockResolvedValueOnce({ id: "g", role: "MANAGER" });
+    expect((await call()).headers.get("location")).toBe("/approvals/reports/report-1");
+    authorization.requireCurrentActor.mockResolvedValueOnce({ id: "a", role: "ATTENDANT" });
+    expect((await call()).headers.get("location")).toBe("/queue/notifications");
   });
 
   it("goes back to the list when the notification is not the reader's", async () => {

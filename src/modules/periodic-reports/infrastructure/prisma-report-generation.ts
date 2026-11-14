@@ -9,7 +9,16 @@ import { createPrismaReportCountsReader } from "./prisma-report-counts";
 
 const dateOf = (day: string) => new Date(`${day}T00:00:00.000Z`);
 
-export function createPrismaReportGenerationStore(database: PrismaClient): PeriodicReportGenerationStore {
+/**
+ * What to write with a report, in its transaction: the notices to its readers (SF-250), given by the job so this module
+ * does not depend on the notifications. Returns how many notices were written.
+ */
+export type ReportWrittenHook = (
+  transaction: Prisma.TransactionClient,
+  report: { id: string; sectorId: string | null; generatedAt: Date },
+) => Promise<number>;
+
+export function createPrismaReportGenerationStore(database: PrismaClient, onWritten?: ReportWrittenHook): PeriodicReportGenerationStore {
   return {
     ...createPrismaReportCountsReader(database),
     async today() {
@@ -29,20 +38,24 @@ export function createPrismaReportGenerationStore(database: PrismaClient): Perio
       return rows.map(({ sectorId }) => sectorId);
     },
     async insert(report) {
-      const { count } = await database.periodicReport.createMany({
-        data: [
-          {
-            kind: report.kind,
-            periodStart: dateOf(report.period.firstDay),
-            periodEnd: dateOf(report.period.lastDay),
-            sectorId: report.sectorId,
-            generatedAt: new Date(),
-            metrics: report.metrics as unknown as Prisma.InputJsonValue,
-          },
-        ],
-        skipDuplicates: true,
+      return database.$transaction(async (transaction) => {
+        const [written] = await transaction.periodicReport.createManyAndReturn({
+          data: [
+            {
+              kind: report.kind,
+              periodStart: dateOf(report.period.firstDay),
+              periodEnd: dateOf(report.period.lastDay),
+              sectorId: report.sectorId,
+              generatedAt: new Date(),
+              metrics: report.metrics as unknown as Prisma.InputJsonValue,
+            },
+          ],
+          skipDuplicates: true,
+          select: { id: true, sectorId: true, generatedAt: true },
+        });
+        if (!written) return { written: false, notices: 0 };
+        return { written: true, notices: onWritten ? await onWritten(transaction, written) : 0 };
       });
-      return count === 1;
     },
   };
 }

@@ -1,10 +1,29 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
 import { sectorSubstituteIds } from "@/modules/requests";
+import { periodicReportLabel } from "@/shared/periods";
 import type { NotificationCategory } from "../domain/email";
 import type { NotificationType } from "../domain/recipients";
 import type { NotificationStore } from "../application/ports";
 
 type StageSource = { type: string; event: { payload: Prisma.JsonValue } | null };
+
+/** The report a notice points to, as read with it (SF-250). */
+export const REPORT_OF_NOTICE = { select: { id: true, kind: true, periodStart: true, periodEnd: true, sectorId: true, metrics: true } } as const;
+
+const dayOf = (date: Date) => date.toISOString().slice(0, 10);
+
+/**
+ * What the text of a notice names: the service of its request or, for a report's notice, the report's period
+ * (SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4).
+ */
+export function noticeSubject(row: {
+  request: { serviceNameSnapshot: string } | null;
+  report: { kind: "WEEKLY" | "MONTHLY"; periodStart: Date; periodEnd: Date } | null;
+}): string {
+  if (row.request) return row.request.serviceNameSnapshot;
+  if (row.report) return periodicReportLabel(row.report.kind, { firstDay: dayOf(row.report.periodStart), lastDay: dayOf(row.report.periodEnd) });
+  return "";
+}
 
 function stageEventIdOf({ type, event }: StageSource): string | null {
   const id = type === "stage.changed" ? (event?.payload as { stageEventId?: unknown } | null)?.stageEventId : null;
@@ -179,10 +198,12 @@ export function createPrismaNotificationStore(database: PrismaClient): Notificat
         select: {
           id: true,
           requestId: true,
+          reportId: true,
           type: true,
           createdAt: true,
           readAt: true,
           request: { select: { serviceNameSnapshot: true } },
+          report: REPORT_OF_NOTICE,
           event: { select: { payload: true } },
         },
       });
@@ -193,10 +214,11 @@ export function createPrismaNotificationStore(database: PrismaClient): Notificat
         return {
           id: row.id,
           requestId: row.requestId,
+          reportId: row.reportId,
           type: row.type as NotificationType,
           createdAt: row.createdAt,
           readAt: row.readAt,
-          serviceName: row.request.serviceNameSnapshot,
+          serviceName: noticeSubject(row),
           ...(stageName ? { stageName } : {}),
           ...(ruleName ? { ruleName } : {}),
         };
@@ -211,14 +233,15 @@ export function createPrismaNotificationStore(database: PrismaClient): Notificat
     async markRead(notificationId, recipientId) {
       const notification = await database.requestNotification.findFirst({
         where: { id: notificationId, recipientId },
-        select: { requestId: true, readAt: true },
+        select: { requestId: true, reportId: true, readAt: true },
       });
 
       if (!notification) return null;
       if (!notification.readAt) {
         await database.requestNotification.update({ where: { id: notificationId }, data: { readAt: new Date() } });
       }
-      return notification.requestId;
+      if (notification.requestId) return { kind: "request", id: notification.requestId };
+      return notification.reportId ? { kind: "report", id: notification.reportId } : null;
     },
     async purgeRead(before) {
       const result = await database.requestNotification.deleteMany({ where: { readAt: { lt: before } } });

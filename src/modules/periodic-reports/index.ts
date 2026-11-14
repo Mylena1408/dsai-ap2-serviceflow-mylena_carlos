@@ -3,14 +3,14 @@ import { prisma } from "@/server/db";
 import * as metrics from "./application/report-metrics";
 import { createPrismaReportCountsReader } from "./infrastructure/prisma-report-counts";
 import * as generation from "./application/generate-reports";
-import { createPrismaReportGenerationStore } from "./infrastructure/prisma-report-generation";
+import { createPrismaReportGenerationStore, type ReportWrittenHook } from "./infrastructure/prisma-report-generation";
 import * as reading from "./application/read-reports";
 import { createPrismaPeriodicReportReader } from "./infrastructure/prisma-report-reader";
 import type { ReportPeriod } from "./domain/periodic-report";
 
 // Periodic reports (SPEC 2026-11-09-comunicacao-e-calendarios, part C): the periods, the numbers and who reads them
-// (SF-246), the numbers of a period (SF-247), the job's generation (SF-248) and the page (SF-249). The notice (SF-250)
-// and the activation (SF-251) come next.
+// (SF-246), the numbers of a period (SF-247), the job's generation (SF-248), the page (SF-249) and the notice written
+// with each report (SF-250, by a hook the job gives). The activation (SF-251) comes next.
 export {
   MAX_REPORT_TAGS,
   PERIODIC_REPORT_KINDS,
@@ -33,9 +33,17 @@ export function computeReportMetrics(sectorId: string | null, period: ReportPeri
 
 export type { PeriodicReportGenerationSummary } from "./application/generate-reports";
 
-/** The daily job's step (5.1 item 2; SF-248): the most recent complete period of each kind on. */
-export function generatePeriodicReports(database: PrismaClient = prisma): Promise<generation.PeriodicReportGenerationSummary> {
-  return generation.generatePeriodicReports(createPrismaReportGenerationStore(database));
+export type { ReportWrittenHook } from "./infrastructure/prisma-report-generation";
+
+/**
+ * The daily job's step (5.1 item 2; SF-248): the most recent complete period of each kind on. `onWritten` writes the
+ * notices of each new report in its transaction (5.1 item 4; SF-250).
+ */
+export function generatePeriodicReports(
+  options: { onWritten?: ReportWrittenHook } = {},
+  database: PrismaClient = prisma,
+): Promise<generation.PeriodicReportGenerationSummary> {
+  return generation.generatePeriodicReports(createPrismaReportGenerationStore(database, options.onWritten));
 }
 
 export { REPORT_LIST_SIZE } from "./application/read-reports";

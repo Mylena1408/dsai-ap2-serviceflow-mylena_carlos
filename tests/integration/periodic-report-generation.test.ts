@@ -41,7 +41,7 @@ describe("generating the periodic reports (SF-248)", () => {
   it("with no kind on, the job generates nothing (CA-REL-01)", async () => {
     await requestInLastWeek();
     await setting("WEEKLY", false);
-    expect(await generatePeriodicReports(prisma)).toEqual({ periods: [], generated: 0, alreadyThere: 0 });
+    expect(await generatePeriodicReports({}, prisma)).toEqual({ periods: [], generated: 0, alreadyThere: 0, notices: 0 });
     expect(await prisma.periodicReport.count()).toBe(0);
   });
 
@@ -51,7 +51,7 @@ describe("generating the periodic reports (SF-248)", () => {
     await setting("WEEKLY", true);
     const scopes = await scopesNow();
 
-    const first = await generatePeriodicReports(prisma);
+    const first = await generatePeriodicReports({}, prisma);
     expect(first).toMatchObject({ periods: [{ kind: "WEEKLY", ...week }], generated: scopes, alreadyThere: 0 });
     const reports = await prisma.periodicReport.findMany({ where: { kind: "WEEKLY" } });
     expect(reports).toHaveLength(scopes);
@@ -62,7 +62,7 @@ describe("generating the periodic reports (SF-248)", () => {
 
     // Run again: nothing new. Later changes do not touch the kept numbers (5.3 item 2).
     await prisma.request.update({ where: { id: requestId }, data: { createdAt: new Date("2020-01-01T12:00:00.000Z") } });
-    expect(await generatePeriodicReports(prisma)).toMatchObject({ generated: 0, alreadyThere: scopes });
+    expect(await generatePeriodicReports({}, prisma)).toMatchObject({ generated: 0, alreadyThere: scopes });
     expect((await prisma.periodicReport.findUniqueOrThrow({ where: { id: mine.id } })).metrics).toMatchObject({ opened: 1 });
   });
 
@@ -70,7 +70,7 @@ describe("generating the periodic reports (SF-248)", () => {
     await requestInLastWeek();
     await setting("WEEKLY", true);
     const scopes = await scopesNow();
-    const runs = await Promise.all([generatePeriodicReports(prisma), generatePeriodicReports(prisma), generatePeriodicReports(prisma)]);
+    const runs = await Promise.all([generatePeriodicReports({}, prisma), generatePeriodicReports({}, prisma), generatePeriodicReports({}, prisma)]);
     expect(runs.reduce((sum, run) => sum + run.generated, 0)).toBe(scopes);
     expect(await prisma.periodicReport.count({ where: { kind: "WEEKLY" } })).toBe(scopes);
   });

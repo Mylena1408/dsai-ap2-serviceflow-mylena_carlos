@@ -23,7 +23,8 @@ function store(enabled: PeriodicReportKind[], existing: Array<string | null> = [
     enabledKinds: vi.fn(async () => enabled),
     activeSectorIds: vi.fn(async () => ["s1", "s2"]),
     existingScopes: vi.fn(async () => existing),
-    insert: vi.fn<PeriodicReportGenerationStore["insert"]>(async () => written),
+    // A sector's report writes one notice to its manager with it (SF-250); the organization's, none.
+    insert: vi.fn<PeriodicReportGenerationStore["insert"]>(async (report) => ({ written, notices: written && report.sectorId ? 1 : 0 })),
     counts: vi.fn(async () => COUNTS),
   } satisfies PeriodicReportGenerationStore;
 }
@@ -31,7 +32,7 @@ function store(enabled: PeriodicReportKind[], existing: Array<string | null> = [
 describe("generatePeriodicReports", () => {
   it("with nothing on, reads and writes nothing (CA-REL-01)", async () => {
     const source = store([]);
-    expect(await generatePeriodicReports(source)).toEqual({ periods: [], generated: 0, alreadyThere: 0 });
+    expect(await generatePeriodicReports(source)).toEqual({ periods: [], generated: 0, alreadyThere: 0, notices: 0 });
     for (const method of ["today", "activeSectorIds", "existingScopes", "insert", "counts"] as const) {
       expect(source[method]).not.toHaveBeenCalled();
     }
@@ -43,6 +44,7 @@ describe("generatePeriodicReports", () => {
       periods: [{ kind: "WEEKLY", firstDay: "2026-11-09", lastDay: "2026-11-15" }],
       generated: 3,
       alreadyThere: 0,
+      notices: 2,
     });
     expect(source.insert.mock.calls.map(([report]) => report.sectorId)).toEqual([null, "s1", "s2"]);
     expect(source.insert.mock.calls[0]![0]).toMatchObject({ kind: "WEEKLY", period: { firstDay: "2026-11-09" }, metrics: { opened: 1 } });
@@ -67,6 +69,6 @@ describe("generatePeriodicReports", () => {
   });
 
   it("a report written by another run meanwhile counts as already there", async () => {
-    expect(await generatePeriodicReports(store(["WEEKLY"], [], false))).toMatchObject({ generated: 0, alreadyThere: 3 });
+    expect(await generatePeriodicReports(store(["WEEKLY"], [], false))).toMatchObject({ generated: 0, alreadyThere: 3, notices: 0 });
   });
 });

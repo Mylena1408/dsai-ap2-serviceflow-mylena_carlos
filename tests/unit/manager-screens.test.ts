@@ -57,7 +57,7 @@ describe("manager notifications route (SF-085)", () => {
   });
 
   it("opens the request in the approvals area", async () => {
-    notifications.openNotification.mockResolvedValue("request-1");
+    notifications.openNotification.mockResolvedValue({ kind: "request", id: "request-1" });
     expect((await call()).headers.get("location")).toBe("/approvals/request-1");
   });
 

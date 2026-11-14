@@ -1,10 +1,12 @@
-import type { PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 import type { EventConsumer } from "@/modules/events";
 import { prisma } from "@/server/db";
 import * as useCases from "./application/notification-use-cases";
 import * as preferences from "./application/preference-use-cases";
+import * as reportNotices from "./application/report-notices";
+import { createPrismaReportNoticeWriter } from "./infrastructure/prisma-report-notices";
 import { processEmailDeliveries, type EmailRunSummary } from "./application/email-delivery";
-import type { NotificationRecord } from "./application/ports";
+import type { NotificationRecord, NotificationTarget } from "./application/ports";
 import { createPrismaNotificationStore } from "./infrastructure/prisma-notification-store";
 import { createPrismaPreferenceStore } from "./infrastructure/prisma-preference-store";
 import * as retention from "./infrastructure/prisma-retention";
@@ -33,7 +35,7 @@ export type {
   EmailSkipReason,
   NotificationCategory,
 } from "./domain/email";
-export type { NotificationRecord } from "./application/ports";
+export type { NotificationRecord, NotificationTarget } from "./application/ports";
 
 export function notificationConsumer(database: PrismaClient = prisma): EventConsumer {
   return useCases.createNotificationConsumer(createPrismaNotificationStore(database));
@@ -51,7 +53,7 @@ export async function markAllNotificationsRead(database: PrismaClient = prisma):
   return useCases.markAllNotificationsRead(createPrismaNotificationStore(database));
 }
 
-export async function openNotification(notificationId: unknown, database: PrismaClient = prisma): Promise<string | null> {
+export async function openNotification(notificationId: unknown, database: PrismaClient = prisma): Promise<NotificationTarget | null> {
   return useCases.openNotification(notificationId, createPrismaNotificationStore(database));
 }
 
@@ -113,4 +115,14 @@ export async function getEmailOverview(
   env: Record<string, string | undefined> = process.env,
 ): Promise<EmailOverview> {
   return emailOverview(createPrismaEmailLog(database), isEmailConfigured(env));
+}
+
+export type { WrittenReport } from "./application/report-notices";
+
+/**
+ * SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4 (SF-250): the notices to the sector's managers of a report just
+ * written, in the transaction that wrote it. Returns how many were written.
+ */
+export function noticeReportManagers(transaction: Prisma.TransactionClient, report: reportNotices.WrittenReport): Promise<number> {
+  return reportNotices.noticeReportManagers(report, createPrismaReportNoticeWriter(transaction));
 }

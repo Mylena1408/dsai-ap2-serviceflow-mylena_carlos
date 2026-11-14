@@ -135,7 +135,7 @@ describe("in-app notifications (SF-063)", () => {
     const listed = await listNotifications(prisma);
     expect(listed).toHaveLength(2);
     expect(listed[0]).toMatchObject({ requestId: request.id, readAt: null, serviceName: expect.any(String) });
-    await expect(openNotification(first.id, prisma)).resolves.toBe(request.id);
+    await expect(openNotification(first.id, prisma)).resolves.toEqual({ kind: "request", id: request.id });
     await expect(countUnreadNotifications(prisma)).resolves.toBe(1);
     await markAllNotificationsRead(prisma);
     await expect(countUnreadNotifications(prisma)).resolves.toBe(0);

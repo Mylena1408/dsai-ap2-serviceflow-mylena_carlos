@@ -23,13 +23,18 @@ export async function GET(request: Request, { params }: NotificationRouteContext
     // Each profile has its own area (SPEC 2026-11-01-aprovacoes, 5.7 for managers).
     const area = actor.role === "ATTENDANT" ? "/queue" : actor.role === "MANAGER" ? "/approvals" : null;
     const listPath = area ? `${area}/notifications` : "/notifications";
-    const requestId = await openNotification(notificationId);
+    const target = await openNotification(notificationId);
 
-    if (!requestId) {
+    if (!target) {
       return redirectTo(request, listPath);
     }
+    // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4 (SF-250): a report's notice leads to the manager's report
+    // page, which checks who reads it; anyone else goes back to their list.
+    if (target.kind === "report") {
+      return redirectTo(request, actor.role === "MANAGER" ? `/approvals/reports/${target.id}` : listPath);
+    }
 
-    return redirectTo(request, area ? `${area}/${requestId}` : `/requests/${requestId}`);
+    return redirectTo(request, area ? `${area}/${target.id}` : `/requests/${target.id}`);
   } catch (error) {
     if (error instanceof ApplicationError) {
       return redirectTo(request, "/");

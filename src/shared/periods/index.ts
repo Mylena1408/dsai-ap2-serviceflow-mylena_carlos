@@ -104,3 +104,19 @@ export function parseReportPeriod(raw: Record<string, RawValue>, now: Date): Rep
   const custom = customPeriod(single(raw.from), single(raw.to), now);
   return typeof custom === "string" ? { period: fallback, error: custom } : { period: custom, error: null };
 }
+
+// The period of a periodic report (SPEC 2026-11-09-comunicacao-e-calendarios, 5.1; SF-249), here because the report's
+// page and the notice of a new report (SF-250) both name it.
+
+const MONTHS = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+
+/** "Semana de 03/11 a 09/11/2026" or "Novembro de 2026"; days are "YYYY-MM-DD". */
+export function periodicReportLabel(kind: "WEEKLY" | "MONTHLY", period: { firstDay: string; lastDay: string }): string {
+  const [year, month, day] = period.firstDay.split("-");
+  if (kind === "MONTHLY") {
+    const name = MONTHS[Number(month) - 1]!;
+    return `${name.charAt(0).toUpperCase()}${name.slice(1)} de ${year}`;
+  }
+  const [lastYear, lastMonth, lastDay] = period.lastDay.split("-");
+  return `Semana de ${day}/${month} a ${lastDay}/${lastMonth}/${lastYear}`;
+}

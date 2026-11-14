@@ -3094,3 +3094,19 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Resultados:** typecheck e lint OK; unitários 1846/1846; `next build` OK (duas rotas novas); integração 774/774; E2E completo 54/55 (a falha acima) e o teste corrigido 1/1.
 - **CA-REL-03** marcado na SPEC.
 - **Linhas:** 482 `added` em TS (aplicação 238, testes 244, contando a correção do teste antigo).
+
+## Contagem de linhas em `d74be6e` (2026-11-14)
+
+- `sh scripts/cloc-diff.sh` sobre a `baseline-ap2` (10.743 linhas de TS): 89.576 `added` (aplicação 44.669, testes 44.660, scripts 247); líquido 87.088. Faltam 10.424 para as 100.000.
+
+## SF-250 — Aviso e e-mail do relatório periódico (2026-11-14)
+
+- **Decisão da responsável (pergunta antes de começar):** "Só gestores": o relatório de um setor avisa só os gestores ativos daquele setor; o administrador não recebe aviso (não tem área de avisos e lê todos na administração); o relatório da organização não avisa ninguém.
+- **Banco (migration `20261114400000_report_notifications`):** `RequestNotification.requestId` passou a aceitar nulo e ganhou `reportId` (FK para `PeriodicReport`), com `CHECK` de exatamente um dos dois e índice único (relatório, pessoa); categoria `REPORTS`. Aditiva para as linhas existentes (todas têm solicitação). Aplicada só no banco de teste local; **falta o Neon** (backup → migration → push).
+- **Sem dependência circular:** o aviso é gravado na mesma transação do relatório por um gancho (`onWritten`) que o job diário passa à geração; o módulo de relatórios não importa o de notificações. O texto do período (`periodicReportLabel`) foi para `src/shared/periods`, usado pela página, pelo aviso e por "Meus dados".
+- **E-mail:** período, abertas, concluídas, canceladas, porcentagem no prazo e link para `/approvals/reports/{id}`. Na hora do envio, quem não é mais gestor daquele setor fica sem e-mail, com o motivo "sem acesso ao relatório" (`report_not_readable`) na seção "E-mails".
+- **Preferências (CA-REL-01):** "Relatórios periódicos do setor" só aparece para gestores, e só com algum relatório ligado ou se a pessoa já tinha escolhido (para poder desligar); a categoria não oferecida é recusada e nunca gravada. Os outros perfis nem leem a configuração.
+- **Tropeços:** (1) escrevi um script de edição por heredoc com `\n`, contra a regra da memória, e uma linha de `email-content.ts` quebrou; corrigida com o Edit antes dos testes. (2) Meu filtro da saída do `tsc` escondia erros em caminhos com parênteses (`src/app/(admin)/...`); rodei o `tsc` sem filtro e corrigi os rótulos da seção "E-mails". (3) Quatro testes antigos esperavam o id da solicitação ao abrir um aviso; passaram a esperar `{ kind: "request", id }`, e a lista exata de categorias ganhou `REPORTS`.
+- **Resultados:** typecheck e lint OK; unitários 1859/1859; integração 776/777 na rodada completa (a falha era a asserção antiga acima; corrigida, o arquivo passou 5/5); `next build` OK.
+- **CA-REL-04** marcado na SPEC.
+- **Linhas:** a contagem sai do commit (o script lê o `git archive`); estimativa pelo diff: cerca de 600 linhas de TS acrescentadas.

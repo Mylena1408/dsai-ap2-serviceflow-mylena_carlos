@@ -4,8 +4,18 @@ import type { NotificationType } from "./recipients";
 // Email notifications (SPEC 2026-11-01-notificacoes-email-preferencias, sections 5.1 to 5.3).
 // Pure rules: the category of each notification type and the life of one delivery.
 
-export const NOTIFICATION_CATEGORIES = ["STATUS", "ASSIGNMENT", "COMMENTS", "SLA", "STAGES", "APPROVALS"] as const;
+export const NOTIFICATION_CATEGORIES = ["STATUS", "ASSIGNMENT", "COMMENTS", "SLA", "STAGES", "APPROVALS", "REPORTS"] as const;
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
+
+/**
+ * SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4 and CA-REL-01 (SF-250): "Relatórios" is offered only to a
+ * manager, and only once a report kind is on or the manager already chose it (so they can turn it off). Without
+ * reports, every preferences page stays as it was.
+ */
+export function offeredCategories(role: string, reports: { kindEnabled: boolean; chosen: boolean }): NotificationCategory[] {
+  const offerReports = role === "MANAGER" && (reports.kindEnabled || reports.chosen);
+  return NOTIFICATION_CATEGORIES.filter((category) => category !== "REPORTS" || offerReports);
+}
 
 /**
  * Table 5.1. Keyed by every notification type, so a new type without a category fails the
@@ -37,6 +47,8 @@ const TYPE_CATEGORY: Record<NotificationType, NotificationCategory> = {
   "document.added": "COMMENTS",
   // SPEC 2026-11-03-pausa-sla-calendario, 5.6.
   "sla.paused": "STATUS",
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4.
+  "report.ready": "REPORTS",
 };
 
 export const NOTIFICATION_TYPES = Object.keys(TYPE_CATEGORY) as NotificationType[];
@@ -61,7 +73,7 @@ export type EmailDeliveryStatus = (typeof EMAIL_DELIVERY_STATUSES)[number];
  * 5.3.2 and 5.2.4: why a delivery was not sent. Recorded as its code, never retried. A person
  * whose profile changed to one without notification pages (administrator) has no link to follow.
  */
-export type EmailSkipReason = "not_configured" | "recipient_inactive" | "recipient_without_area";
+export type EmailSkipReason = "not_configured" | "recipient_inactive" | "recipient_without_area" | "report_not_readable";
 
 export type EmailDeliveryOutcome =
   | { kind: "sent" }

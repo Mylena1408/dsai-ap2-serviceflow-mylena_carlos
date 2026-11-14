@@ -45,7 +45,7 @@ export function EmailPreferencesPage({ preferences, notificationsHref, notice }:
       <form action={saveEmailPreferencesAction} className="surface-card account-form">
         <fieldset className="format-options">
           <legend>Receber por e-mail</legend>
-          {NOTIFICATION_CATEGORIES.map((category) => (
+          {NOTIFICATION_CATEGORIES.filter((category) => preferences[category] !== undefined).map((category) => (
             <label className="checkbox-field" key={category}>
               <input defaultChecked={preferences[category]} name="category" type="checkbox" value={category} />
               {CATEGORY_LABELS[category]}
@@ -53,7 +53,9 @@ export function EmailPreferencesPage({ preferences, notificationsHref, notice }:
           ))}
         </fieldset>
         <p className="metadata">
-          O e-mail traz só o aviso e o link para a solicitação; os detalhes ficam no sistema.
+          {preferences.REPORTS === undefined
+            ? "O e-mail traz só o aviso e o link para a solicitação; os detalhes ficam no sistema."
+            : "O e-mail traz só o aviso e o link para a solicitação (ou, no relatório, os números principais e o link); os detalhes ficam no sistema."}
         </p>
         <button type="submit">Salvar preferências</button>
       </form>

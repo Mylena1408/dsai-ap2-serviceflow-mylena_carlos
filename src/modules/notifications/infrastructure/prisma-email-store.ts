@@ -1,7 +1,21 @@
 import type { PrismaClient } from "@prisma/client";
 import type { NotificationType } from "../domain/recipients";
 import type { EmailDeliveryLog, EmailDeliveryStore } from "../application/ports";
-import { ruleNamesOf, stageNamesOf } from "./prisma-notification-store";
+import { periodicReportMetricsSchema } from "@/modules/periodic-reports";
+import { REPORT_OF_NOTICE, noticeSubject, ruleNamesOf, stageNamesOf } from "./prisma-notification-store";
+
+/** SPEC 2026-11-09-comunicacao-e-calendarios, 5.3 item 4: only the main numbers go to the email. */
+function reportNumbers(report: { id: string; sectorId: string | null; metrics: unknown }) {
+  const metrics = periodicReportMetricsSchema.parse(report.metrics);
+  return {
+    id: report.id,
+    sectorId: report.sectorId,
+    opened: metrics.opened,
+    completed: metrics.completed,
+    cancelled: metrics.cancelled,
+    onTimePercentage: metrics.onTimePercentage,
+  };
+}
 
 export function createPrismaEmailStore(database: PrismaClient): EmailDeliveryStore {
   return {
@@ -43,12 +57,13 @@ export function createPrismaEmailStore(database: PrismaClient): EmailDeliverySto
           availableAt: true,
           sentAt: true,
           lastErrorCode: true,
-          recipient: { select: { email: true, isActive: true, role: true } },
+          recipient: { select: { email: true, isActive: true, role: true, sectorId: true } },
           notification: {
             select: {
               type: true,
               requestId: true,
               request: { select: { serviceNameSnapshot: true } },
+              report: REPORT_OF_NOTICE,
               event: { select: { payload: true } },
             },
           },
@@ -64,9 +79,10 @@ export function createPrismaEmailStore(database: PrismaClient): EmailDeliverySto
           notification: {
             type: notification.type as NotificationType,
             requestId: notification.requestId,
-            serviceName: notification.request.serviceNameSnapshot,
+            serviceName: noticeSubject(notification),
             ...(stageNames[index] ? { stageName: stageNames[index] } : {}),
             ...(ruleNames[index] ? { ruleName: ruleNames[index] } : {}),
+            ...(notification.report ? { report: reportNumbers(notification.report) } : {}),
           },
         })),
       };
