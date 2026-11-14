@@ -181,3 +181,11 @@
 
 54. Contagem em `f3eae8d`: 90.525 `added` (aplicação 45.063, testes 45.215, scripts 247), líquido 88.037.
 55. SF-252: migration `20261114500000_sector_calendars` e domínio do calendário efetivo do setor; CA-CAL-04. Unitários 1873/1873, integração 784/784, build OK.
+
+> faça o commit do sf-252
+
+56. Commit `64cf9fc` (SF-252).
+
+> deploy antes
+
+57. Backup `serviceflow-2026-11-14-pre-deploy-3.dump` conferido por inteiro (SQL sem as 36 linhas `pg_attver` do Neon, 70/70 tabelas iguais à produção). Migrations `report_notifications` e `sector_calendars` aplicadas no Neon (62, em dia; só as duas tabelas novas, vazias). Commit dos registros e push.

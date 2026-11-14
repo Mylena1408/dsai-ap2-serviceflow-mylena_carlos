@@ -180,3 +180,11 @@ Se o banco restaurado não tiver as extensões do original, criar antes `CREATE 
 - **Para os próximos deploys:** a conferência completa pede um destino que aceite a opção (por exemplo, um ramo do próprio Neon) ou tirar o `pg_attver` do SQL gerado pelo `pg_restore -f` antes de aplicar. Isso tende a afetar toda tabela criada no Neon a partir de agora.
 - Depois das migrations, a produção ficou com 60 migrations e as três tabelas novas (`UserImport`, `PeriodicReport`, `PeriodicReportSetting`) vazias; nenhuma outra contagem mudou.
 - Continua faltando a cópia fora da máquina, com cifra própria.
+
+## 22. Cópia antes do terceiro deploy de 2026-11-14
+
+- Feita pelo agente a pedido da responsável ("deploy antes"), antes de aplicar 2 migrations no Neon (`20261114400000_report_notifications` e `20261114500000_sector_calendars`). URL direta lida do mesmo arquivo da responsável das seções 20 e 21, passada só aos processos, sem aparecer na saída.
+- Cópia `serviceflow-2026-11-14-pre-deploy-3.dump` (197.609 bytes) em `C:\Users\Mylena Reis\serviceflow-backups\`, com o atributo cifrado do EFS conferido. As contagens da produção eram as mesmas de depois do segundo deploy do dia.
+- **Verificação completa, resolvendo a pendência da seção 21:** a cópia foi convertida em SQL (`pg_restore -f`); as 36 linhas `ALTER TABLE ONLY ... ALTER COLUMN ... SET (pg_attver=...)` (opção própria do Neon, só nas tabelas criadas nele) foram retiradas; o restante foi aplicado num banco local isolado com `ON_ERROR_STOP` (nenhum erro). As 70 tabelas tiveram as mesmas contagens da produção; o banco de verificação foi apagado. A opção retirada é só um marcador interno do Neon e não carrega dados; numa recuperação real no Neon, a cópia volta sem esse passo.
+- Depois das migrations, a produção ficou com 62 migrations e as duas tabelas novas (`SectorCalendar`, `SectorHoliday`) vazias; nenhuma outra contagem mudou (a coluna nova `Request.slaCalendarSectorId` ficou vazia em todas as solicitações).
+- Continua faltando a cópia fora da máquina, com cifra própria.

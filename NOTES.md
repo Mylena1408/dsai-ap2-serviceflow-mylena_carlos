@@ -3136,3 +3136,10 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Limpezas dos testes:** as duas tabelas novas entraram em `tests/integration/fixtures.ts` e `scripts/prepare-e2e.ts`, antes de usuários e setores.
 - **Resultados:** typecheck e lint OK; unitários 1873/1873; integração 784/784; `next build` OK; sem dependência nova.
 - **CA-CAL-04** marcado.
+
+## Deploy de SF-248 a SF-252 (2026-11-14)
+
+- **Ordem seguida:** backup → 2 migrations no Neon → push, a pedido da responsável ("deploy antes", em vez de começar o SF-253).
+- **Backup:** `serviceflow-2026-11-14-pre-deploy-3.dump`, cifrado pelo EFS. **Conferência completa:** convertido em SQL, sem as 36 linhas da opção `pg_attver` do Neon, restaurado com `ON_ERROR_STOP` num banco local; 70 de 70 tabelas com as contagens da produção (seção 22 da SPEC de backup). Resolve a verificação parcial do deploy anterior.
+- **Migrations no Neon:** `20261114400000_report_notifications` e `20261114500000_sector_calendars`; `prisma migrate status` em dia (62); contagens iguais às de antes, mais `SectorCalendar` e `SectorHoliday` vazias.
+- **URL do Neon:** lida do arquivo da responsável, passada só aos processos; nada gravado no repositório.
