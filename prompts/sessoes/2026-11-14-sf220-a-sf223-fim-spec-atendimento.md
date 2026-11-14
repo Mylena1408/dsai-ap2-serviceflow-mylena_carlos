@@ -145,3 +145,7 @@
 
 42. Commit `73a52d7` (SF-246).
 43. SF-247: números do período com as definições de "Análises"; cenário de teste corrigido depois de ler o `CHECK` do atraso. Unitários 1829/1829, integração 767/767.
+
+> faça os commits e push e migrations
+
+44. Commit `534ac40` (SF-247). Backup `serviceflow-2026-11-14-pre-deploy-2.dump`; a restauração local falhou nas duas tabelas dos avisos por uma opção do Neon (`pg_attver`) que o PostgreSQL 17 não conhece; 65 de 67 tabelas conferidas, as 2 restantes vazias na produção (registrado na seção 21 da SPEC de backup). Migrations da parte B e da parte C aplicadas no Neon (60, em dia; contagens iguais mais as três tabelas novas vazias). Push dos commits.

@@ -171,3 +171,12 @@ Se o banco restaurado não tiver as extensões do original, criar antes `CREATE 
 - Cópia `serviceflow-2026-11-14-pre-deploy.dump` (197.609 bytes) em `C:\Users\Mylena Reis\serviceflow-backups\`, com o atributo cifrado do EFS conferido. É menor que a de 09/11 (275.428 bytes), por isso a conferência foi feita antes de seguir.
 - Verificação: restaurada num banco local isolado (`--no-acl`, como na seção 10); as 65 tabelas com a mesma contagem de linhas da produção (10 pessoas, 38 solicitações, 57 migrations); o banco de verificação foi apagado. Depois da migration, a produção ficou com 58 migrations e as duas tabelas novas vazias; nenhuma outra contagem mudou.
 - Continua faltando a cópia fora da máquina, com cifra própria.
+
+## 21. Cópia antes do segundo deploy de 2026-11-14
+
+- Feita pelo agente a pedido da responsável ("faça os commits e push e migrations"), antes de aplicar 2 migrations no Neon (`20261114200000_user_imports` e `20261114300000_periodic_reports`). URL direta lida do mesmo arquivo da responsável da seção 20, passada só aos processos, sem aparecer na saída.
+- Cópia `serviceflow-2026-11-14-pre-deploy-2.dump` (197.609 bytes) em `C:\Users\Mylena Reis\serviceflow-backups\`, com o atributo cifrado do EFS conferido. As contagens da produção eram as mesmas de depois do primeiro deploy do dia.
+- **Verificação parcial, com a causa registrada:** a restauração local parou em `CREATE TABLE "Announcement"` com `unrecognized parameter "pg_attver"`. O Neon grava uma opção de coluna própria (`pg_attver`) nas tabelas criadas nele (aqui, as duas dos avisos, criadas no deploy anterior), e o PostgreSQL 17 dos bancos locais não a reconhece. Restaurada sem parar no erro, a cópia trouxe 65 das 67 tabelas com as mesmas contagens da produção; os 13 erros vieram todos das duas tabelas dos avisos (2 da opção, 11 em consequência), que estavam vazias na produção. A cópia em si está completa (o `pg_dump` terminou sem erro).
+- **Para os próximos deploys:** a conferência completa pede um destino que aceite a opção (por exemplo, um ramo do próprio Neon) ou tirar o `pg_attver` do SQL gerado pelo `pg_restore -f` antes de aplicar. Isso tende a afetar toda tabela criada no Neon a partir de agora.
+- Depois das migrations, a produção ficou com 60 migrations e as três tabelas novas (`UserImport`, `PeriodicReport`, `PeriodicReportSetting`) vazias; nenhuma outra contagem mudou.
+- Continua faltando a cópia fora da máquina, com cifra própria.

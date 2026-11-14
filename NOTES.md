@@ -3067,3 +3067,10 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Tropeço no teste, corrigido:** o primeiro cenário marcava atraso em solicitações sem prazo-base, e o `CHECK` `Request_completedLate_check` (marcação só em concluída com `slaHoursSnapshot`) recusou. Eu tinha suposto que bastava `dueAt`, sem ler a regra; li a migration e o cenário passou a ter o prazo-base. A consulta estava certa.
 - **Resultados:** typecheck e lint OK; unitários 1829/1829; integração 767/767.
 - **Linhas:** 236 `added` em TS (aplicação 103, testes 133).
+
+## Deploy de SF-241 a SF-247 (2026-11-14)
+
+- **Ordem seguida:** backup → 2 migrations no Neon → push, a pedido da responsável ("faça os commits e push e migrations").
+- **Backup:** `serviceflow-2026-11-14-pre-deploy-2.dump`, cifrado pelo EFS. **Conferência parcial:** a restauração no PostgreSQL 17 local falhou nas duas tabelas dos avisos por uma opção de coluna própria do Neon (`pg_attver`), que o 17 não reconhece; as outras 65 tabelas bateram com a produção, e as duas que faltaram estavam vazias. Causa, resultado e o que fazer nos próximos deploys estão na seção 21 da SPEC de backup.
+- **Migrations no Neon:** `20261114200000_user_imports` e `20261114300000_periodic_reports`; `prisma migrate status` em dia (60); contagens da produção iguais às de antes, mais as três tabelas novas vazias.
+- **URL do Neon:** lida do arquivo da responsável (o mesmo caminho da manhã), passada só aos processos; nada gravado no repositório.
