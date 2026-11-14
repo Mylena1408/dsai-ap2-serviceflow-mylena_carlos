@@ -4,9 +4,12 @@ import * as preview from "./application/preview-import";
 import { createPrismaUserImportReader } from "./infrastructure/prisma-user-import";
 import * as apply from "./application/apply-import";
 import { createPrismaUserImportStore } from "./infrastructure/prisma-user-import-store";
+import { csvField } from "@/modules/reports";
+import * as history from "./application/import-history";
+import { createPrismaUserImportHistoryReader } from "./infrastructure/prisma-user-import-history";
 
 // Importing people from a CSV file (SPEC 2026-11-09-comunicacao-e-calendarios, part B): the format and the rules
-// (SF-241), the preview (SF-242) and the application (SF-243). The history (SF-244) comes next.
+// (SF-241), the preview (SF-242), the application (SF-243) and the history with the error report (SF-244).
 export { detectSeparator, parseCsv } from "./domain/csv";
 export type { CsvError, CsvRecord, CsvResult } from "./domain/csv";
 export {
@@ -53,4 +56,18 @@ export type { UserImportConfirmation, UserImportResult } from "./application/app
 /** Applying a previewed import (4.1 item 3; SF-243): inactive people without a usable password, audited. */
 export function applyUserImport(confirmation: apply.UserImportConfirmation, database: PrismaClient = prisma): Promise<apply.UserImportResult> {
   return apply.applyUserImport(confirmation, createPrismaUserImportStore(database));
+}
+
+export { IMPORT_OUTCOME_LABELS, IMPORT_REPORT_COLUMNS, buildImportReportCsv, importReportFileName, reportReasons } from "./domain/report-csv";
+export { IMPORT_HISTORY_SIZE } from "./application/import-history";
+export type { UserImportHistoryItem } from "./application/import-history";
+
+/** The 50 most recent imports (4.1 item 4; SF-244). */
+export function listUserImports(database: PrismaClient = prisma): Promise<history.UserImportHistoryItem[]> {
+  return history.listUserImports(createPrismaUserImportHistoryReader(database));
+}
+
+/** The error report of an import, in CSV (4.1 item 4; SF-244). */
+export function exportUserImportReport(importId: unknown, database: PrismaClient = prisma): Promise<{ content: string; fileName: string }> {
+  return history.exportUserImportReport(importId, createPrismaUserImportHistoryReader(database), csvField);
 }

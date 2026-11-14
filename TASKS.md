@@ -2541,7 +2541,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-244 — Histórico das importações e relatório de erros
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. `listUserImports` (as 50 mais recentes, com autor e contagens) e `exportUserImportReport` com a rota `/api/user-imports/{id}/report.csv` (colunas fixas, células de fórmula protegidas, sem nome nem e-mail, só o administrador); CA-IMP-03 verificado. A tela chega na SF-245.
 - **Objetivo:** Seção 4.1, parte B.
 - **Arquivos/módulos esperados:** Módulo de importação.
 - **Dependências:** SF-243.

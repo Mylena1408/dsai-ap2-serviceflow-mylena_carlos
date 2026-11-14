@@ -3031,3 +3031,11 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Resultados:** typecheck e lint OK; unitários 1797/1797; integração 756/756; E2E `dashboard.spec.ts` 1/1 (para exercitar a limpeza nova do `prepare-e2e`).
 - **CA-IMP-04** marcado. A CA-IMP-03 fica para a SF-244 (histórico e relatório de erros em CSV).
 - **Linhas:** 346 `added` em TS (aplicação 159, testes 186, scripts 1); fora da meta, 38 de SQL.
+
+## SF-244 — Histórico das importações e relatório de erros (2026-11-14)
+
+- **Regra (esclarecimento na SPEC, 4.3):** só o administrador. O histórico mostra as 50 importações mais recentes, com quem importou (o nome de hoje), quando e as contagens. O relatório de erros de cada importação sai em CSV em `/api/user-imports/{id}/report.csv`: colunas fixas Linha, Resultado, Motivos, Perfil e Setor; uma linha por linha do arquivo que ficou de fora; sem nome nem e-mail (SF-243). Importação desconhecida ou id inválido: 404 "Importação não encontrada."; gestor: 403.
+- **Formato:** o mesmo dos outros CSVs do sistema (UTF-8 com BOM, `;`, CRLF, sem cache), com o `csvField` do módulo de relatórios, que põe um apóstrofo na frente de uma célula que a planilha leria como fórmula (conferido com um perfil `=chefe()`). A marca BOM e o CRLF são escritos com `String.fromCharCode`, para a ferramenta Write não gravar caracteres invisíveis no fonte.
+- **Resultados:** typecheck e lint OK; unitários 1803/1803; integração 759/759; `next build` OK com a rota nova. A tela chega na SF-245.
+- **CA-IMP-03** marcado na SPEC.
+- **Linhas:** 311 `added` em TS (aplicação 154, testes 157).

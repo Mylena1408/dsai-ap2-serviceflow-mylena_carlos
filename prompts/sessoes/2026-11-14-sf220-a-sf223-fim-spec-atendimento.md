@@ -119,3 +119,8 @@
 
 34. Commit `6b046b3` (SF-242).
 35. SF-243: migration `20261114200000_user_imports`, aplicação da importação com auditoria, pessoas inativas com `!importado`, relatório sem dados pessoais; CA-IMP-04. Unitários 1797/1797, integração 756/756.
+
+> faça o commit do SF-243 e siga para o SF-244
+
+36. Commit `20295ca` (SF-243).
+37. SF-244: histórico das importações e relatório de erros em CSV (rota nova); CA-IMP-03. Build OK; unitários 1803/1803, integração 759/759.
