@@ -163,6 +163,7 @@ describe("texts (section 5.2)", () => {
       // Added by SPEC 2026-11-09-comunicacao-e-calendarios, 3.3 item 5.
       ANNOUNCEMENT: true,
       USER_IMPORT: true,
+      PERIODIC_REPORT_SETTING: true,
     };
 
     expect([...AUDIT_ACTIONS].sort()).toEqual(Object.keys(actions).sort());

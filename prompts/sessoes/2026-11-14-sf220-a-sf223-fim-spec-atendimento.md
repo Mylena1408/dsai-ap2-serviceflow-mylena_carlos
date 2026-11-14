@@ -135,3 +135,8 @@
 > terminou?
 
 > terminou?
+
+> faça o commit do sf-245 e siga para o sf-246
+
+40. Commit `1a6e67f` (SF-245).
+41. SF-246: migration `20261114300000_periodic_reports` e módulo `periodic-reports`; ativação com id UUID para a auditoria; categoria "Relatórios" adiada para a SF-250. Unitários 1826/1826, integração 764/764.

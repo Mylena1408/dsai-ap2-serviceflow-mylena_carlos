@@ -274,6 +274,11 @@ async function loadState(
       const row = await transaction.userImport.findUnique({ where: { id }, select: { createdCount: true, skippedCount: true, errorCount: true } });
       return row && { label: "Importação de usuários", state: row };
     }
+    // SPEC 2026-11-09-comunicacao-e-calendarios, 5.3 item 3: whether a kind is on, named by the kind.
+    case "PERIODIC_REPORT_SETTING": {
+      const row = await transaction.periodicReportSetting.findUnique({ where: { id }, select: { kind: true, isEnabled: true } });
+      return row && { label: row.kind === "WEEKLY" ? "Relatório semanal" : "Relatório mensal", state: { isEnabled: row.isEnabled } };
+    }
     case "HOLIDAY": {
       const row = await transaction.businessHoliday.findUnique({ where: { id }, select: { day: true, name: true, yearly: true } });
       return row && { label: row.name, state: { day: row.day.toISOString().slice(0, 10), name: row.name, yearly: row.yearly } };

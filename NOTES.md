@@ -3049,3 +3049,13 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Resultados:** typecheck e lint OK; unitários 1810/1810; `next build` OK (duas rotas novas); integração 760/760; E2E completo 55/55 (11,7 min), em sequência.
 - **Parte B concluída:** CA-IMP-01 a 04 verificados, com a revisão do E2E registrada na SPEC.
 - **Linhas:** 526 `added` em TS (aplicação 355, testes 171).
+
+## SF-246 — Relatórios periódicos: banco e domínio (2026-11-14)
+
+- **Início da parte C.** Migration `20261114300000_periodic_reports`, gerada por diff de arquivos do schema e completada à mão: índice único em (tipo, primeiro dia, setor) com `NULLS NOT DISTINCT` (PostgreSQL 15 em diante; Neon 18, local 17), para que o relatório da organização ("sem setor") também seja um só por período; `CHECK` de que a semana vai de segunda a domingo e o mês do dia 1 ao último dia (decisão K7), e de que os números são um objeto. A única coluna opcional (`sectorId`) não entra no `CHECK`. O teste das migrations passou antes de aplicar.
+- **Ativação (regra 3):** `PeriodicReportSetting`, uma linha por tipo; sem linha, desligado. A primeira versão usava o tipo como chave, mas a auditoria guarda o id da entidade como UUID: a tabela ganhou um `id` UUID e o tipo ficou como valor único. Auditoria: entidade `PERIODIC_REPORT_SETTING`, campo `isEnabled`.
+- **Categoria "Relatórios" adiada para a SF-250 (registrado na SPEC):** a primeira versão da migration acrescentava `REPORTS` ao enum das categorias de aviso; o typecheck mostrou que o código trata a lista de categorias como fechada, e acrescentá-la faria a opção aparecer nas preferências de todos antes de existir relatório (contra a CA-REL-01). Como o aviso de hoje (`RequestNotification`) exige uma solicitação, guardar o aviso do relatório também é assunto da SF-250, que registrará a migration que isso pedir.
+- **Geração (esclarecimento na SPEC, 5.3):** o job gera, para cada tipo ligado, o período completo mais recente que ainda não existe; segunda-feira e dia 1 continuam sendo os dias normais, e uma execução que falhe não deixa o período sem relatório.
+- **Domínio:** `latestCompletePeriod` (conferido nas viradas de mês, de ano e no fevereiro de ano bissexto), `periodLabel`, `buildReportMetrics` (porcentagem no prazo, mediana em horas, média das avaliações com uma casa, as cinco etiquetas mais usadas) com o esquema estrito dos números guardados, `canReadReport` e `reportScopes`.
+- **Resultados:** typecheck e lint OK; unitários 1826/1826; integração 764/764; E2E `dashboard.spec.ts` 1/1 (limpeza nova do `prepare-e2e`).
+- **Linhas:** 296 `added` em TS (aplicação 162, testes 132, scripts 2); fora da meta, 73 de SQL.

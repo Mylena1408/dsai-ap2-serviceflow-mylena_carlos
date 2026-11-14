@@ -52,6 +52,8 @@ export const AUDIT_ENTITY_TYPES = [
   "ANNOUNCEMENT",
   // 4.1 item 3.
   "USER_IMPORT",
+  // 5.3 item 3.
+  "PERIODIC_REPORT_SETTING",
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -93,6 +95,7 @@ export const PERSONAL_FIELDS: Readonly<Record<AuditEntityType, readonly string[]
   CHECKLIST_ITEM: [],
   ANNOUNCEMENT: [],
   USER_IMPORT: [],
+  PERIODIC_REPORT_SETTING: [],
 };
 
 /** Passwords, hashes, secrets and tokens never enter a record, whatever the entity. */
@@ -135,6 +138,7 @@ export const AUDIT_ENTITY_LABELS: Record<AuditEntityType, string> = {
   CHECKLIST_ITEM: "Item de checklist",
   ANNOUNCEMENT: "Aviso",
   USER_IMPORT: "Importação de usuários",
+  PERIODIC_REPORT_SETTING: "Relatório periódico",
 };
 
 /** Names of the recorded fields; an unknown field shows its own name. */
@@ -391,6 +395,8 @@ export const AUDITED_FIELDS: Readonly<Record<AuditEntityType, readonly string[]>
   ANNOUNCEMENT: ["title", "body", "level", "kind", "target", "targetRole", "targetSectorId", "startsAt", "endsAt", "leadHours"],
   // 4.1 item 3: the counts only; the report never holds a name or an e-mail.
   USER_IMPORT: ["createdCount", "skippedCount", "errorCount"],
+  // 5.3 item 3: on or off.
+  PERIODIC_REPORT_SETTING: ["isEnabled"],
 };
 
 export type AuditActorRole = "ADMIN" | "REQUESTER" | "ATTENDANT" | "MANAGER";

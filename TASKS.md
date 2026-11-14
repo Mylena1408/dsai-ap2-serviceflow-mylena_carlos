@@ -2561,7 +2561,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-246 — Relatórios: migrations e domínio
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. Migration `20261114300000_periodic_reports` (relatórios com índice único que trata "sem setor" como um valor e `CHECK` dos períodos; ativação por tipo com id UUID; auditoria `PERIODIC_REPORT_SETTING`); módulo `src/modules/periodic-reports` com os períodos, os números guardados e quem lê; regras da CA-REL-02 pelo banco. A categoria de avisos "Relatórios" ficou para a SF-250.
 - **Objetivo:** Seção 5.3, parte C.
 - **Arquivos/módulos esperados:** `prisma/`, módulo de relatórios periódicos.
 - **Dependências:** Parte B concluída.

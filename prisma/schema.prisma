@@ -100,6 +100,8 @@ enum AuditEntityType {
   ANNOUNCEMENT
   /// 4.1 item 3.
   USER_IMPORT
+  /// 5.3 item 3.
+  PERIODIC_REPORT_SETTING
 }
 
 /// SPEC 2026-11-02-api-externa-webhooks, 5.2 (decision A2).
@@ -191,6 +193,8 @@ model Sector {
   tags              SectorTag[]
   /// SPEC 2026-11-09-comunicacao-e-calendarios, 3.3 item 2.
   announcements     Announcement[]
+  /// 5.1 item 1.
+  periodicReports   PeriodicReport[]
   lastDistributedTo User?                  @relation("SectorLastDistributedTo", fields: [lastDistributedToId], references: [id], onDelete: SetNull)
 }
 
@@ -303,6 +307,8 @@ model User {
   announcementDismissals   AnnouncementDismissal[]
   /// 4.1 item 4.
   userImports              UserImport[]               @relation("UserImportActor")
+  /// 5.3 item 3.
+  periodicReportSettings   PeriodicReportSetting[]    @relation("PeriodicReportSettingUpdater")
 }
 
 model Service {
@@ -1742,4 +1748,42 @@ model UserImport {
   actor User @relation("UserImportActor", fields: [actorId], references: [id], onDelete: Restrict)
 
   @@index([createdAt])
+}
+
+/// SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 2 (decision K7): the week before (Monday to Sunday) or the month
+/// before.
+enum PeriodicReportKind {
+  WEEKLY
+  MONTHLY
+}
+
+/// The numbers of a period, for a sector or the organization (5.1 items 1 and 2; 5.3 items 1 and 2): kept as they
+/// were when generated. Unique per (kind, first day, sector), "no sector" counting as one value: that index and the
+/// CHECKs are in the migration.
+model PeriodicReport {
+  id          String             @id @default(uuid()) @db.Uuid
+  kind        PeriodicReportKind
+  periodStart DateTime           @db.Date
+  periodEnd   DateTime           @db.Date
+  /// Null for the organization's report.
+  sectorId    String?            @db.Uuid
+  generatedAt DateTime           @db.Timestamptz
+  metrics     Json
+
+  sector Sector? @relation(fields: [sectorId], references: [id], onDelete: Restrict)
+
+  @@index([periodStart])
+  @@index([sectorId])
+}
+
+/// 5.3 item 3: whether each kind is generated; without a row, it is off.
+model PeriodicReportSetting {
+  /// The audit trail names an entity by a UUID.
+  id          String             @id @default(uuid()) @db.Uuid
+  kind        PeriodicReportKind @unique
+  isEnabled   Boolean
+  updatedAt   DateTime           @db.Timestamptz
+  updatedById String             @db.Uuid
+
+  updatedBy User @relation("PeriodicReportSettingUpdater", fields: [updatedById], references: [id], onDelete: Restrict)
 }
