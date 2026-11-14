@@ -148,6 +148,8 @@ export const AUDIT_FIELD_LABELS: Readonly<Record<string, string>> = {
   role: "Perfil",
   sectorId: "Setor",
   isActive: "Ativo",
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 5.3 item 3 (the periodic reports).
+  isEnabled: "Ligado",
   // SPEC 2026-11-08-atendimento-dia-a-dia, 3.3 item 1.
   color: "Cor",
   description: "Descrição",

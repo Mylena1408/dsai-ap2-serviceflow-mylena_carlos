@@ -167,3 +167,8 @@
 
 49. Contagem em `d74be6e`: 89.576 `added` (aplicação 44.669, testes 44.660, scripts 247), líquido 87.088.
 50. SF-250: migration `20261114400000_report_notifications` (aviso aponta para solicitação ou relatório, `CHECK`; categoria `REPORTS`); aviso aos gestores do setor na mesma transação do relatório, e-mail pela categoria "Relatórios", que só aparece para gestores com relatório ligado; CA-REL-04. Unitários 1859/1859, integração 777 (asserção antiga ajustada), build OK. Migration ainda não aplicada no Neon.
+
+> faça o commit do sf-250 e siga para o sf-251
+
+51. Commit `56f95f7` (SF-250). Contagem: 90.087 `added` (SF-250 somou 511).
+52. SF-251: ativação por tipo na seção "Relatórios", com auditoria só quando muda; E2E `periodic-reports.spec.ts` da parte C; CA-REL-01 marcado, parte C concluída. Unitários 1866/1866, integração 779/779, build OK, E2E 56/56.

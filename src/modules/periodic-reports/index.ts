@@ -6,11 +6,13 @@ import * as generation from "./application/generate-reports";
 import { createPrismaReportGenerationStore, type ReportWrittenHook } from "./infrastructure/prisma-report-generation";
 import * as reading from "./application/read-reports";
 import { createPrismaPeriodicReportReader } from "./infrastructure/prisma-report-reader";
+import * as settings from "./application/report-settings";
+import { createPrismaReportSettingsReader, createPrismaReportSettingsStore } from "./infrastructure/prisma-report-settings";
 import type { ReportPeriod } from "./domain/periodic-report";
 
 // Periodic reports (SPEC 2026-11-09-comunicacao-e-calendarios, part C): the periods, the numbers and who reads them
-// (SF-246), the numbers of a period (SF-247), the job's generation (SF-248), the page (SF-249) and the notice written
-// with each report (SF-250, by a hook the job gives). The activation (SF-251) comes next.
+// (SF-246), the numbers of a period (SF-247), the job's generation (SF-248), the page (SF-249), the notice written
+// with each report (SF-250, by a hook the job gives) and the administrator's activation (SF-251).
 export {
   MAX_REPORT_TAGS,
   PERIODIC_REPORT_KINDS,
@@ -61,4 +63,16 @@ export function getPeriodicReport(reportId: unknown, database: PrismaClient = pr
 /** The manager's link only with a report of their sector (CA-REL-01). */
 export function hasPeriodicReports(database: PrismaClient = prisma): Promise<boolean> {
   return reading.hasPeriodicReports(createPrismaPeriodicReportReader(database));
+}
+
+export type { PeriodicReportSettings } from "./application/report-settings";
+
+/** The administrator's activation (5.3 item 3; SF-251): whether each kind is on. */
+export function getPeriodicReportSettings(database: PrismaClient = prisma): Promise<settings.PeriodicReportSettings> {
+  return settings.getPeriodicReportSettings(createPrismaReportSettingsReader(database));
+}
+
+/** Turns a kind on or off, in the audit trail; `{ kind, enabled: "true" | "false" }`. */
+export function setPeriodicReportEnabled(input: unknown, database: PrismaClient = prisma): Promise<{ changed: boolean }> {
+  return settings.setPeriodicReportEnabled(input, createPrismaReportSettingsStore(database));
 }

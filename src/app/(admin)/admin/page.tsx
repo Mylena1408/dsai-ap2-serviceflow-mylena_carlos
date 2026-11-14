@@ -49,7 +49,7 @@ import { listAnnouncementsForAdmin } from "@/modules/announcements";
 import { AnnouncementsSection } from "./_sections/announcements/announcements-section";
 import { listUserImports } from "@/modules/user-import";
 import { UserImportSection } from "./_sections/user-import/user-import-section";
-import { getPeriodicReport, listPeriodicReports } from "@/modules/periodic-reports";
+import { getPeriodicReport, getPeriodicReportSettings, listPeriodicReports } from "@/modules/periodic-reports";
 import { PeriodicReportsSection } from "./_sections/periodic-reports/periodic-reports-section";
 import { AnnouncementStrip } from "@/app/_components/announcement-strip";
 import { listServiceChecklists } from "@/modules/checklists";
@@ -90,6 +90,8 @@ type AdminPageProps = {
     /** SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 3: the reports' scope filter and the report to open. */
     scope?: string;
     report?: string;
+    /** SF-251: the result of turning a report on or off. */
+    reportSetting?: string;
   }>;
 };
 
@@ -137,15 +139,17 @@ type AdminSection = (typeof adminSections)[number]["id"];
 
 /** One report when `report` names one this person reads; an unknown one shows the list with a message. */
 async function loadReportsScreen(scope: string | undefined, report: string | undefined) {
+  // SF-251: the activation is always on the section.
+  const settings = await getPeriodicReportSettings();
   if (report) {
     try {
-      return { report: await getPeriodicReport(report), list: null, missing: false };
+      return { report: await getPeriodicReport(report), list: null, missing: false, settings };
     } catch (error) {
       if (!(error instanceof ApplicationError) || (error.code !== "NOT_FOUND" && error.code !== "VALIDATION_ERROR")) throw error;
-      return { report: null, list: await listPeriodicReports({ scope }), missing: true };
+      return { report: null, list: await listPeriodicReports({ scope }), missing: true, settings };
     }
   }
-  return { report: null, list: await listPeriodicReports({ scope }), missing: false };
+  return { report: null, list: await listPeriodicReports({ scope }), missing: false, settings };
 }
 
 function selectedAdminSection(section?: string): AdminSection {
@@ -173,7 +177,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     throw error;
   }
 
-  const [{ entity, error, notice, section, period, from, to, sector, type, actor, page, knowledge, absence, schedule, service, edit, fields, tag, checklist, open, announcementResult, scope, report }, sectors, categories, users, services, documentRequirements, serviceFields, serviceStages, permissions] =
+  const [{ entity, error, notice, section, period, from, to, sector, type, actor, page, knowledge, absence, schedule, service, edit, fields, tag, checklist, open, announcementResult, scope, report, reportSetting }, sectors, categories, users, services, documentRequirements, serviceFields, serviceStages, permissions] =
     await Promise.all([
       searchParams,
       listSectors(),
@@ -373,7 +377,13 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       {sectorTags ? <SectorTagsPanel area="admin" message={tag} sectors={sectorTags} /> : null}
       {announcementOverview ? <AnnouncementsSection message={announcementResult} overview={announcementOverview} /> : null}
       {userImports ? <UserImportSection history={userImports} /> : null}
-      {reportsScreen ? <PeriodicReportsSection list={reportsScreen.list} missing={reportsScreen.missing} report={reportsScreen.report} /> : null}
+      {reportsScreen ? <PeriodicReportsSection
+          list={reportsScreen.list}
+          missing={reportsScreen.missing}
+          report={reportsScreen.report}
+          settingResult={reportSetting}
+          settings={reportsScreen.settings}
+        /> : null}
       {serviceChecklists ? <ServiceChecklistsPanel area="admin" message={checklist} open={open} services={serviceChecklists} /> : null}
       {timeReport ? (
         <section className="admin-section" aria-labelledby="admin-time-heading">

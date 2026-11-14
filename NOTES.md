@@ -3110,3 +3110,16 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Resultados:** typecheck e lint OK; unitários 1859/1859; integração 776/777 na rodada completa (a falha era a asserção antiga acima; corrigida, o arquivo passou 5/5); `next build` OK.
 - **CA-REL-04** marcado na SPEC.
 - **Linhas:** a contagem sai do commit (o script lê o `git archive`); estimativa pelo diff: cerca de 600 linhas de TS acrescentadas.
+
+## Contagem de linhas em `56f95f7` (SF-250, 2026-11-14)
+
+- `sh scripts/cloc-diff.sh`: 90.087 `added` (aplicação 44.875, testes 44.965, scripts 247); líquido 87.599. O SF-250 somou 511 (aplicação 206, testes 305). Faltam 9.913 para as 100.000.
+
+## SF-251 — Ativação dos relatórios e E2E da parte C (2026-11-14)
+
+- **Regra (esclarecimento na SPEC, 5.3):** na seção "Relatórios" da administração, cada tipo aparece com o seu estado e um botão ("Ligar relatório semanal", "Desligar relatório mensal"). Escolher o estado que o tipo já tem não muda nada e não grava auditoria; a primeira escolha cria a linha ("Criou"), as seguintes a alteram ("Alterou", campo "Ligado", rótulo novo na auditoria). Só o administrador; desligar mantém os relatórios.
+- **Concorrência:** duas primeiras escolhas ao mesmo tempo esbarram no `kind` único; o conflito vira a mensagem "mudou ao mesmo tempo" (transação serializável, `P2002`/`P2034` traduzidos).
+- **E2E `periodic-reports.spec.ts`:** sem relatório o gestor não vê link nem categoria; o administrador liga o semanal; o gestor escolhe o e-mail de "Relatórios"; a rota protegida do job gera os relatórios e os avisos (a segunda chamada não gera nada); o gestor abre o relatório pelo aviso e vê só o do seu setor; o e-mail fica pendente só para o gestor; o administrador lê todos e desliga, mantendo a lista. O teste limpa relatórios, avisos de relatório, configurações e a preferência "Relatórios" antes e depois, para os outros testes que rodam o job encontrarem tudo desligado.
+- **Tropeço:** um comando com dois heredocs seguidos (um deles com aspas triplas do Python) não foi interpretado pelo shell e nada foi gravado; refiz os arquivos com o Write e o script de edição salvo na pasta temporária.
+- **Resultados:** typecheck e lint OK; unitários 1866/1866; integração 779/779; `next build` OK; E2E completo 56/56.
+- **CA-REL-01** marcado (CA-REL-02 a 04 já estavam); parte C revisada e concluída.

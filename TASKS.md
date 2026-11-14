@@ -2611,7 +2611,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-251 — Ativação pelo administrador e E2E da parte C
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. Ligar e desligar cada tipo na seção "Relatórios" da administração, com auditoria (só quando muda); E2E `periodic-reports.spec.ts` da parte C (ligar, preferência do gestor, job pela rota protegida, aviso que abre o relatório, lista do administrador, desligar mantendo o histórico); CA-REL-01 a 04 revisados e marcados.
 - **Objetivo:** Parte C.
 - **Arquivos/módulos esperados:** Administração.
 - **Dependências:** SF-246 a SF-250.
