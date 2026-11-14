@@ -2975,3 +2975,11 @@ Padrão a replicar nas SF-039 e SF-040:
 - **CA-AVI-04** marcado na SPEC; com ele, os cinco critérios da parte A estão verificados. A revisão deles com o E2E fica para a SF-240.
 - **Linhas:** 192 `added` em TS (aplicação 35, testes 157).
 - **Contagem (`scripts/cloc-diff.sh`, HEAD `a190e26`, antes do commit da SF-238):** 86.028 linhas `added` sobre a `baseline-ap2` (src 42.895, tests 42.889, scripts 244); faltam 13.972 para 100.000.
+
+## Deploy de SF-234 a SF-238 (2026-11-14)
+
+- **Ordem seguida:** backup verificado → 1 migration no Neon → push, como combinado desde 06/11. A responsável pediu o push dos 5 commits; o agente apontou a migration e ela escolheu "Backup e migration antes".
+- **Backup:** `serviceflow-2026-11-14-pre-deploy.dump`, conferido por restauração local (65 tabelas com as mesmas contagens da produção), cifrado pelo EFS. Detalhes na seção 20 da SPEC de backup. Ferramentas: `pg_dump`, `pg_restore` e `psql` do PostgreSQL 18 em `AppData\Local\serviceflow-pg18`.
+- **Migration no Neon:** `prisma migrate deploy` aplicou `20261114100000_announcements`; `prisma migrate status` confirmou o banco em dia (58). Contagens da produção depois: iguais às de antes, mais `Announcement` e `AnnouncementDismissal` vazias. Desta vez o agente pôde rodar a migration.
+- **URL do Neon:** lida do arquivo da responsável fora do projeto, no caminho que ela informou; o agente não varreu outros arquivos atrás de credenciais. Nada foi gravado no repositório.
+- **Push:** `74ca33a..aa38f77`.

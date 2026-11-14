@@ -80,3 +80,12 @@
 > faça a contagem de linhas de código executaveis pelo cloc --diff
 
 22. `sh scripts/cloc-diff.sh` no HEAD `a190e26`: 86.028 linhas `added` (src 42.895, tests 42.889, scripts 244); faltam 13.972 para 100.000.
+
+> faça o commit e prossiga
+
+23. Commit `aa38f77` (SF-238); início da SF-239 (caso de uso e leitura do histórico).
+
+> faça o push para os 5 commits
+
+24. O agente apontou que os commits trazem a migration dos avisos e que o deploy da Vercel não aplica migrations; a responsável escolheu "Backup e migration antes" e informou o caminho do arquivo da URL direta do Neon.
+25. Backup `serviceflow-2026-11-14-pre-deploy.dump` (PostgreSQL 18), conferido por restauração local (65 tabelas iguais); migration aplicada no Neon (58, em dia; contagens iguais mais as duas tabelas novas vazias); push `74ca33a..aa38f77`.
