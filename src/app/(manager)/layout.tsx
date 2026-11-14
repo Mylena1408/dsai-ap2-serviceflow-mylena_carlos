@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SignOutButton } from "@/modules/auth";
 import { NotificationsLink } from "@/app/_components/notifications";
+import { AnnouncementsLink } from "@/app/_components/announcement-history";
 import { SectorServicesLink } from "@/app/_components/sector-services-link";
 import type { ReactNode } from "react";
 
@@ -32,6 +33,8 @@ export default function ManagerLayout({
           {/* SPEC 2026-11-08-atendimento-dia-a-dia, 4.1 item 1. */}
           <Link href="/approvals/checklists">Checklists</Link>
           <NotificationsLink href="/approvals/notifications" />
+          {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 4: only with announcements. */}
+          <AnnouncementsLink />
           <SectorServicesLink />
           <Link href="/account/data">Meus dados</Link>
           <Link href="/account/api-tokens">Acesso à API</Link>

@@ -6,6 +6,7 @@ import {
   type AnnouncementLevel,
   type AnnouncementStripItem,
 } from "@/modules/announcements";
+import Link from "next/link";
 import { dismissAnnouncementAction } from "./announcement-strip-actions";
 
 // The strip of announcements at the top of every screen of a signed-in person (SPEC 2026-11-09-comunicacao-e-
@@ -67,6 +68,10 @@ export function AnnouncementStripView({ announcements }: { announcements: readon
           </div>
         );
       })}
+      {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 4 (SF-239). */}
+      <p className="announcement-strip-more">
+        <Link href="/announcements">Ver todos os avisos</Link>
+      </p>
     </section>
   );
 }

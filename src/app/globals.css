@@ -1887,3 +1887,9 @@ p {
 .announcement-strip-dismiss {
   margin-top: 6px;
 }
+
+/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 4: the link to the page "Avisos" below the strip. */
+.announcement-strip-more {
+  margin: 0;
+  text-align: right;
+}

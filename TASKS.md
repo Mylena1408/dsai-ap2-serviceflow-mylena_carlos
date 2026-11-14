@@ -2491,7 +2491,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-239 — Página "Avisos" com o histórico
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. Página `/announcements` para qualquer perfil, com os avisos do público em vigor e os encerrados nos últimos 90 dias (os dispensados ficam), a situação de cada um e o período no fuso da organização; link "Ver todos os avisos" na faixa e "Avisos" no menu só para quem tem avisos (CA-AVI-01).
 - **Objetivo:** Seção 3.1 (item 4), parte A.
 - **Arquivos/módulos esperados:** Página nova nas áreas.
 - **Dependências:** SF-236.

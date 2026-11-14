@@ -2983,3 +2983,11 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Migration no Neon:** `prisma migrate deploy` aplicou `20261114100000_announcements`; `prisma migrate status` confirmou o banco em dia (58). Contagens da produção depois: iguais às de antes, mais `Announcement` e `AnnouncementDismissal` vazias. Desta vez o agente pôde rodar a migration.
 - **URL do Neon:** lida do arquivo da responsável fora do projeto, no caminho que ela informou; o agente não varreu outros arquivos atrás de credenciais. Nada foi gravado no repositório.
 - **Push:** `74ca33a..aa38f77`.
+
+## SF-239 — Página "Avisos" (2026-11-14)
+
+- **Regra (esclarecimento na SPEC, 3.3):** `/announcements`, para qualquer perfil, com o cabeçalho das páginas de conta. Avisos do público da pessoa cuja faixa já começou, em vigor ou encerrados nos últimos 90 dias; os em vigor primeiro, depois os encerrados, pelo início mais recente; os dispensados ficam. Situação: "Em vigor", "Manutenção programada", "Manutenção em andamento" ou "Encerrado".
+- **Decisão para o CA-AVI-01:** um link fixo "Avisos" nos menus mudaria as telas de todos, mesmo sem avisos. O link no menu de cada área (`AnnouncementsLink`) só aparece quando a pessoa tem algum aviso na lista; a faixa ganhou "Ver todos os avisos". O administrador chega à página pela faixa; a gestão continua na administração.
+- **Leitura:** a consulta reaproveita o filtro de público da faixa (`audienceWhere`) e estreita pelos 90 dias e pela maior antecedência; as regras do domínio (`announcementHistory`) decidem.
+- **Resultados:** typecheck e lint OK; unitários 1751/1751; `next build` OK (`/announcements` dinâmica); integração 748/748; E2E completo 53/53 (13,2 min), em sequência. Sem avisos cadastrados, os menus e as telas do E2E não mudaram.
+- **Linhas:** 406 `added` em TS (aplicação 210, testes 196); fora da meta, 6 de CSS.
