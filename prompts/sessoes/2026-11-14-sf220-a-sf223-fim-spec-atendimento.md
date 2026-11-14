@@ -140,3 +140,8 @@
 
 40. Commit `1a6e67f` (SF-245).
 41. SF-246: migration `20261114300000_periodic_reports` e módulo `periodic-reports`; ativação com id UUID para a auditoria; categoria "Relatórios" adiada para a SF-250. Unitários 1826/1826, integração 764/764.
+
+> faça o commit do sf-246 e siga para o sf-247
+
+42. Commit `73a52d7` (SF-246).
+43. SF-247: números do período com as definições de "Análises"; cenário de teste corrigido depois de ler o `CHECK` do atraso. Unitários 1829/1829, integração 767/767.

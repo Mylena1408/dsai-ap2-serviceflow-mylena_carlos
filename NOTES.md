@@ -3059,3 +3059,11 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Domínio:** `latestCompletePeriod` (conferido nas viradas de mês, de ano e no fevereiro de ano bissexto), `periodLabel`, `buildReportMetrics` (porcentagem no prazo, mediana em horas, média das avaliações com uma casa, as cinco etiquetas mais usadas) com o esquema estrito dos números guardados, `canReadReport` e `reportScopes`.
 - **Resultados:** typecheck e lint OK; unitários 1826/1826; integração 764/764; E2E `dashboard.spec.ts` 1/1 (limpeza nova do `prepare-e2e`).
 - **Linhas:** 296 `added` em TS (aplicação 162, testes 132, scripts 2); fora da meta, 73 de SQL.
+
+## SF-247 — Números do período dos relatórios (2026-11-14)
+
+- **Regra (esclarecimento na SPEC, 5.3):** os números usam as definições de "Análises", do painel e do relatório de horas, para que relatório e telas digam o mesmo: período da meia-noite do primeiro dia à meia-noite depois do último (fuso da organização); setor atual da solicitação; concluídas com a situação "Concluída" e conclusão no período; canceladas idem; "com prazo" e "no prazo" pela marcação `completedLate`; mediana da abertura à conclusão; avaliações dadas no período; minutos dos lançamentos não apagados pelo dia; etiquetas que as solicitações abertas no período têm na geração, com o setor no relatório da organização.
+- **Como:** `computeReportMetrics` (aplicação) e `createPrismaReportCountsReader` (cinco consultas agregadas em paralelo); a leitura aceita o cliente ou uma transação, para o job da SF-248 contar e gravar juntos.
+- **Tropeço no teste, corrigido:** o primeiro cenário marcava atraso em solicitações sem prazo-base, e o `CHECK` `Request_completedLate_check` (marcação só em concluída com `slaHoursSnapshot`) recusou. Eu tinha suposto que bastava `dueAt`, sem ler a regra; li a migration e o cenário passou a ter o prazo-base. A consulta estava certa.
+- **Resultados:** typecheck e lint OK; unitários 1829/1829; integração 767/767.
+- **Linhas:** 236 `added` em TS (aplicação 103, testes 133).

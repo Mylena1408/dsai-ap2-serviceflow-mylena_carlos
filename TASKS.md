@@ -2571,7 +2571,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-247 — Cálculo dos números do período
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. `computeReportMetrics` conta no banco, com as definições de "Análises" e do relatório de horas, as abertas, concluídas, canceladas, no prazo, a mediana, as avaliações, os minutos e as etiquetas de um setor ou da organização no período (do primeiro dia à meia-noite depois do último, no fuso da organização); CA-REL-02 (números).
 - **Objetivo:** Seção 5.1 e 5.3, parte C (decisão K7).
 - **Arquivos/módulos esperados:** Módulo de relatórios periódicos.
 - **Dependências:** SF-246.
