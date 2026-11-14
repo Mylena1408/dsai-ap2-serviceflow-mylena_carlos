@@ -2,7 +2,7 @@ import { requireConfigurationAdministrator } from "@/server/authorization";
 import { NotFoundError } from "@/server/errors";
 import { validateInput } from "@/server/validation";
 import { entityIdSchema } from "@/shared/validation";
-import { buildImportReportCsv, importReportFileName } from "../domain/report-csv";
+import { IMPORT_MODEL_FILE_NAME, buildImportModelCsv, buildImportReportCsv, importReportFileName } from "../domain/report-csv";
 import type { ImportReportEntry } from "../domain/user-import";
 
 // The history of the imports and the error report (SPEC 2026-11-09-comunicacao-e-calendarios, 4.1 item 4; SF-244):
@@ -40,4 +40,10 @@ export async function exportUserImportReport(
   const found = await reader.report(id);
   if (!found) throw new NotFoundError();
   return { content: buildImportReportCsv(found.report, field), fileName: importReportFileName(found.createdAt) };
+}
+
+/** The model of the file, for the administrator (4.1 item 1; SF-245). */
+export async function exportUserImportModel(field: (value: string) => string): Promise<{ content: string; fileName: string }> {
+  await requireConfigurationAdministrator();
+  return { content: buildImportModelCsv(field), fileName: IMPORT_MODEL_FILE_NAME };
 }

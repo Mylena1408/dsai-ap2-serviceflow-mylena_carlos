@@ -78,3 +78,22 @@ describe("the history of the imports (SF-244)", () => {
     await expect(listUserImports()).rejects.toMatchObject({ code: "FORBIDDEN" });
   });
 });
+
+describe("the model of the file (SF-245)", () => {
+  it("is downloaded by the administrator and refused to a manager", async () => {
+    const { GET: model } = await import("@/app/api/user-imports/model.csv/route");
+    const admin = await createDomainUser({ role: "ADMIN" });
+    as(admin);
+    const response = await model();
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-disposition")).toBe('attachment; filename="serviceflow-modelo-importacao-usuarios.csv"');
+    expect(await response.text()).toContain("nome;email;perfil;setor");
+
+    const sector = await createDomainSector();
+    const manager = await createDomainUser({ role: "MANAGER", sectorId: sector.id });
+    as({ ...manager, role: "MANAGER" });
+    const refused = await model();
+    expect(refused.status).toBe(403);
+    expect(await refused.text()).toBe("Só o administrador baixa o modelo da importação.");
+  });
+});

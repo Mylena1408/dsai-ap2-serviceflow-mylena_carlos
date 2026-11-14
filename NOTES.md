@@ -3039,3 +3039,13 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Resultados:** typecheck e lint OK; unitários 1803/1803; integração 759/759; `next build` OK com a rota nova. A tela chega na SF-245.
 - **CA-IMP-03** marcado na SPEC.
 - **Linhas:** 311 `added` em TS (aplicação 154, testes 157).
+
+## SF-245 — Modelo, telas e E2E da parte B; fim da parte B (2026-11-14)
+
+- **Modelo:** `/api/user-imports/model.csv`, só o administrador, com o cabeçalho e dois exemplos; o do atendente usa o setor "Nome de um setor ativo", que não existe, então o modelo importado sem editar mostra um erro na prévia e essa linha não é criada.
+- **Tela:** seção "Importar usuários" na administração, no fluxo da configuração portátil (envio → prévia com os totais e a tabela de cada linha → "Aplicar a importação", que só aparece com alguma linha a criar e envia o mesmo texto → resultado com os totais, aviso se diferirem da prévia, lembrete de que as pessoas entram inativas e sem senha e o link do relatório), e o histórico com o relatório de cada importação.
+- **Duas correções antes de testar:** (1) o componente do navegador importava valores do `index.ts` do módulo, que carrega o Prisma; isso levaria código de servidor ao navegador. Importar o arquivo do domínio direto seria a saída, mas o lint do projeto proíbe importar o interior de outro módulo; a seção (componente de servidor) passou a entregar os textos e o limite como propriedades, e o componente do navegador importa só tipos. (2) o texto do resultado fazia trocas de texto frágeis (`replace`); ganhou uma função própria.
+- **Teste corrigido:** o E2E conferia as contagens do histórico como "110" (erro de digitação; o certo era 1, 1 e 1); passou a conferir célula a célula.
+- **Resultados:** typecheck e lint OK; unitários 1810/1810; `next build` OK (duas rotas novas); integração 760/760; E2E completo 55/55 (11,7 min), em sequência.
+- **Parte B concluída:** CA-IMP-01 a 04 verificados, com a revisão do E2E registrada na SPEC.
+- **Linhas:** 526 `added` em TS (aplicação 355, testes 171).

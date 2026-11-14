@@ -30,3 +30,18 @@ export function importReportFileName(createdAt: Date): string {
   const [day, time] = zonedDateTimeOf(createdAt).split(" ");
   return `serviceflow-importacao-${day}-${time!.replace(":", "")}.csv`;
 }
+
+/**
+ * The model of the file (4.1 item 1; SF-245): the header and two examples. The attendant's sector does not exist, so a
+ * model imported without changes shows how an error looks, and that line is never created.
+ */
+export const IMPORT_MODEL_FILE_NAME = "serviceflow-modelo-importacao-usuarios.csv";
+
+export function buildImportModelCsv(field: (value: string) => string): string {
+  const rows = [
+    ["nome", "email", "perfil", "setor"],
+    ["Maria Exemplo", "maria.exemplo@exemplo.test", "solicitante", ""],
+    ["João Exemplo", "joao.exemplo@exemplo.test", "atendente", "Nome de um setor ativo"],
+  ];
+  return BYTE_ORDER_MARK + rows.map((row) => row.map(field).join(";")).join(LINE_END) + LINE_END;
+}

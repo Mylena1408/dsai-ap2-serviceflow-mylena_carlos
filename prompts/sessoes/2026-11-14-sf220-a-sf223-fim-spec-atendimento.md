@@ -124,3 +124,14 @@
 
 36. Commit `20295ca` (SF-243).
 37. SF-244: histórico das importações e relatório de erros em CSV (rota nova); CA-IMP-03. Build OK; unitários 1803/1803, integração 759/759.
+
+> faça o commit do sf-244 e siga para o sf-245
+
+38. Commit `ccc49cd` (SF-244).
+39. SF-245: modelo do CSV, seção "Importar usuários" e E2E `user-import.spec.ts`; textos das regras passados do servidor ao componente do navegador (sem levar o Prisma ao navegador e sem importar o interior do módulo). Build OK; unitários 1810/1810, integração 760/760, E2E 55/55. Parte B concluída.
+
+> tente novamente
+
+> terminou?
+
+> terminou?

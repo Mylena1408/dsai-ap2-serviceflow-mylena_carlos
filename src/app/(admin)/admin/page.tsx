@@ -47,6 +47,8 @@ import { listSectorTags } from "@/modules/tags";
 import { SectorTagsPanel } from "@/app/_components/sector-tags";
 import { listAnnouncementsForAdmin } from "@/modules/announcements";
 import { AnnouncementsSection } from "./_sections/announcements/announcements-section";
+import { listUserImports } from "@/modules/user-import";
+import { UserImportSection } from "./_sections/user-import/user-import-section";
 import { AnnouncementStrip } from "@/app/_components/announcement-strip";
 import { listServiceChecklists } from "@/modules/checklists";
 import { ServiceChecklistsPanel } from "@/app/_components/service-checklists";
@@ -89,6 +91,8 @@ type AdminPageProps = {
 const adminSections = [
   { id: "overview", label: "Visão geral" },
   { id: "users", label: "Usuários" },
+  // SPEC 2026-11-09-comunicacao-e-calendarios, part B.
+  { id: "user-import", label: "Importar usuários" },
   // SPEC 2026-11-06-aprofundamento-configurabilidade, 6.3.1.
   { id: "roles", label: "Papéis" },
   { id: "sectors", label: "Setores" },
@@ -198,6 +202,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const sectorTags = selectedSection === "tags" ? await listSectorTags() : null;
   // SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 1.
   const announcementOverview = selectedSection === "announcements" ? await listAnnouncementsForAdmin() : null;
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 4.1 item 4.
+  const userImports = selectedSection === "user-import" ? await listUserImports() : null;
   // SPEC 2026-11-08-atendimento-dia-a-dia, 4.1 item 1: read only when the section is open.
   const serviceChecklists = selectedSection === "checklists" ? await listServiceChecklists() : null;
   // SPEC 2026-11-08-atendimento-dia-a-dia, 5.3 item 4: read only when the section is open.
@@ -344,6 +350,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       {configurationCheck ? <ConfigurationSection check={configurationCheck} /> : null}
       {sectorTags ? <SectorTagsPanel area="admin" message={tag} sectors={sectorTags} /> : null}
       {announcementOverview ? <AnnouncementsSection message={announcementResult} overview={announcementOverview} /> : null}
+      {userImports ? <UserImportSection history={userImports} /> : null}
       {serviceChecklists ? <ServiceChecklistsPanel area="admin" message={checklist} open={open} services={serviceChecklists} /> : null}
       {timeReport ? (
         <section className="admin-section" aria-labelledby="admin-time-heading">

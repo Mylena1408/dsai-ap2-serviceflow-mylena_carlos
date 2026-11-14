@@ -2551,7 +2551,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-245 — Modelo do CSV, telas e E2E da parte B
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. Modelo em `/api/user-imports/model.csv`; seção "Importar usuários" (envio, prévia linha a linha, aplicação, resultado com o relatório e histórico); E2E `user-import.spec.ts`; CA-IMP-01 e 02 verificados e revisão de CA-IMP-01 a 04. Parte B concluída.
 - **Objetivo:** Parte B.
 - **Arquivos/módulos esperados:** Telas da parte B.
 - **Dependências:** SF-241 a SF-244.

@@ -58,7 +58,15 @@ export function applyUserImport(confirmation: apply.UserImportConfirmation, data
   return apply.applyUserImport(confirmation, createPrismaUserImportStore(database));
 }
 
-export { IMPORT_OUTCOME_LABELS, IMPORT_REPORT_COLUMNS, buildImportReportCsv, importReportFileName, reportReasons } from "./domain/report-csv";
+export {
+  IMPORT_MODEL_FILE_NAME,
+  IMPORT_OUTCOME_LABELS,
+  IMPORT_REPORT_COLUMNS,
+  buildImportModelCsv,
+  buildImportReportCsv,
+  importReportFileName,
+  reportReasons,
+} from "./domain/report-csv";
 export { IMPORT_HISTORY_SIZE } from "./application/import-history";
 export type { UserImportHistoryItem } from "./application/import-history";
 
@@ -70,4 +78,9 @@ export function listUserImports(database: PrismaClient = prisma): Promise<histor
 /** The error report of an import, in CSV (4.1 item 4; SF-244). */
 export function exportUserImportReport(importId: unknown, database: PrismaClient = prisma): Promise<{ content: string; fileName: string }> {
   return history.exportUserImportReport(importId, createPrismaUserImportHistoryReader(database), csvField);
+}
+
+/** The model of the file (4.1 item 1; SF-245). */
+export function exportUserImportModel(): Promise<{ content: string; fileName: string }> {
+  return history.exportUserImportModel(csvField);
 }
