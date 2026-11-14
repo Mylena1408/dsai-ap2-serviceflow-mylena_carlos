@@ -162,6 +162,7 @@ describe("texts (section 5.2)", () => {
       CHECKLIST_ITEM: true,
       // Added by SPEC 2026-11-09-comunicacao-e-calendarios, 3.3 item 5.
       ANNOUNCEMENT: true,
+      USER_IMPORT: true,
     };
 
     expect([...AUDIT_ACTIONS].sort()).toEqual(Object.keys(actions).sort());

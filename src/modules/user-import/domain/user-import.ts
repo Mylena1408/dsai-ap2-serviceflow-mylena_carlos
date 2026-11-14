@@ -234,3 +234,33 @@ export const IMPORT_LINE_ERROR_LABELS: Record<ImportLineError, string> = {
   sector_not_allowed: "solicitante e administrador não têm setor",
   sector_unknown: "setor não encontrado entre os ativos",
 };
+
+/**
+ * 4.3 item 3 (decision K1): the password of an imported person. The login refuses anything that is not an argon2id
+ * hash, as with the anonymization's marker; the administrator sets a password when activating the person.
+ */
+export const IMPORTED_PASSWORD_HASH = "!importado";
+
+/** A line left out, as the import keeps it (SF-243): never a name or an e-mail, which could outlive an anonymization. */
+export interface ImportReportEntry {
+  line: number;
+  outcome: "skip" | "error";
+  reasons: Array<ImportLineError | "email_exists">;
+  role: string;
+  sector: string;
+}
+
+export function importReport(lines: readonly ImportLineOutcome[]): ImportReportEntry[] {
+  return lines.flatMap((line) => {
+    if (line.outcome === "create") return [];
+    return [
+      {
+        line: line.line,
+        outcome: line.outcome,
+        reasons: line.outcome === "skip" ? [line.reason] : [...line.errors],
+        role: line.values.perfil,
+        sector: line.values.setor,
+      },
+    ];
+  });
+}

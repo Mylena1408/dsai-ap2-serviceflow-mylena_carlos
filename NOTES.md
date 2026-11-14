@@ -3020,3 +3020,14 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Tropeço corrigido:** o arquivo da leitura no banco não foi criado na primeira tentativa porque a pasta `infrastructure` ainda não existia (o shell não cria pastas no redirecionamento); o typecheck acusou e o arquivo foi criado com a ferramenta Write.
 - **Resultados:** typecheck e lint OK; unitários 1791/1791; integração 750/750. A tela chega na SF-245; a CA-IMP-02 será marcada lá.
 - **Linhas:** 241 `added` em TS (aplicação 100, testes 141).
+
+## SF-243 — Aplicação da importação de usuários (2026-11-14)
+
+- **Banco:** migration `20261114200000_user_imports`, gerada por diff de arquivos do schema e completada com um `CHECK` (contagens sem negativos, de 1 a 500 linhas no total, relatório em lista com uma entrada por linha ignorada ou com erro). Todas as colunas são obrigatórias, então o `CHECK` nunca vê NULL. A auditoria ganhou a entidade `USER_IMPORT`. O teste das migrations passou antes de aplicar. Esta é a única migration prevista para a parte B (o histórico, SF-244, lê a mesma tabela).
+- **Aplicação (esclarecimento na SPEC, 4.3):** só o administrador; confere o resumo SHA-256 da prévia (texto diferente: conflito, nada gravado); numa transação serializável com prazo de 60 s, reavalia o texto com o banco do momento (um e-mail criado depois da prévia vira "ignorada", conferido na integração), cria cada pessoa inativa com `!importado` e a entrada "Criou · Usuário", e registra a importação com a entrada "Importou · Importação de usuários" e as três contagens. Uma importação sem nenhuma criação também fica registrada.
+- **Privacidade (decisão desta tarefa, registrada na SPEC):** o relatório guardado tem linha, resultado, motivos, perfil e setor, nunca nome ou e-mail. Uma linha "ignorada" é de alguém que já existe; guardar o e-mail dela num relatório escaparia da anonimização. O administrador acha a linha pelo número no próprio arquivo.
+- **K1 de ponta a ponta:** a integração ativa uma pessoa importada e define a senha com os casos de uso da tela "Usuários" de hoje (`updateUser` com senha e `setUserActive`), e o login passa a aceitá-la.
+- **Ajuste de código:** a leitura da importação aceita o cliente ou a transação (`PrismaClient | Prisma.TransactionClient`), em vez de forçar o tipo com `as unknown as`.
+- **Resultados:** typecheck e lint OK; unitários 1797/1797; integração 756/756; E2E `dashboard.spec.ts` 1/1 (para exercitar a limpeza nova do `prepare-e2e`).
+- **CA-IMP-04** marcado. A CA-IMP-03 fica para a SF-244 (histórico e relatório de erros em CSV).
+- **Linhas:** 346 `added` em TS (aplicação 159, testes 186, scripts 1); fora da meta, 38 de SQL.

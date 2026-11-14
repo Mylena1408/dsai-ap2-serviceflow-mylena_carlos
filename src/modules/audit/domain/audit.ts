@@ -50,6 +50,8 @@ export const AUDIT_ENTITY_TYPES = [
   "CHECKLIST_ITEM",
   // SPEC 2026-11-09-comunicacao-e-calendarios, 3.3 item 5.
   "ANNOUNCEMENT",
+  // 4.1 item 3.
+  "USER_IMPORT",
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -90,6 +92,7 @@ export const PERSONAL_FIELDS: Readonly<Record<AuditEntityType, readonly string[]
   SECTOR_TAG: [],
   CHECKLIST_ITEM: [],
   ANNOUNCEMENT: [],
+  USER_IMPORT: [],
 };
 
 /** Passwords, hashes, secrets and tokens never enter a record, whatever the entity. */
@@ -131,6 +134,7 @@ export const AUDIT_ENTITY_LABELS: Record<AuditEntityType, string> = {
   SECTOR_TAG: "Etiqueta",
   CHECKLIST_ITEM: "Item de checklist",
   ANNOUNCEMENT: "Aviso",
+  USER_IMPORT: "Importação de usuários",
 };
 
 /** Names of the recorded fields; an unknown field shows its own name. */
@@ -232,6 +236,10 @@ export const AUDIT_FIELD_LABELS: Readonly<Record<string, string>> = {
   startsAt: "Início",
   endsAt: "Fim",
   leadHours: "Antecedência (horas)",
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 4.1 item 3.
+  createdCount: "Linhas criadas",
+  skippedCount: "Linhas ignoradas",
+  errorCount: "Linhas com erro",
 };
 
 function normalize(value: AuditInputValue): AuditValue {
@@ -381,6 +389,8 @@ export const AUDITED_FIELDS: Readonly<Record<AuditEntityType, readonly string[]>
   CHECKLIST_ITEM: ["text", "isRequired", "position", "isActive", "conditionFieldId", "conditionValue"],
   // SPEC 2026-11-09-comunicacao-e-calendarios, 3.3 item 5: the audience as "target" (see the labels).
   ANNOUNCEMENT: ["title", "body", "level", "kind", "target", "targetRole", "targetSectorId", "startsAt", "endsAt", "leadHours"],
+  // 4.1 item 3: the counts only; the report never holds a name or an e-mail.
+  USER_IMPORT: ["createdCount", "skippedCount", "errorCount"],
 };
 
 export type AuditActorRole = "ADMIN" | "REQUESTER" | "ATTENDANT" | "MANAGER";

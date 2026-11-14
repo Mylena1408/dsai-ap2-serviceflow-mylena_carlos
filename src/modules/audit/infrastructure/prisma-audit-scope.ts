@@ -269,6 +269,11 @@ async function loadState(
       const { audience, audienceRole, audienceSectorId, ...rest } = row;
       return { label: row.title, state: { ...rest, target: audience, targetRole: audienceRole, targetSectorId: audienceSectorId } };
     }
+    // SPEC 2026-11-09-comunicacao-e-calendarios, 4.1 item 3: the counts of the import.
+    case "USER_IMPORT": {
+      const row = await transaction.userImport.findUnique({ where: { id }, select: { createdCount: true, skippedCount: true, errorCount: true } });
+      return row && { label: "Importação de usuários", state: row };
+    }
     case "HOLIDAY": {
       const row = await transaction.businessHoliday.findUnique({ where: { id }, select: { day: true, name: true, yearly: true } });
       return row && { label: row.name, state: { day: row.day.toISOString().slice(0, 10), name: row.name, yearly: row.yearly } };

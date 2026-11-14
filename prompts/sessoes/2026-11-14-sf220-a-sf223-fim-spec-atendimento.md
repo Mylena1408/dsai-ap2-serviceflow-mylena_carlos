@@ -114,3 +114,8 @@
 33. SF-242: prévia da importação (caso de uso, leitura no banco, texto e resumo para a aplicação). Unitários 1791/1791, integração 750/750.
 
 > terminou?
+
+> faça o commit do SF-242 e siga para o SF-243
+
+34. Commit `6b046b3` (SF-242).
+35. SF-243: migration `20261114200000_user_imports`, aplicação da importação com auditoria, pessoas inativas com `!importado`, relatório sem dados pessoais; CA-IMP-04. Unitários 1797/1797, integração 756/756.

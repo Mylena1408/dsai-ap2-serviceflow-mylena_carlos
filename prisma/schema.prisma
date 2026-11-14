@@ -98,6 +98,8 @@ enum AuditEntityType {
   CHECKLIST_ITEM
   /// SPEC 2026-11-09-comunicacao-e-calendarios, 3.3 item 5.
   ANNOUNCEMENT
+  /// 4.1 item 3.
+  USER_IMPORT
 }
 
 /// SPEC 2026-11-02-api-externa-webhooks, 5.2 (decision A2).
@@ -299,6 +301,8 @@ model User {
   /// SPEC 2026-11-09-comunicacao-e-calendarios, 3.3.
   announcementsCreated     Announcement[]             @relation("AnnouncementCreatedBy")
   announcementDismissals   AnnouncementDismissal[]
+  /// 4.1 item 4.
+  userImports              UserImport[]               @relation("UserImportActor")
 }
 
 model Service {
@@ -1721,4 +1725,21 @@ model AnnouncementDismissal {
 
   @@id([announcementId, userId])
   @@index([userId])
+}
+
+/// An import of people from a CSV file (SPEC 2026-11-09-comunicacao-e-calendarios, 4.1 items 3 and 4; SF-243): who,
+/// when, how many lines were created, skipped and refused, and the report of the lines left out. The report keeps
+/// line, outcome, reasons, role and sector as typed, never a name or an e-mail.
+model UserImport {
+  id           String   @id @default(uuid()) @db.Uuid
+  actorId      String   @db.Uuid
+  createdAt    DateTime @default(now()) @db.Timestamptz
+  createdCount Int
+  skippedCount Int
+  errorCount   Int
+  report       Json
+
+  actor User @relation("UserImportActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([createdAt])
 }

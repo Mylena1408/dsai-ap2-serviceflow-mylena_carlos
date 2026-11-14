@@ -2531,7 +2531,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-243 — Aplicação com auditoria, pessoas inativas e sem senha
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. Migration `20261114200000_user_imports` (tabela `UserImport` com `CHECK`, auditoria `USER_IMPORT`); `applyUserImport` confere o resumo, reavalia com o banco do momento numa transação serializável, cria as pessoas inativas com `!importado` e a auditoria de cada uma, e registra a importação (auditada) com o relatório sem nome nem e-mail; CA-IMP-04 verificado.
 - **Objetivo:** Seção 4.3, parte B (decisão K1).
 - **Arquivos/módulos esperados:** Módulo de importação, auditoria.
 - **Dependências:** SF-242.
