@@ -3317,3 +3317,13 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Capturas:** painel no computador, no celular e no alto contraste conferidos; o estado "ligado" de "Alto contraste" e "Acessibilidade" sumia com o mouse em cima (a regra de hover vencia), e passou a valer também com hover.
 - **Resultados:** typecheck e lint OK; unitários 2021/2021 (5 novos); integração 803/803; `next build` OK; E2E do painel e dos contrastes 9/9.
 - **E2E completo:** 76/76.
+
+## SF-270 — E2E da leitura em voz alta e revisão final (2026-11-15)
+
+- **Fala simulada:** um `addInitScript` troca `speechSynthesis` e `SpeechSynthesisUtterance` por versões que registram texto, idioma, velocidade e voz de cada trecho, e as chamadas de pausar, continuar e cancelar; um modo termina cada trecho sozinho (para ler a página inteira), outro espera o teste (para pausar e parar no meio). Também simula navegador sem fala e com vozes só em inglês.
+- **Primeira rodada:** duas falhas do próprio teste: a ajuda começa pelo rótulo "Ajuda" acima do título (a leitura estava certa), e o texto selecionado vem como o navegador o mostra (o rótulo é maiúsculo por CSS, e a seleção devolve "AJUDA"). O teste passou a comparar com o que o próprio navegador entrega como seleção, num parágrafo comum.
+- **"Nada sai do aparelho":** o teste escuta as requisições da página durante uma leitura inteira e espera nenhuma.
+- **Painel aberto na varredura:** acrescentado ao `accessibility-scan.spec.ts` (dois temas, 360 e 1.280 px).
+- **Tropeço repetido:** mais um script de edição por heredoc com barras invertidas (`\s` numa expressão regular do teste); desta vez o arquivo saiu certo (conferido), mas o Python avisou. As edições seguintes com barra invertida foram feitas com Edit, como manda a regra da memória.
+- **Resultados:** E2E `reading-aloud.spec.ts` 4/4 e a varredura do painel aberto 1/1; a rodada completa anterior (76/76) já tinha o mesmo código da aplicação, porque a SF-270 só acrescenta testes. Lint OK.
+- **Revisão final:** seção 11 da SPEC; 10 de 10 critérios (a SPEC tem 10 critérios; uma nota minha, ao escrevê-la, falava em 13 por engano); 2.455 linhas `added` de TypeScript até a SF-269 (mais cerca de 200 da SF-270) contra a estimativa de 870 a 1.490.

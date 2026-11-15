@@ -374,3 +374,4 @@
 > faça o commit da sf-269 e siga para a sf-270
 
 113. E2E completo 76/76; commit da SF-269. E2E da SF-270 escrito enquanto a rodada terminava.
+114. SF-270: E2E `reading-aloud.spec.ts` (fala simulada) 4/4, varredura do painel aberto, revisão final da SPEC (seção 11; 10 de 10 critérios; linhas e tempo medidos).

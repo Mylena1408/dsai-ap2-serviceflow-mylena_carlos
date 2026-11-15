@@ -1,6 +1,7 @@
 import { join } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
-import { PROFILE_PAGES, PUBLIC_PAGES, enterAs, openChecked, pageName, type CheckedPage, type Profile } from "./responsive-pages";
+import { PROFILE_PAGES, PUBLIC_PAGES, WIDTHS, enterAs, measureOverflow, openChecked, pageName, type CheckedPage, type Profile } from "./responsive-pages";
+import { openAccessibility } from "./accessibility-panel-helpers";
 
 // SPEC 2026-11-15-acessibilidade, 5.4 (SF-266; CA-CON-02; decision L5): the axe-core scan of every page of the list,
 // in the normal theme and in high contrast. It uses the axe-core already in node_modules (it comes with
@@ -72,3 +73,24 @@ for (const theme of ["normal", "high"] as const) {
     expect(violations).toEqual([]);
   });
 }
+
+// SF-270 (final review): the open "Acessibilidade" panel, which the page scans above see closed, in both themes and
+// at the phone and desktop widths, with its controls in view and without pushing the page sideways.
+test("the open accessibility panel has no axe violation and fits the phone, in both themes (CA-CON-02, CA-RSP-01)", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.emulateMedia({ reducedMotion: "reduce", contrast: "no-preference" });
+  for (const theme of ["normal", "high"] as const) {
+    await page.context().clearCookies();
+    if (theme === "high") await page.context().addCookies([{ name: "sf-contrast", value: "high", url: "http://127.0.0.1:3100" }]);
+    for (const width of [WIDTHS.phone, WIDTHS.desktop]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto("/help");
+      await openAccessibility(page);
+      await expect(page.getByRole("button", { name: "Ouvir esta página" })).toBeInViewport();
+      await expect(page.getByRole("button", { name: "Alto contraste" })).toBeInViewport();
+      const overflow = await measureOverflow(page);
+      expect(overflow.scrollWidth, `${theme} ${width}px`).toBeLessThanOrEqual(overflow.clientWidth);
+      expect(await scan(page, theme), `${theme} ${width}px`).toEqual([]);
+    }
+  }
+});

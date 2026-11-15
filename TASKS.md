@@ -2701,7 +2701,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ## Acessibilidade — SPEC de 2026-11-15
 
-Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessibilidade.md`). As decisões L1 a L7 da seção 8 foram aprovadas como propostas em 2026-11-15.
+Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessibilidade.md`). As decisões L1 a L7 da seção 8 foram aprovadas como propostas em 2026-11-15. Concluída em 2026-11-15 (SF-260 a SF-270).
 
 ### SF-260 — Varredura das larguras e lista dos problemas
 
@@ -2805,7 +2805,7 @@ Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessi
 
 ### SF-270 — E2E com fala simulada e revisão final
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15: E2E `reading-aloud.spec.ts` (fala simulada; CA-VOZ-01 a 03) e varredura do painel aberto nos dois temas; revisão final na seção 11 da SPEC (10 de 10 critérios). SPEC de acessibilidade concluída.
 - **Objetivo:** Partes A a C.
 - **Arquivos/módulos esperados:** `tests/e2e/`, SPEC.
 - **Dependências:** SF-260 a SF-269.

@@ -1,7 +1,7 @@
 # SPEC — Acessibilidade: telas responsivas, alto contraste e leitura em voz alta
 
 **Data:** 2026-11-15
-**Status:** Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"). Decisões L1 a L7 aprovadas como propostas em 2026-11-15 ("pode começar a SPEC de acessibilidade com as decisões propostas"). Em andamento: parte A concluída (SF-260 a SF-263, CA-RSP-01 a 04); parte B concluída (SF-264 a SF-266, CA-CON-01 a 03); parte C: SF-267 a SF-269 concluídas.
+**Status:** Concluída em 2026-11-15 (SF-260 a SF-270; 10 de 10 critérios). Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"); decisões L1 a L7 aprovadas como propostas no mesmo dia ("pode começar a SPEC de acessibilidade com as decisões propostas").
 **Projeto:** ServiceFlow
 **Referências:**
 - WCAG 2.2: 1.4.3 (contraste mínimo, AA), 1.4.6 (contraste aprimorado, AAA), 1.4.10 (refluxo: sem rolagem nas duas direções a 320 px CSS), 1.4.11 (contraste de elementos não textuais), 2.1.1 (teclado), 2.4.7 (foco visível), 4.1.2 (nome, função e valor).
@@ -144,9 +144,9 @@ Quem não usa os recursos novos continua com as telas como hoje, com duas exceç
 
 ### 6.4 Critérios de aceitação
 
-- [ ] **CA-VOZ-01** — "Ouvir esta página" lê o conteúdo principal na ordem, sem o menu nem o que está oculto, com rótulos e valores dos campos e as linhas das tabelas.
-- [ ] **CA-VOZ-02** — O trecho selecionado é lido; pausar, continuar, parar e velocidade funcionam e a velocidade é lembrada.
-- [ ] **CA-VOZ-03** — Sem suporte do navegador, a opção avisa e nada quebra; nenhuma dependência nova e nada é enviado para fora.
+- [x] **CA-VOZ-01** — "Ouvir esta página" lê o conteúdo principal na ordem, sem o menu nem o que está oculto, com rótulos e valores dos campos e as linhas das tabelas. *Verificado em 2026-11-15 (SF-270): E2E `reading-aloud.spec.ts` com a fala do navegador simulada: a ajuda lida na ordem (rótulo, título, campo de busca com valor, temas e perguntas), sem as respostas das perguntas fechadas, sem os botões e sem a barra; em "Análises", a tabela aberta lida linha a linha com o nome das colunas e sem o menu da área; voz pt-BR, trechos de até 220 caracteres; e unitários das regras (SF-267 e SF-268).*
+- [x] **CA-VOZ-02** — O trecho selecionado é lido; pausar, continuar, parar e velocidade funcionam e a velocidade é lembrada. *Verificado em 2026-11-15 (SF-270): E2E (sem seleção, avisa; o trecho selecionado é lido como o navegador o entrega; pausar, continuar e parar chamam a fala na hora e nada mais é dito depois de parar; 1,5× vale para a leitura seguinte, fica no cookie e volta na visita seguinte; mudar de página para a leitura) e unitários do `SpeechPlayer`.*
+- [x] **CA-VOZ-03** — Sem suporte do navegador, a opção avisa e nada quebra; nenhuma dependência nova e nada é enviado para fora. *Verificado em 2026-11-15 (SF-270): E2E sem `speechSynthesis` (aviso com o leitor de tela, nenhum erro na página, o alto contraste continua funcionando) e com vozes sem português (aviso próprio); uma leitura inteira da ajuda não fez nenhuma requisição; `package.json` sem mudança desde o início da SPEC.*
 
 ## 7. A barra "Acessibilidade"
 
@@ -190,3 +190,13 @@ Um botão "Acessibilidade" no topo de todas as telas, inclusive na entrada e no 
 | **Total** | | 11 tarefas | **11 a 16,5 h** (mais 1 a 1,5 h desta SPEC e dos registros) | **870 a 1.490** |
 
 Além das linhas contadas, cerca de 400 a 650 linhas de CSS (o `cloc-diff.sh` conta só TypeScript e JavaScript). A estimativa usa o ritmo medido na SPEC 2 (de 1 a 2 horas por tarefa com as suítes completas); a incerteza maior está na parte C, porque a fala depende do navegador. **Ordem:** A → B → C; cada parte pode ser entregue e enviada sozinha, e nenhuma pede backup do banco, porque não há migration.
+
+## 11. Revisão final (SF-270, 2026-11-15)
+
+- **Critérios:** 10 de 10 marcados (CA-RSP-01 a 04, CA-CON-01 a 03, CA-VOZ-01 a 03); a barra da seção 7, que não tem critério próprio, foi conferida pelo E2E do painel (`accessibility-panel.spec.ts`). Revisões das partes nas seções 4.5 e 5.5.
+- **Painel aberto:** a varredura das 70 páginas vê o painel fechado; a SF-270 acrescentou a varredura do painel aberto, nos dois temas, a 360 px e a 1.280 px, sem violação do `axe-core` e sem rolagem lateral.
+- **O que a pessoa vê de novo em toda tela:** "Pular para o conteúdo" (só com o foco do teclado) e o botão "Acessibilidade", com a leitura em voz alta e o alto contraste no painel. No celular, o menu recolhido em "Menu" e as tabelas com rolagem própria. O tema normal tem as mesmas cores de antes (conferido elemento por elemento em 72 páginas na SF-264).
+- **Sem banco, sem dependência:** nenhuma migration; `package.json` e `package-lock.json` sem mudança; as preferências (contraste e velocidade) ficam em cookies do navegador; a fala é a do navegador e nada sai do aparelho.
+- **Decisões de execução registradas nos esclarecimentos:** menus que não cabiam acima de 760 px quebram em linhas (4.3 item 4); nomes das áreas de tabela (4.3 item 6); tema e etiquetas no alto contraste (5.3 itens 5 e 6); o que se lê, inclusive que a senha nunca é lida (6.3 itens 5 e 6); o painel (seção 7).
+- **Linhas e tempo, medidos:** de `d99f4a7` (antes da SF-260) a `e44f49c` (SF-269), o `cloc-diff.sh` contou **2.455 linhas `added`** de TypeScript (aplicação 1.169, testes 1.286), mais cerca de 200 da SF-270 (testes); 241 linhas removidas na aplicação, quase todas pela reindentação das tabelas dentro de `TableScroll` (a mesma linha volta como `added`). O CSS cresceu 548 linhas e perdeu 94 (estimativa: 400 a 650). A estimativa de TypeScript era de 870 a 1.490: os testes passaram do previsto (varredura, comparação de cores, contraste de cada variável, fala simulada) e a parte C ganhou módulo próprio (domínio, aplicação e infraestrutura). Tempo: das 15h09 (commit da SF-260) às 20h06 (SF-269), mais a SF-270, cerca de 5,5 a 6 horas de relógio, contra a estimativa de 11 a 16,5 h; boa parte do relógio foi espera das rodadas completas do E2E (cerca de 17 min cada, três delas interrompidas por falta de memória no computador).
+- **Fica para depois (fora do escopo, registrado):** escala de letra (decisão L3); comandos por voz (decisão L2); duas caixas de marcar dos filtros da fila com 44 px nos dois temas, herdados dos campos (vistas nas capturas da SF-264, já eram assim).
