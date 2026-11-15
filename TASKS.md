@@ -2698,3 +2698,141 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 - **Critérios de conclusão:** CA-COM-02 ("Análises"); revisão de todos os critérios.
 - **Testes relacionados:** Unitários, integração e E2E.
 - **SPEC:** `SPEC/2026-11-09-comunicacao-e-calendarios.md`.
+
+## Acessibilidade — SPEC de 2026-11-15
+
+Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessibilidade.md`). As decisões L1 a L7 da seção 8 aguardam a revisão da responsável antes da SF-260.
+
+### SF-260 — Varredura das larguras e lista dos problemas
+
+- **Estado:** Pendente.
+- **Objetivo:** Seção 4, parte A.
+- **Arquivos/módulos esperados:** `tests/e2e/`, registro na SPEC.
+- **Dependências:** Decisões L1 a L7 revisadas.
+- **Critérios de conclusão:** Lista dos problemas de refluxo a 360 px e 768 px registrada.
+- **Testes relacionados:** E2E auxiliar.
+- **SPEC:** `SPEC/2026-11-15-acessibilidade.md`.
+
+### SF-261 — Menu recolhível nas áreas e na administração
+
+- **Estado:** Pendente.
+- **Objetivo:** Seção 4.1 item 1.
+- **Arquivos/módulos esperados:** Layouts das áreas, administração, `globals.css`.
+- **Dependências:** SF-260.
+- **Critérios de conclusão:** CA-RSP-02.
+- **Testes relacionados:** Unitários e E2E.
+- **SPEC:** `SPEC/2026-11-15-acessibilidade.md`.
+
+### SF-262 — Tabelas com rolagem própria, formulários e alvos de toque
+
+- **Estado:** Pendente.
+- **Objetivo:** Seção 4.1 itens 2 e 3.
+- **Arquivos/módulos esperados:** `src/app/_components/`, `globals.css`.
+- **Dependências:** SF-260.
+- **Critérios de conclusão:** CA-RSP-03.
+- **Testes relacionados:** Unitários e E2E.
+- **SPEC:** `SPEC/2026-11-15-acessibilidade.md`.
+
+### SF-263 — E2E de responsividade e revisão da parte A
+
+- **Estado:** Pendente.
+- **Objetivo:** Parte A.
+- **Arquivos/módulos esperados:** `tests/e2e/`.
+- **Dependências:** SF-261 e SF-262.
+- **Critérios de conclusão:** CA-RSP-01 e CA-RSP-04.
+- **Testes relacionados:** E2E.
+- **SPEC:** `SPEC/2026-11-15-acessibilidade.md`.
+
+### SF-264 — Cores fixas em variáveis e tema de alto contraste
+
+- **Estado:** Pendente.
+- **Objetivo:** Seção 5.3 itens 1 a 3 (decisão L4).
+- **Arquivos/módulos esperados:** `globals.css`, cores das etiquetas e dos gráficos.
+- **Dependências:** Parte A.
+- **Critérios de conclusão:** CA-CON-03 (tema normal igual).
+- **Testes relacionados:** E2E (comparação das cores do tema normal).
+- **SPEC:** `SPEC/2026-11-15-acessibilidade.md`.
+
+### SF-265 — Preferência de contraste guardada e a do sistema
+
+- **Estado:** Pendente.
+- **Objetivo:** Seção 5.1 itens 1, 3 e 4 (decisão L1).
+- **Arquivos/módulos esperados:** Layout raiz, componente de preferências.
+- **Dependências:** SF-264.
+- **Critérios de conclusão:** CA-CON-01.
+- **Testes relacionados:** Unitários e E2E.
+- **SPEC:** `SPEC/2026-11-15-acessibilidade.md`.
+
+### SF-266 — Varredura do axe-core nos dois temas e E2E da parte B
+
+- **Estado:** Pendente.
+- **Objetivo:** Seção 5.4 (decisão L5).
+- **Arquivos/módulos esperados:** `tests/e2e/`.
+- **Dependências:** SF-265.
+- **Critérios de conclusão:** CA-CON-02.
+- **Testes relacionados:** E2E.
+- **SPEC:** `SPEC/2026-11-15-acessibilidade.md`.
+
+### SF-267 — Extração do texto para a leitura e divisão em trechos
+
+- **Estado:** Pendente.
+- **Objetivo:** Seção 6.1 item 1 e 6.3 item 2.
+- **Arquivos/módulos esperados:** Domínio da leitura em voz alta.
+- **Dependências:** Parte B.
+- **Critérios de conclusão:** CA-VOZ-01 (regras).
+- **Testes relacionados:** Unitários.
+- **SPEC:** `SPEC/2026-11-15-acessibilidade.md`.
+
+### SF-268 — Controle da fala: voz, página, trecho, pausa e velocidade
+
+- **Estado:** Pendente.
+- **Objetivo:** Seção 6.1 itens 2 a 4 (decisão L2).
+- **Arquivos/módulos esperados:** Componente de fala.
+- **Dependências:** SF-267.
+- **Critérios de conclusão:** CA-VOZ-02 e CA-VOZ-03.
+- **Testes relacionados:** Unitários.
+- **SPEC:** `SPEC/2026-11-15-acessibilidade.md`.
+
+### SF-269 — Barra Acessibilidade, Pular para o conteúdo e atalho
+
+- **Estado:** Pendente.
+- **Objetivo:** Seção 7 (decisão L7).
+- **Arquivos/módulos esperados:** Layout raiz, componentes.
+- **Dependências:** SF-265 e SF-268.
+- **Critérios de conclusão:** Barra em todas as telas, por teclado.
+- **Testes relacionados:** Unitários e E2E.
+- **SPEC:** `SPEC/2026-11-15-acessibilidade.md`.
+
+### SF-270 — E2E com fala simulada e revisão final
+
+- **Estado:** Pendente.
+- **Objetivo:** Partes A a C.
+- **Arquivos/módulos esperados:** `tests/e2e/`, SPEC.
+- **Dependências:** SF-260 a SF-269.
+- **Critérios de conclusão:** Revisão de todos os critérios.
+- **Testes relacionados:** E2E.
+- **SPEC:** `SPEC/2026-11-15-acessibilidade.md`.
+
+## Ajuda do usuário e perguntas frequentes — SPEC de 2026-11-15
+
+Página "Ajuda" com perguntas frequentes por perfil e busca (`SPEC/2026-11-15-ajuda-faq.md`).
+
+### SF-271 — Módulo de ajuda e página /help com os links
+
+- **Estado:** Concluída em 2026-11-15. 6 temas (2 gerais e 1 por perfil) com 43 perguntas; busca sem acentos nem maiúsculas por todas as palavras; página aberta a todos; links "Ajuda" nas três áreas, na administração e na entrada.
+- **Objetivo:** Seções 2 e 4.
+- **Arquivos/módulos esperados:** `src/modules/help/`, `src/app/help/`, layouts das áreas, administração e entrada.
+- **Dependências:** Nenhuma.
+- **Critérios de conclusão:** CA-AJD-01, CA-AJD-02 e CA-AJD-04.
+- **Testes relacionados:** Unitários.
+- **SPEC:** `SPEC/2026-11-15-ajuda-faq.md`.
+
+### SF-272 — Testes da ajuda e revisão dos critérios
+
+- **Estado:** Concluída em 2026-11-15. 9 unitários e o E2E `help.spec.ts` (sem login, os quatro perfis pelo link, busca); CA-AJD-01 a 04 marcados.
+- **Objetivo:** Seção 6.
+- **Arquivos/módulos esperados:** `tests/unit/modules/help/`, `tests/e2e/help.spec.ts`.
+- **Dependências:** SF-271.
+- **Critérios de conclusão:** CA-AJD-01 a 04.
+- **Testes relacionados:** Unitários e E2E.
+- **SPEC:** `SPEC/2026-11-15-ajuda-faq.md`.

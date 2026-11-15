@@ -23,6 +23,8 @@ export default function RequesterLayout({
           <NotificationsLink href="/notifications" />
           {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 4: only with announcements. */}
           <AnnouncementsLink />
+          {/* SPEC 2026-11-15-ajuda-faq, 2 item 4. */}
+          <Link href="/help">Ajuda</Link>
           <Link href="/account/data">Meus dados</Link>
           <Link href="/account/api-tokens">Acesso à API</Link>
           <Link href="/account/password">Alterar senha</Link>

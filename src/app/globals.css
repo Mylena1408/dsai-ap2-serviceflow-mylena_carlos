@@ -1893,3 +1893,18 @@ p {
   margin: 0;
   text-align: right;
 }
+
+/* SPEC 2026-11-15-ajuda-faq: the questions of the help page. */
+.help-question {
+  border-top: 1px solid var(--line);
+  padding: 10px 0;
+}
+
+.help-question summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.help-question p {
+  margin: 8px 0 0;
+}

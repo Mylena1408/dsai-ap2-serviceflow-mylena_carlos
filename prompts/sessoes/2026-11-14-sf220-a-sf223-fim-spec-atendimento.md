@@ -263,3 +263,23 @@
 78. Commit do SF-258 e início do SF-259 (o código só foi alterado depois do fim do E2E, que usa o servidor de desenvolvimento).
 79. Commit `74db44a` (SF-258).
 80. SF-259: bloco "Relatórios periódicos" em "Análises" (gestor e administração), E2E da parte C ampliado, CA-COM-02 marcado; revisão final da SPEC 2 (seção 11): 19 de 19 critérios, 26 tarefas, 11.935 linhas `added` na SPEC (até a SF-258), total 93.020. Unitários 1911/1911, integração 803/803, build OK, E2E 57/57.
+
+> sim
+
+81. Commit `0e3acf6` (SF-259) e push `7208049..0e3acf6` (o push ficou alguns minutos esperando, depois terminou sozinho).
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+82. Contagem em `0e3acf6`: 93.134 `added` (aplicação 46.120, testes 46.765, scripts 249), líquido 90.651; faltam 6.866.
+
+> escreva a SPEC de acessibilidade e gere um relatorio com as etapas e o tempo de de trabalho/linhas de código geradas
+
+83. SPEC `2026-11-15-acessibilidade.md` escrita (partes A responsividade, B alto contraste, C leitura em voz alta; 13 critérios; decisões L1 a L7 propostas, aguardando revisão); tarefas SF-260 a SF-270 registradas como pendentes; relatório de etapas, horas e linhas apresentado.
+
+> faça o mapa do site que demonstra todas as dependências e micro serviços relacionados, crie a sessão ajuda do usuário e FAQ
+
+84. Perguntas: mapa como documento no repositório (escolhido) e Ajuda com "SPEC e já implementar" (escolhido). `docs/mapa-do-site.md` (37 módulos, dependências levantadas do código, serviços externos; sem microsserviços). SPEC `2026-11-15-ajuda-faq.md`, SF-271 e SF-272: página `/help` com 6 temas e 43 perguntas, busca e links. Unitários 1920/1920, integração 803/803, E2E da ajuda 1/1; a rodada completa do E2E e o PostgreSQL portátil foram encerrados pelo Claude Code por falta de memória.
+
+> sim, rode o E2E completo e faça o commit
+
+85. PostgreSQL portátil religado; E2E completo 58/58 (com o teste da ajuda). Commit do mapa do site, das SPECs de acessibilidade e de ajuda e da página "Ajuda" (SF-271 e SF-272).

@@ -3212,3 +3212,16 @@ Padrão a replicar nas SF-039 e SF-040:
 - **E2E:** `periodic-reports.spec.ts` passou a conferir que "Análises" não tem o bloco antes de haver relatório, que o gestor vê o relatório do setor com o link e o "Ver todos", e que o administrador vê o da organização.
 - **Resultados:** typecheck e lint OK; unitários 1911/1911; integração 803/803; `next build` OK; E2E completo 57/57.
 - **Revisão final (seção 11 da SPEC):** 19 de 19 critérios marcados; 26 tarefas concluídas; cinco migrations aditivas no Neon; SPEC 2 somou 11.935 linhas `added` até a SF-258 (aplicação 5.022, testes 6.906, scripts 7) contra a estimativa de 9.000 a 12.000; total do projeto 93.020 em `74db44a`, faltam cerca de 6.980.
+
+## Mapa do site e SPEC de acessibilidade (2026-11-15)
+
+- **SPEC de acessibilidade** (`SPEC/2026-11-15-acessibilidade.md`): partes A (responsividade), B (alto contraste) e C (leitura em voz alta), 13 critérios, tarefas SF-260 a SF-270 (11 a 16,5 h, 870 a 1.490 linhas de TS, mais 400 a 650 de CSS). As decisões L1 a L7 aguardam a revisão da responsável; nenhuma tarefa começou.
+- **Mapa do site** (`docs/mapa-do-site.md`), por escolha da responsável como documento no repositório: arquitetura (monólito modular na Vercel; serviços externos Neon, Supabase Storage, Resend, Vercel Cron e webhooks), páginas por perfil, rotas HTTP, os 37 módulos com as dependências entre eles (levantadas do código por busca nos imports), o job diário e os pacotes npm. O ServiceFlow não tem microsserviços; o documento diz isso.
+
+## SF-271 e SF-272 — Ajuda do usuário e perguntas frequentes (2026-11-15)
+
+- **SPEC** `SPEC/2026-11-15-ajuda-faq.md`, escrita e implementada em seguida, por escolha da responsável ("SPEC e já implementar").
+- **Regra:** página `/help` aberta a todos; sem login, os temas "Primeiros passos" e "Conta e acesso"; com login, o tema do perfil primeiro e os gerais; busca por todas as palavras na pergunta e na resposta, sem acentos nem maiúsculas, até 100 caracteres, pelo endereço (`?q=`), sem JavaScript. Conteúdo no código (`src/modules/help`), 6 temas e 43 perguntas, cada resposta com o nome da tela como está no menu (conferi os rótulos dos botões no código antes de escrever). Links "Ajuda" nas três áreas, no topo da administração e na entrada.
+- **Tropeço conhecido:** o Write trocou os escapes `\u0300-\u036f` da normalização por caracteres invisíveis, como a memória avisa; restaurei com `chr(92)` antes dos testes.
+- **Resultados:** typecheck e lint OK; unitários 1920/1920 (9 novos); integração 803/803; E2E `help.spec.ts` sozinho 1/1. A primeira rodada completa do E2E foi encerrada pelo Claude Code por falta de memória no computador (o build já tinha passado), junto com o PostgreSQL portátil dos testes; a pedido da responsável, o banco foi religado e a rodada completa repetida: **E2E 58/58**.
+- **CA-AJD-01 a 04** marcados.

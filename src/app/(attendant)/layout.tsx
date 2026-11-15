@@ -31,6 +31,8 @@ export default function AttendantLayout({
           {/* SPEC 2026-11-08-atendimento-dia-a-dia, 13.4 item 1. */}
           <MyMentionsLink />
           <SectorServicesLink />
+          {/* SPEC 2026-11-15-ajuda-faq, 2 item 4. */}
+          <Link href="/help">Ajuda</Link>
           <Link href="/account/data">Meus dados</Link>
           <Link href="/account/api-tokens">Acesso à API</Link>
           <Link href="/account/password">Alterar senha</Link>
