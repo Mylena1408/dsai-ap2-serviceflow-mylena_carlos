@@ -6,15 +6,17 @@ const authorization = vi.hoisted(() => ({ requireCurrentActor: vi.fn() }));
 vi.mock("@/server/authorization", () => authorization);
 
 import {
+  LATEST_REPORTS,
   REPORT_LIST_SIZE,
   getPeriodicReport,
   hasPeriodicReports,
+  latestPeriodicReports,
   listPeriodicReports,
   type PeriodicReportReader,
   type PeriodicReportSummary,
 } from "@/modules/periodic-reports/application/read-reports";
 import { buildReportMetrics } from "@/modules/periodic-reports";
-import { PeriodicReportListView, PeriodicReportView, generatedAtText, reportTitle, scopeText } from "@/app/_components/periodic-reports";
+import { LatestPeriodicReports, PeriodicReportListView, PeriodicReportView, generatedAtText, reportTitle, scopeText } from "@/app/_components/periodic-reports";
 import { AuthorizationError, NotFoundError } from "@/server/errors";
 
 // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 3 (SF-249; CA-REL-03).
@@ -157,5 +159,40 @@ describe("the screens", () => {
     expect(blank).toContain("<th scope=\"row\">Concluídas no prazo</th><td>—</td>");
     expect(blank).toContain("<th scope=\"row\">Avaliação média</th><td>—</td>");
     expect(blank).not.toContain("Etiquetas mais usadas");
+  });
+});
+
+// SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 3 (SF-259; CA-COM-02 in "Análises").
+describe("latestPeriodicReports (the block of \"Análises\")", () => {
+  it("a manager reads their sector's latest, whatever is asked; the administrator, the sector chosen or the organization's", async () => {
+    as("MANAGER", S1);
+    const source = reader();
+    expect(await latestPeriodicReports({ sectorId: S2 }, source)).toEqual([summary()]);
+    expect(source.list).toHaveBeenLastCalledWith({ sectorId: S1 }, LATEST_REPORTS);
+    as("ADMIN", null);
+    await latestPeriodicReports({ sectorId: S2 }, source);
+    expect(source.list).toHaveBeenLastCalledWith({ sectorId: S2 }, LATEST_REPORTS);
+    await latestPeriodicReports({}, source);
+    expect(source.list).toHaveBeenLastCalledWith({ sectorId: null }, LATEST_REPORTS);
+  });
+
+  it("anyone else reads none, without asking the database", async () => {
+    for (const [role, sectorId] of [["ATTENDANT", S1], ["REQUESTER", null], ["MANAGER", null]] as const) {
+      as(role, sectorId);
+      const source = reader();
+      expect(await latestPeriodicReports({ sectorId: S1 }, source)).toEqual([]);
+      expect(source.list).not.toHaveBeenCalled();
+    }
+  });
+
+  it("the block lists the reports with their links and the way to all of them; without reports it is not shown", () => {
+    const html = renderToStaticMarkup(
+      createElement(LatestPeriodicReports, { reports: [summary()], detailHref: (id: string) => `/x/${id}`, allHref: "/x" }),
+    );
+    expect(html).toContain('aria-labelledby="analytics-periodic-reports"');
+    expect(html).toContain(`<a href="/x/${ID}">Semana de 09/11 a 15/11/2026</a>`);
+    expect(html).toContain("Semanal · Central · gerado em 16/11/2026 06:00");
+    expect(html).toContain('<a href="/x">Ver todos os relatórios</a>');
+    expect(renderToStaticMarkup(createElement(LatestPeriodicReports, { reports: [], detailHref: (id: string) => id, allHref: "/x" }))).toBe("");
   });
 });

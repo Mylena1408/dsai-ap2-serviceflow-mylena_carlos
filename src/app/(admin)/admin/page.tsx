@@ -50,8 +50,9 @@ import { listAnnouncementsForAdmin } from "@/modules/announcements";
 import { AnnouncementsSection } from "./_sections/announcements/announcements-section";
 import { listUserImports } from "@/modules/user-import";
 import { UserImportSection } from "./_sections/user-import/user-import-section";
-import { getPeriodicReport, getPeriodicReportSettings, listPeriodicReports } from "@/modules/periodic-reports";
+import { getPeriodicReport, getPeriodicReportSettings, latestPeriodicReports, listPeriodicReports } from "@/modules/periodic-reports";
 import { PeriodicReportsSection } from "./_sections/periodic-reports/periodic-reports-section";
+import { LatestPeriodicReports } from "@/app/_components/periodic-reports";
 import { AnnouncementStrip } from "@/app/_components/announcement-strip";
 import { listServiceChecklists } from "@/modules/checklists";
 import { ServiceChecklistsPanel } from "@/app/_components/service-checklists";
@@ -201,6 +202,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const dashboard = selectedSection === "dashboard" ? await getDashboard({ period, from, to, sector }) : null;
   // SPEC 2026-11-06-analises-operacionais, 5.1: computed only when the section is open.
   const analytics = selectedSection === "analytics" ? await getAnalytics({ period, from, to, sector }) : null;
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 3: the latest reports of the scope shown (a sector, or the organization).
+  const analyticsReports = analytics ? await latestPeriodicReports({ sectorId: analytics.sector?.id ?? null }) : [];
+  const reportsScope = analytics?.sector?.id ?? "organization";
   // SPEC 2026-11-06-base-conhecimento, 2.2: read only when the section is open.
   const knowledgeServices = selectedSection === "knowledge" ? await listArticlesForEditor() : null;
   // SPEC 2026-11-02-auditoria-lgpd, 5.2: read only when the section is open.
@@ -362,6 +366,11 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </div>
           </div>
           <AnalyticsView action="/admin" analytics={analytics} hidden={{ section: "analytics" }} timeReport={{ action: "/admin", hidden: { section: "time" } }} />
+          <LatestPeriodicReports
+            allHref={`/admin?section=periodic-reports&scope=${reportsScope}`}
+            detailHref={(id) => `/admin?section=periodic-reports&report=${id}`}
+            reports={analyticsReports}
+          />
         </section>
       ) : null}
 

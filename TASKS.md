@@ -2691,7 +2691,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-259 — Relatórios em "Análises" e revisão final
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15. Bloco "Relatórios periódicos" em "Análises" (até cinco do escopo, com links; gestor: o setor; administrador: o setor do filtro ou a organização; sem relatório, sem bloco); E2E da parte C ampliado; CA-COM-02 marcado; revisão final da SPEC 2 (seção 11), 19 de 19 critérios.
 - **Objetivo:** Seção 7, item 3, parte E.
 - **Arquivos/módulos esperados:** `src/modules/reports/`.
 - **Dependências:** SF-258.

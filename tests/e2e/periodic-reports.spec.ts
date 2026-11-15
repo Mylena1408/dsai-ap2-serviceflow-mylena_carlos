@@ -9,6 +9,7 @@ import { seedDemoData } from "../../scripts/demo-data";
 // report from the notice; the administrator reads every report and turns the weekly one off, keeping them.
 
 const WEEK_NOTICE = /Relatório disponível: Semana de \d{2}\/\d{2} a \d{2}\/\d{2}\/\d{4}/;
+const WEEK_TITLE = /^Semana de \d{2}\/\d{2} a \d{2}\/\d{2}\/\d{4}$/;
 
 async function enterAs(page: Page, profile: "Administrador" | "Gestor") {
   await page.goto("/");
@@ -58,6 +59,10 @@ test("the administrator turns the weekly report on, the job generates it and the
   await expect(page.getByRole("link", { name: "Relatórios", exact: true })).toHaveCount(0);
   await page.goto("/approvals/notifications/preferences");
   await expect(page.getByRole("group", { name: "Receber por e-mail" }).getByRole("checkbox")).toHaveCount(6);
+  // "Análises" has no reports block either (SF-259).
+  await page.goto("/approvals/analytics");
+  await expect(page.getByRole("heading", { name: "Análises do setor" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Relatórios periódicos" })).toHaveCount(0);
   await signOut(page);
 
   // The administrator turns the weekly report on (5.3 item 3).
@@ -102,6 +107,13 @@ test("the administrator turns the weekly report on, the job generates it and the
   await expect(page).toHaveURL(/\/approvals\/reports\/[0-9a-f-]{36}$/);
   await expect(page.getByRole("table", { name: "Números do período" })).toContainText("Solicitações abertas");
   await expect(page.getByRole("link", { name: "Relatórios", exact: true })).toHaveCount(1);
+  // "Análises" shows the latest report of the sector, linked to its page (SPEC 7 item 3; SF-259).
+  await page.goto("/approvals/analytics");
+  const block = page.getByRole("region", { name: "Relatórios periódicos" });
+  await expect(block.getByRole("link", { name: WEEK_TITLE })).toHaveCount(1);
+  await expect(block).not.toContainText("Organização");
+  await block.getByRole("link", { name: "Ver todos os relatórios" }).click();
+  await expect(page).toHaveURL(/\/approvals\/reports$/);
   await page.goto("/approvals/reports");
   // Only their sector's report: one row, never the organization's.
   await expect(page.getByRole("table", { name: "Relatórios" }).locator("tbody tr")).toHaveCount(1);
@@ -119,6 +131,11 @@ test("the administrator turns the weekly report on, the job generates it and the
 
   // The administrator reads every report, turns the weekly one off and keeps them (5.3 item 3).
   await enterAs(page, "Administrador");
+  // The administrator's "Análises", without a sector filter, shows the organization's report (SF-259).
+  await page.goto("/admin?section=analytics");
+  const adminBlock = page.getByRole("region", { name: "Relatórios periódicos" });
+  await expect(adminBlock.getByRole("link", { name: WEEK_TITLE })).toHaveCount(1);
+  await expect(adminBlock).toContainText("Organização");
   await page.goto("/admin?section=periodic-reports");
   const table = section.getByRole("table", { name: "Relatórios" });
   await expect(table).toContainText("Organização");

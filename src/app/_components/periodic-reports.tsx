@@ -174,3 +174,40 @@ export async function PeriodicReportsLink() {
   }
   return show ? <Link href="/approvals/reports">Relatórios</Link> : null;
 }
+
+/**
+ * "Relatórios periódicos" in "Análises" (SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 3; SF-259): the latest
+ * reports of the scope shown, each linked to its page, and the way to the page "Relatórios". Without a report, nothing
+ * is shown, so the screen stays as it was (CA-REL-01).
+ */
+export function LatestPeriodicReports({
+  reports,
+  detailHref,
+  allHref,
+}: {
+  reports: readonly PeriodicReportSummary[];
+  detailHref: (reportId: string) => string;
+  allHref: string;
+}) {
+  if (reports.length === 0) return null;
+  return (
+    <section aria-labelledby="analytics-periodic-reports" className="surface-card">
+      <h2 id="analytics-periodic-reports">Relatórios periódicos</h2>
+      <p className="metadata">Os mais recentes deste escopo, com os números guardados no dia em que foram gerados.</p>
+      <ul className="content-list">
+        {reports.map((report) => (
+          <li key={report.id}>
+            <Link href={detailHref(report.id)}>{reportTitle(report)}</Link>
+            <span className="metadata">
+              {" "}
+              · {PERIODIC_REPORT_KIND_LABELS[report.kind]} · {scopeText(report)} · gerado em {generatedAtText(report.generatedAt)}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p>
+        <Link href={allHref}>Ver todos os relatórios</Link>
+      </p>
+    </section>
+  );
+}

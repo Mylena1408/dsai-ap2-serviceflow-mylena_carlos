@@ -48,7 +48,7 @@ export function generatePeriodicReports(
   return generation.generatePeriodicReports(createPrismaReportGenerationStore(database, options.onWritten));
 }
 
-export { REPORT_LIST_SIZE } from "./application/read-reports";
+export { LATEST_REPORTS, REPORT_LIST_SIZE } from "./application/read-reports";
 export type { PeriodicReportDetail, PeriodicReportList, PeriodicReportSummary, ReportScopeFilter } from "./application/read-reports";
 
 /** The page "Relatórios" (5.1 item 3; SF-249): the reports of the reader's scope. */
@@ -58,6 +58,11 @@ export function listPeriodicReports(raw: { scope?: string } = {}, database: Pris
 
 export function getPeriodicReport(reportId: unknown, database: PrismaClient = prisma): Promise<reading.PeriodicReportDetail> {
   return reading.getPeriodicReport(reportId, createPrismaPeriodicReportReader(database));
+}
+
+/** The block of "Análises" (7 item 3; SF-259): the latest reports of the scope shown. */
+export function latestPeriodicReports(raw: { sectorId?: string | null } = {}, database: PrismaClient = prisma): Promise<reading.PeriodicReportSummary[]> {
+  return reading.latestPeriodicReports(raw, createPrismaPeriodicReportReader(database));
 }
 
 /** The manager's link only with a report of their sector (CA-REL-01). */

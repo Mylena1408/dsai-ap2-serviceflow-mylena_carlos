@@ -82,3 +82,18 @@ export async function hasPeriodicReports(reader: PeriodicReportReader): Promise<
   if (actor.role !== "MANAGER" || !actor.sectorId) return false;
   return (await reader.list({ sectorId: actor.sectorId }, 1)).length > 0;
 }
+
+/** SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 3 (SF-259): how many reports the block of "Análises" shows. */
+export const LATEST_REPORTS = 5;
+
+/**
+ * The latest reports of the scope "Análises" is showing (7 item 3; CA-COM-02): a manager's sector whatever is asked;
+ * for the administrator, the sector chosen in the filter or, without one, the organization's. Anyone else reads
+ * none, so the block does not appear.
+ */
+export async function latestPeriodicReports(raw: { sectorId?: string | null }, reader: PeriodicReportReader): Promise<PeriodicReportSummary[]> {
+  const actor = await requireCurrentActor();
+  if (actor.role === "MANAGER" && actor.sectorId) return reader.list({ sectorId: actor.sectorId }, LATEST_REPORTS);
+  if (actor.role === "ADMIN") return reader.list({ sectorId: raw.sectorId ?? null }, LATEST_REPORTS);
+  return [];
+}

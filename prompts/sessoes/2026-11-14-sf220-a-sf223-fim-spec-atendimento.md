@@ -261,3 +261,5 @@
 > pode prosseguir
 
 78. Commit do SF-258 e início do SF-259 (o código só foi alterado depois do fim do E2E, que usa o servidor de desenvolvimento).
+79. Commit `74db44a` (SF-258).
+80. SF-259: bloco "Relatórios periódicos" em "Análises" (gestor e administração), E2E da parte C ampliado, CA-COM-02 marcado; revisão final da SPEC 2 (seção 11): 19 de 19 critérios, 26 tarefas, 11.935 linhas `added` na SPEC (até a SF-258), total 93.020. Unitários 1911/1911, integração 803/803, build OK, E2E 57/57.

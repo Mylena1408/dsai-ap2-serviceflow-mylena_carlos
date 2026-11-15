@@ -3203,3 +3203,12 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Testes antigos ajustados:** os dublês do SF-253 ganharam `organizationHolidays`.
 - **Resultados:** typecheck e lint OK; unitários 1908/1908; integração 802/802; `next build` OK; E2E completo 57/57.
 - CA-COM-02 conferido na API; será marcado com a parte de "Análises" (SF-259).
+
+## SF-259 — Relatórios em "Análises" e revisão final da SPEC 2 (2026-11-15)
+
+- **Regra (esclarecimento na SPEC, 7):** bloco "Relatórios periódicos" em "Análises", com até cinco relatórios do escopo mostrado e links (cada relatório e "Ver todos os relatórios"). Gestor: o próprio setor, seja qual for o pedido; administrador: o setor do filtro ou, sem setor, a organização (o link leva à seção já filtrada); outros perfis: nada, sem consultar o banco. Sem relatório, o componente não desenha nada (CA-REL-01).
+- **Código:** `latestPeriodicReports` e `LATEST_REPORTS` nos relatórios; componente `LatestPeriodicReports`; as duas páginas de "Análises" (gestor e administração) o mostram abaixo das análises. `AnalyticsView` não mudou.
+- **Tropeço:** escrevi outra vez um script de edição em heredoc com barras invertidas (as expressões regulares do E2E); o Python avisou dos escapes e manteve as barras como estavam. Conferi as linhas no arquivo antes de seguir; nada saiu errado, mas a regra da memória continua valendo.
+- **E2E:** `periodic-reports.spec.ts` passou a conferir que "Análises" não tem o bloco antes de haver relatório, que o gestor vê o relatório do setor com o link e o "Ver todos", e que o administrador vê o da organização.
+- **Resultados:** typecheck e lint OK; unitários 1911/1911; integração 803/803; `next build` OK; E2E completo 57/57.
+- **Revisão final (seção 11 da SPEC):** 19 de 19 critérios marcados; 26 tarefas concluídas; cinco migrations aditivas no Neon; SPEC 2 somou 11.935 linhas `added` até a SF-258 (aplicação 5.022, testes 6.906, scripts 7) contra a estimativa de 9.000 a 12.000; total do projeto 93.020 em `74db44a`, faltam cerca de 6.980.
