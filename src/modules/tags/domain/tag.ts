@@ -11,17 +11,19 @@ export const MAX_TAGS_PER_REQUEST = 5;
 
 /**
  * Decision I3: a fixed palette, each color a light background with a dark text whose contrast passes WCAG AA
- * for normal text (4.5:1); the unit tests check every pair.
+ * for normal text (4.5:1); the unit tests check every pair. `contrastText` is the color of the tag in the high
+ * contrast theme (SPEC 2026-11-15-acessibilidade, 5.3 item 3): a light text on black, at least 7:1, and still a
+ * different hue for each color.
  */
 export const TAG_COLORS = {
-  gray: { label: "Cinza", background: "#E5E7EB", text: "#1F2937" },
-  red: { label: "Vermelho", background: "#FDE2E1", text: "#991B1B" },
-  orange: { label: "Laranja", background: "#FFEDD5", text: "#9A3412" },
-  yellow: { label: "Amarelo", background: "#FEF3C7", text: "#854D0E" },
-  green: { label: "Verde", background: "#DCFCE7", text: "#166534" },
-  teal: { label: "Turquesa", background: "#CCFBF1", text: "#115E59" },
-  blue: { label: "Azul", background: "#DBEAFE", text: "#1E40AF" },
-  purple: { label: "Roxo", background: "#EDE9FE", text: "#5B21B6" },
+  gray: { label: "Cinza", background: "#E5E7EB", text: "#1F2937", contrastText: "#E5E7EB" },
+  red: { label: "Vermelho", background: "#FDE2E1", text: "#991B1B", contrastText: "#FCA5A5" },
+  orange: { label: "Laranja", background: "#FFEDD5", text: "#9A3412", contrastText: "#FDBA74" },
+  yellow: { label: "Amarelo", background: "#FEF3C7", text: "#854D0E", contrastText: "#FDE047" },
+  green: { label: "Verde", background: "#DCFCE7", text: "#166534", contrastText: "#86EFAC" },
+  teal: { label: "Turquesa", background: "#CCFBF1", text: "#115E59", contrastText: "#5EEAD4" },
+  blue: { label: "Azul", background: "#DBEAFE", text: "#1E40AF", contrastText: "#93C5FD" },
+  purple: { label: "Roxo", background: "#EDE9FE", text: "#5B21B6", contrastText: "#C4B5FD" },
 } as const;
 
 export type TagColor = keyof typeof TAG_COLORS;

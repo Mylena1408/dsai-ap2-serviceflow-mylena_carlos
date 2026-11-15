@@ -318,3 +318,9 @@
 > faça o commit da sf-263 e siga para a sf-264
 
 96. E2E completo da SF-263 65/65; commit da SF-263.
+97. SF-264: comparação das cores calculadas antes e depois (72 páginas, 26.915 estilos, 0 diferenças); 56 variáveis; tema `data-contrast="high"` com etiquetas, avisos e gráficos; unitário do contraste do tema; E2E `high-contrast-theme.spec.ts`; capturas de tela conferidas.
+98. O E2E completo e o PostgreSQL portátil foram encerrados pelo Claude Code por falta de memória.
+
+> sim, rode o E2E completo e faça o commit
+
+99. PostgreSQL religado; E2E completo 67/67; commit da SF-264.

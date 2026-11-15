@@ -2745,7 +2745,7 @@ Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessi
 
 ### SF-264 — Cores fixas em variáveis e tema de alto contraste
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15: 57 cores fixas viraram 56 variáveis, e o tema normal ficou idêntico (comparação das cores calculadas de 72 páginas); tema de alto contraste com `data-contrast="high"` (decisão L4), etiquetas, faixa de avisos e gráficos inclusive (esclarecimento 5.3 item 5 da SPEC).
 - **Objetivo:** Seção 5.3 itens 1 a 3 (decisão L4).
 - **Arquivos/módulos esperados:** `globals.css`, cores das etiquetas e dos gráficos.
 - **Dependências:** Parte A.

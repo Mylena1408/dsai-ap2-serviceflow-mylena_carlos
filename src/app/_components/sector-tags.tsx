@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { TableScroll } from "./table-scroll";
 import { MAX_ACTIVE_TAGS_PER_SECTOR, MAX_TAG_NAME_LENGTH, TAG_COLORS, TAG_COLOR_KEYS, type SectorTags, type TagColor } from "@/modules/tags";
 import { createSectorTagAction, setSectorTagActiveAction, updateSectorTagAction } from "./sector-tag-actions";
@@ -22,19 +23,19 @@ export function sectorTagMessage(code: string | undefined): { text: string; erro
 
 /** A tag as the screens show it, in its palette color. */
 export function TagChip({ name, color, muted = false }: { name: string; color: TagColor; muted?: boolean }) {
-  const palette = TAG_COLORS[color];
+  const palette = muted ? TAG_COLORS.gray : TAG_COLORS[color];
+  // --tag-contrast is the tag's color in the high contrast theme (SPEC 2026-11-15-acessibilidade, 5.3 item 3).
+  const style = {
+    backgroundColor: palette.background,
+    color: palette.text,
+    borderRadius: "999px",
+    padding: "0.1rem 0.6rem",
+    fontSize: "0.85rem",
+    display: "inline-block",
+    "--tag-contrast": palette.contrastText,
+  } as CSSProperties;
   return (
-    <span
-      className="tag-chip"
-      style={{
-        backgroundColor: muted ? TAG_COLORS.gray.background : palette.background,
-        color: muted ? TAG_COLORS.gray.text : palette.text,
-        borderRadius: "999px",
-        padding: "0.1rem 0.6rem",
-        fontSize: "0.85rem",
-        display: "inline-block",
-      }}
-    >
+    <span className="tag-chip" style={style}>
       {name}
     </span>
   );
