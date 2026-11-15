@@ -295,3 +295,8 @@
 > pode começar a SPEC de acessibilidade com as decisões propostas
 
 88. Decisões L1 a L7 aprovadas. SF-260: lista de páginas e medida da rolagem lateral (`tests/e2e/responsive-pages.ts`), varredura `responsive-survey.spec.ts` (só com `RESPONSIVE_SURVEY=1`): 70 páginas, 47 ocorrências de três causas, registradas na seção 2.1 da SPEC.
+
+> faça o commit da sf-260 e siga para a sf-261
+
+89. Commit `fde48eb` (SF-260).
+90. SF-261: varredura ampliada para 1.280 px (o menu do gestor passava da tela também no computador); componente `CollapsibleNav` nas três áreas e nas seções da administração; menu que quebra linha acima de 760 px (esclarecimento 4.3 itens 4 e 5 na SPEC); E2E `collapsible-menu.spec.ts`; varredura sem nenhuma ocorrência; CA-RSP-02 marcado.

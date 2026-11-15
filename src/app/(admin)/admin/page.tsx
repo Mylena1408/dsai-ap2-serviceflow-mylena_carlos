@@ -20,6 +20,7 @@ import { BundlesSection } from "./_sections/bundles/bundles-section";
 import { getEmailOverview } from "@/modules/notifications";
 import { getAnalytics, getDashboard } from "@/modules/reports";
 import { listAuditTrail } from "@/modules/audit";
+import { CollapsibleNav } from "@/app/_components/collapsible-nav";
 import { AuditSection } from "./_sections/audit/audit-section";
 import { DashboardView } from "@/app/_components/dashboard-view";
 import { AnalyticsView } from "@/app/_components/analytics-view";
@@ -273,18 +274,21 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           <SignOutButton />
         </div>
       </header>
-      <nav aria-label="Seções administrativas" className="admin-navigation">
-        {adminSections.map((item) => (
-          <Link
-            aria-current={selectedSection === item.id ? "page" : undefined}
-            className={`admin-navigation-link${selectedSection === item.id ? " is-selected" : ""}`}
-            href={`/admin?section=${item.id}`}
-            key={item.id}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
+      {/* SPEC 2026-11-15-acessibilidade, 4.1 item 1: behind the "Menu" button below 760 px. */}
+      <div className="admin-navigation-bar">
+        <CollapsibleNav className="admin-navigation" label="Seções administrativas">
+          {adminSections.map((item) => (
+            <Link
+              aria-current={selectedSection === item.id ? "page" : undefined}
+              className={`admin-navigation-link${selectedSection === item.id ? " is-selected" : ""}`}
+              href={`/admin?section=${item.id}`}
+              key={item.id}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </CollapsibleNav>
+      </div>
       {message ? (
         <p
           className={`feedback${error ? " feedback-error" : ""}`}

@@ -226,6 +226,11 @@ p {
   gap: 12px;
 }
 
+/* SF-261: the links at the top of the administration wrap on phones instead of pushing the page sideways. */
+.page-nav {
+  flex-wrap: wrap;
+}
+
 .app-topbar nav {
   display: flex;
   align-items: center;
@@ -240,6 +245,36 @@ p {
 
 .app-topbar nav a:hover {
   color: var(--brand-strong);
+}
+
+/* SPEC 2026-11-15-acessibilidade, 4.1 item 1 (SF-261): above 760 px the "Menu" button is hidden and a menu that
+   does not fit beside the brand wraps into more lines instead of pushing the page sideways (the manager's menu did,
+   even at 1280 px); a menu that fits stays exactly as before. */
+.menu-toggle {
+  display: none;
+}
+
+.app-topbar nav {
+  min-width: 0;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 8px;
+}
+
+.app-topbar nav a {
+  white-space: nowrap;
+}
+
+.menu-toggle-icon {
+  display: inline-block;
+  width: 16px;
+  height: 2px;
+  margin: 0 2px;
+  border-radius: 1px;
+  background: currentColor;
+  box-shadow:
+    0 -5px 0 currentColor,
+    0 5px 0 currentColor;
 }
 
 .page-nav-links {
@@ -1236,10 +1271,71 @@ p {
     padding: 18px;
   }
 
+  /* SPEC 2026-11-15-acessibilidade, 4.1 item 1 (SF-261): the navigation behind the "Menu" button. Until the page is
+     hydrated (no data-enhanced) the links stay visible, so the menu also works without JavaScript. */
+  .app-topbar {
+    flex-wrap: wrap;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 8px;
+    border-color: var(--line);
+    background: #fff;
+    color: #405765;
+  }
+
+  .menu-toggle:hover:not(:disabled) {
+    border-color: #b8c9ce;
+    background: #f6f9fa;
+    color: var(--ink);
+    box-shadow: none;
+  }
+
+  .app-topbar .menu-toggle {
+    margin-left: auto;
+  }
+
+  .app-topbar .sign-out-button {
+    min-height: 44px;
+  }
+
+  .app-topbar nav {
+    order: 3;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .app-topbar nav a {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    padding: 0 4px;
+    border-top: 1px solid var(--line);
+    white-space: normal;
+  }
+
+  .app-topbar nav[data-enhanced][data-open="false"],
+  .admin-navigation[data-enhanced][data-open="false"] {
+    display: none;
+  }
+
+  .admin-navigation-bar .menu-toggle {
+    margin-bottom: 12px;
+  }
+
   .admin-navigation {
+    flex-direction: column;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: thin;
+  }
+
+  .admin-navigation-link {
+    justify-content: flex-start;
+    min-height: 44px;
   }
 
   .admin-overview-grid {
@@ -1280,14 +1376,6 @@ p {
   .app-topbar {
     width: min(100% - 24px, 420px);
     flex-wrap: wrap;
-  }
-
-  .app-topbar nav {
-    order: 3;
-    width: 100%;
-    /* The links wrap instead of pushing the page sideways on phones (found by the analytics E2E). */
-    flex-wrap: wrap;
-    gap: 8px 14px;
   }
 
   .page-shell {

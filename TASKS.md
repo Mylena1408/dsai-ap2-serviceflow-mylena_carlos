@@ -2715,7 +2715,7 @@ Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessi
 
 ### SF-261 — Menu recolhível nas áreas e na administração
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15: botão "Menu" abaixo de 760 px nas três áreas e nas seções da administração; acima disso, o menu quebra linha só quando não cabe (esclarecimento 4.3 item 4 da SPEC). CA-RSP-02 marcado; a varredura nas três larguras não acha página que role de lado.
 - **Objetivo:** Seção 4.1 item 1.
 - **Arquivos/módulos esperados:** Layouts das áreas, administração, `globals.css`.
 - **Dependências:** SF-260.

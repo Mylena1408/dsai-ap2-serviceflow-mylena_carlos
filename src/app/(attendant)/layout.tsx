@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SignOutButton } from "@/modules/auth";
 import { NotificationsLink } from "@/app/_components/notifications";
+import { CollapsibleNav } from "@/app/_components/collapsible-nav";
 import { AnnouncementStrip } from "@/app/_components/announcement-strip";
 import { AnnouncementsLink } from "@/app/_components/announcement-history";
 import { SectorServicesLink } from "@/app/_components/sector-services-link";
@@ -19,7 +20,8 @@ export default function AttendantLayout({
           <span className="brand-mark" aria-hidden="true">S</span>
           ServiceFlow
         </Link>
-        <nav aria-label="Navegação principal">
+        {/* SPEC 2026-11-15-acessibilidade, 4.1 item 1: behind the "Menu" button below 760 px. */}
+        <CollapsibleNav label="Navegação principal">
           <Link href="/queue">Fila do meu setor</Link>
           <Link href="/queue/dashboard">Meu painel</Link>
           <Link href="/queue/responses">Respostas prontas</Link>
@@ -36,7 +38,7 @@ export default function AttendantLayout({
           <Link href="/account/data">Meus dados</Link>
           <Link href="/account/api-tokens">Acesso à API</Link>
           <Link href="/account/password">Alterar senha</Link>
-        </nav>
+        </CollapsibleNav>
         <SignOutButton />
       </header>
       {children}
