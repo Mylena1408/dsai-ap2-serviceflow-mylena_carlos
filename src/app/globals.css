@@ -16,6 +16,7 @@
   --shadow: 0 18px 50px rgb(23 43 58 / 7%);
   --radius: 18px;
   --radius-small: 10px;
+  --accessibility-bar-height: 52px;
 
   /* SPEC 2026-11-15-acessibilidade, 5.3 item 1 (SF-264): the colors written in the rules became tokens, with
      the same values, so the high contrast theme can redefine them. */
@@ -1257,7 +1258,8 @@ p {
 
 .login-screen {
   display: grid;
-  min-height: 100vh;
+  /* The accessibility bar sits above it (SF-265): together they fill the window, without a scroll. */
+  min-height: calc(100vh - var(--accessibility-bar-height));
   place-items: center;
   padding: 28px 20px;
   background:
@@ -2060,6 +2062,51 @@ p {
 
 .help-question p {
   margin: 8px 0 0;
+}
+
+/* SPEC 2026-11-15-acessibilidade, 5.1 item 1 (SF-265): the bar at the top of every screen with "Alto contraste",
+   aligned with the area's top bar; SF-269 turns it into the "Acessibilidade" button and its panel. */
+.accessibility-bar {
+  display: flex;
+  width: min(100% - 48px, 1120px);
+  height: var(--accessibility-bar-height);
+  align-items: flex-end;
+  justify-content: flex-end;
+  margin: 0 auto;
+}
+
+.contrast-toggle {
+  min-height: 40px;
+  padding: 6px 14px;
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--control-text);
+  font-size: 14px;
+}
+
+.contrast-toggle:hover:not(:disabled) {
+  border-color: var(--quiet-border-hover);
+  background: var(--quiet-surface-hover);
+  color: var(--ink);
+  box-shadow: none;
+}
+
+.contrast-toggle[aria-pressed="true"] {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+}
+
+@media (max-width: 760px) {
+  .accessibility-bar {
+    width: min(100% - 32px, 620px);
+  }
+}
+
+@media (max-width: 480px) {
+  .accessibility-bar {
+    width: min(100% - 24px, 420px);
+  }
 }
 
 /* SPEC 2026-11-15-acessibilidade, part B (SF-264; decision L4): the high contrast theme, on when the page carries

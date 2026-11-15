@@ -2755,7 +2755,7 @@ Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessi
 
 ### SF-265 — Preferência de contraste guardada e a do sistema
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15: botão "Alto contraste" no topo de todas as telas; escolha no cookie `sf-contrast`, aplicada antes do primeiro desenho por um script no `<head>`; sem escolha, a preferência do sistema (esclarecimento 5.3 item 6 da SPEC). CA-CON-01 e CA-CON-03 marcados.
 - **Objetivo:** Seção 5.1 itens 1, 3 e 4 (decisão L1).
 - **Arquivos/módulos esperados:** Layout raiz, componente de preferências.
 - **Dependências:** SF-264.

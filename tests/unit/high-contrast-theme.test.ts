@@ -56,7 +56,9 @@ describe("the colors of the rules are tokens (5.3 item 1)", () => {
   });
 
   it("the high contrast theme redefines every color token of the normal one", () => {
-    const colors = [...normal.keys()].filter((name) => !name.startsWith("--radius"));
+    // The color tokens, by their value (sizes such as --radius or --accessibility-bar-height are not colors).
+    const colors = [...normal].filter(([, value]) => /#[0-9a-f]{3,8}\b|rgb\(/i.test(value)).map(([name]) => name);
+    expect(colors.length).toBeGreaterThan(60);
     expect(colors.filter((name) => !high.has(name))).toEqual([]);
   });
 

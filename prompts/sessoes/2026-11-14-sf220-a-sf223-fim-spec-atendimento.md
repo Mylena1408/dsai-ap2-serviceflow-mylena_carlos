@@ -324,3 +324,19 @@
 > sim, rode o E2E completo e faça o commit
 
 99. PostgreSQL religado; E2E completo 67/67; commit da SF-264.
+
+> faça o commit de todas as tarefas ja feitas
+
+100. Nada a commitar: SF-260 a SF-264 já estavam nos commits `fde48eb` a `6225fd0`.
+
+> sim, faça o push
+
+101. Push `d99f4a7..6225fd0` (sem migrations, sem backup).
+
+> siga para a sf-265
+
+102. SF-265: módulo `accessibility` (cookie, preferência do sistema, script do `<head>`), botão `ContrastToggle` no layout raiz, unitários e E2E `contrast-preference.spec.ts`; CA-CON-01 e CA-CON-03 marcados.
+
+> faça o commit da sf-265 e siga para a sf-266
+
+103. E2E completo 69/70: o teste do tema da SF-264 punha o atributo na mão e corria contra a hidratação; passou a usar o botão (3 rodadas verdes). Commit da SF-265.

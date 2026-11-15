@@ -1,14 +1,15 @@
 import { expect, test, type Page } from "@playwright/test";
 import { enterAs } from "./responsive-pages";
 
-// SPEC 2026-11-15-acessibilidade, 5.1 item 2 and 5.3 (SF-264; CA-CON-03): the high contrast theme, switched here by
-// the attribute that SF-265 will set, and the normal theme unchanged around it.
+// SPEC 2026-11-15-acessibilidade, 5.1 item 2 and 5.3 (SF-264; CA-CON-03): the high contrast theme, switched by its
+// button (SF-265), and the normal theme unchanged around it.
 
-function setContrast(page: Page, high: boolean) {
-  return page.evaluate((on) => {
-    if (on) document.documentElement.dataset.contrast = "high";
-    else delete document.documentElement.dataset.contrast;
-  }, high);
+/** Switches the theme as a person does, once the page is hydrated, and waits for the page to follow. */
+async function setContrast(page: Page, high: boolean) {
+  await page.waitForLoadState("networkidle");
+  const toggle = page.getByRole("button", { name: "Alto contraste" });
+  if ((await toggle.getAttribute("aria-pressed")) !== String(high)) await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", String(high));
 }
 
 /** The computed colors of every element of the page, in order. */
