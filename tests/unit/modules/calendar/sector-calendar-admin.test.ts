@@ -44,6 +44,7 @@ function reader(): SectorCalendarReader & { activeSectors: ReturnType<typeof vi.
     hours: vi.fn(async (sectorId: string) => (sectorId === S1 ? { weekdays: [1, 2, 3, 4, 5, 6], startMinute: 420, endMinute: 1140 } : null)),
     holidays: vi.fn(async () => [{ id: H1, day: "2026-11-20", name: "Feriado local", yearly: false }]),
     organization: vi.fn(async () => ORGANIZATION),
+    organizationHolidays: vi.fn(async () => [{ id: "org-1", day: "2026-12-25", name: "Natal", yearly: true }]),
   };
 }
 
@@ -186,6 +187,7 @@ describe("the panel", () => {
     hours: null,
     holidays: [],
     organization: ORGANIZATION,
+    organizationHolidays: [],
     ...overrides,
   });
 

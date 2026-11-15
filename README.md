@@ -175,6 +175,7 @@ curl -X POST -H "Authorization: Bearer sf_..." -H "Content-Type: application/jso
 ```
 
 - Rotas: `GET /api/v1/me`, `GET /api/v1/services` (solicitante), `GET /api/v1/requests`, `POST /api/v1/requests` (solicitante, sem anexos), `GET /api/v1/requests/{id}`, `POST /api/v1/requests/{id}/comments`. A descrição completa, com formatos e erros, está em `GET /api/v1/openapi.json` (público).
+- Leitura de comunicação e calendário (`SPEC/2026-11-09-comunicacao-e-calendarios.md`, seção 7): `GET /api/v1/announcements` traz os avisos em vigor para a pessoa do token (as regras da faixa, sem o limite de três da tela, dizendo se ela dispensou cada um); `GET /api/v1/sectors/{id}/calendar` traz o calendário efetivo de um setor (expediente próprio ou o da organização, fuso da organização e os feriados das duas listas), só para o gestor do próprio setor.
 - No detalhe da solicitação, a equipe do setor (atendentes e gestor) recebe também `tags`, `checklist` (marcados, total e itens) e `minutesLogged` (minutos apontados); para o solicitante, esses campos vêm `null` (`SPEC/2026-11-08-atendimento-dia-a-dia.md`, seção 9).
 - Ações de atendimento (`SPEC/2026-11-03-api-acoes-webhooks-setor.md`), todas `POST` com token de escopo `WRITE`, com as mesmas regras da tela, o mesmo histórico e os mesmos eventos, e resposta com o detalhe atualizado:
   - `/api/v1/requests/{id}/assume`, `/start` e `/complete` (atendente do setor; corpo vazio ou `{}`);

@@ -2681,7 +2681,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-258 — API pública: avisos e calendário
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15. `GET /api/v1/announcements` (avisos em vigor para a pessoa do token, sem o limite da faixa, com a dispensa) e `GET /api/v1/sectors/{id}/calendar` (calendário efetivo, só o gestor do próprio setor); OpenAPI e README atualizados. CA-COM-02 verificado na API (a parte de "Análises" fica para a SF-259).
 - **Objetivo:** Seção 7, item 2, parte E.
 - **Arquivos/módulos esperados:** `src/modules/public-api/`.
 - **Dependências:** SF-257.

@@ -62,7 +62,7 @@ export type {
   AnnouncementViewer,
 } from "./domain/announcement";
 export type { AnnouncementAdminItem, AnnouncementAdminOverview } from "./application/announcement-admin";
-export type { AnnouncementStripItem } from "./application/announcement-strip";
+export type { AnnouncementInForce, AnnouncementStripItem } from "./application/announcement-strip";
 export type { AnnouncementHistoryItem, AnnouncementHistoryState } from "./application/announcement-history";
 
 /** The strip of the signed-in person (3.1 item 2; SF-236). */
@@ -71,6 +71,11 @@ export function getAnnouncementStrip(database: PrismaClient = prisma): Promise<s
 }
 
 /** 3.3 item 4: the signed-in person dismisses an information notice of their strip (SF-237). */
+/** SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 2 (SF-258): every announcement in force for the person. */
+export function getAnnouncementsInForce(database: PrismaClient = prisma): Promise<strip.AnnouncementInForce[]> {
+  return strip.getAnnouncementsInForce(createPrismaAnnouncementStripReader(database));
+}
+
 export function dismissAnnouncement(announcementId: unknown, database: PrismaClient = prisma): Promise<void> {
   return dismissal.dismissAnnouncement(announcementId, createPrismaAnnouncementDismissalStore(database));
 }

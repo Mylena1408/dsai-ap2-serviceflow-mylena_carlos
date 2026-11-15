@@ -1,5 +1,12 @@
 import { requireCurrentActor } from "@/server/authorization";
-import { canDismiss, maintenancePhase, visibleAnnouncements, type AnnouncementRecord, type AnnouncementViewer } from "../domain/announcement";
+import {
+  announcementsInForce,
+  canDismiss,
+  maintenancePhase,
+  visibleAnnouncements,
+  type AnnouncementRecord,
+  type AnnouncementViewer,
+} from "../domain/announcement";
 
 // The strip at the top of the screens (SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 2 and 3.3 items 2 to 4;
 // SF-236): the announcements of the signed-in person's audience shown now, urgent first, at most three, without the
@@ -34,5 +41,30 @@ export async function getAnnouncementStrip(reader: AnnouncementStripReader): Pro
     ...announcement,
     dismissible: canDismiss(announcement),
     phase: maintenancePhase(announcement, now),
+  }));
+}
+
+export interface AnnouncementInForce extends AnnouncementStripItem {
+  /** Whether the person dismissed it on the screens (only an information notice can be). */
+  dismissed: boolean;
+}
+
+/**
+ * SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 2 (SF-258): the announcements in force for the signed-in person,
+ * for the public API: the strip's rules (audience, period with the lead) without its limit, each with whether they
+ * dismissed it. The instant is the database's.
+ */
+export async function getAnnouncementsInForce(reader: AnnouncementStripReader): Promise<AnnouncementInForce[]> {
+  const actor = await requireCurrentActor();
+  const viewer: AnnouncementViewer = { id: actor.id, role: actor.role, sectorId: actor.sectorId };
+  const now = await reader.now();
+  const shown = announcementsInForce(await reader.candidates(viewer, now), viewer, now);
+  if (shown.length === 0) return [];
+  const dismissed = new Set(await reader.dismissedIds(viewer.id, shown.filter(canDismiss).map(({ id }) => id)));
+  return shown.map((announcement) => ({
+    ...announcement,
+    dismissible: canDismiss(announcement),
+    phase: maintenancePhase(announcement, now),
+    dismissed: dismissed.has(announcement.id),
   }));
 }

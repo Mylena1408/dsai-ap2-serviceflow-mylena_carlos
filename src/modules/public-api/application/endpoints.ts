@@ -1,5 +1,7 @@
 import { z } from "zod";
+import { getAnnouncementsInForce } from "@/modules/announcements";
 import type { ApiUser } from "@/modules/api-tokens";
+import { getSectorCalendarView } from "@/modules/calendar";
 import { getRequestChecklist } from "@/modules/checklists";
 import { addComment, listComments } from "@/modules/comments";
 import { listPublishedServiceRequirements } from "@/modules/document-requirements";
@@ -40,7 +42,9 @@ import { validateInput } from "@/server/validation";
 import { PERMISSIONS } from "@/shared/permissions";
 import type { ApiErrorCode } from "../domain/errors";
 import {
+  announcementRepresentation,
   commentRepresentation,
+  sectorCalendarRepresentation,
   requestDetailRepresentation,
   requestSummaryRepresentation,
   serviceRepresentation,
@@ -114,6 +118,27 @@ export async function me(caller: ApiCaller): Promise<ApiResult> {
       token: { scope: caller.scope, expiresAt: caller.expiresAt.toISOString() },
     },
   };
+}
+
+/**
+ * SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 2 (SF-258): the announcements in force for the token owner, as
+ * the strip's rules choose them (audience and period, without the screen's limit of three); every profile.
+ */
+export async function announcements(): Promise<ApiResult> {
+  const items = await getAnnouncementsInForce();
+  return { status: 200, body: { items: items.map(announcementRepresentation) } };
+}
+
+/**
+ * 7 item 2 and CA-COM-02: a sector's effective calendar, only to who already reads it on the screens (a manager, their
+ * own sector; the tokens' profiles have no administrator). Another sector, or one that does not exist, is "not found".
+ */
+export async function sectorCalendar(caller: ApiCaller, rawSectorId: string): Promise<ApiResult> {
+  requireRole(caller, "MANAGER");
+  const sectorId = validateInput(z.string().uuid(), rawSectorId);
+  const view = await getSectorCalendarView(sectorId);
+  if (!view.sector || view.sector.id !== sectorId) throw new NotFoundError();
+  return { status: 200, body: sectorCalendarRepresentation({ ...view, sector: view.sector }) };
 }
 
 export async function services(caller: ApiCaller): Promise<ApiResult> {

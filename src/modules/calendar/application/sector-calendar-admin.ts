@@ -25,6 +25,8 @@ export interface SectorCalendarView {
   holidays: SectorHolidayRecord[];
   /** The organization's calendar, to show what the sector follows. */
   organization: CalendarSettings;
+  /** The organization's holidays, which apply to every sector (SF-258: the public API shows the effective calendar). */
+  organizationHolidays: SectorHolidayRecord[];
 }
 
 export interface SectorCalendarReader {
@@ -32,6 +34,7 @@ export interface SectorCalendarReader {
   hours(sectorId: string): Promise<SectorHours | null>;
   holidays(sectorId: string): Promise<SectorHolidayRecord[]>;
   organization(): Promise<CalendarSettings>;
+  organizationHolidays(): Promise<SectorHolidayRecord[]>;
 }
 
 export interface SectorCalendarTransaction extends AuditScope {
@@ -75,13 +78,13 @@ function scopeOf(actor: AuthorizationActor): string | null {
 
 export async function getSectorCalendarView(rawSectorId: unknown, reader: SectorCalendarReader): Promise<SectorCalendarView> {
   const scope = scopeOf(await requireCurrentActor());
-  const [sectors, organization] = await Promise.all([reader.activeSectors(scope), reader.organization()]);
+  const [sectors, organization, organizationHolidays] = await Promise.all([reader.activeSectors(scope), reader.organization(), reader.organizationHolidays()]);
   // A manager always sees their sector; the administrator, the one chosen (an unknown choice shows none).
   const wanted = scope ?? (typeof rawSectorId === "string" ? rawSectorId : null);
   const sector = sectors.find(({ id }) => id === wanted) ?? null;
-  if (!sector) return { sectors, sector: null, hours: null, holidays: [], organization };
+  if (!sector) return { sectors, sector: null, hours: null, holidays: [], organization, organizationHolidays };
   const [hours, holidays] = await Promise.all([reader.hours(sector.id), reader.holidays(sector.id)]);
-  return { sectors, sector, hours, holidays, organization };
+  return { sectors, sector, hours, holidays, organization, organizationHolidays };
 }
 
 /** The sector, active and managed by the person; otherwise "not found" (a manager learns nothing of other sectors). */

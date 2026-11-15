@@ -32,6 +32,9 @@ export const API_V1_OPERATIONS: readonly ApiOperation[] = [
   // SPEC 2026-11-03-pausa-sla-calendario, 5.8.
   { method: "post", path: "/api/v1/requests/{requestId}/pause-sla", scope: "WRITE" },
   { method: "post", path: "/api/v1/requests/{requestId}/resume-sla", scope: "WRITE" },
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 2.
+  { method: "get", path: "/api/v1/announcements", scope: "READ" },
+  { method: "get", path: "/api/v1/sectors/{sectorId}/calendar", scope: "READ" },
   { method: "get", path: "/api/v1/openapi.json", scope: null },
 ];
 
@@ -109,6 +112,26 @@ export const OPENAPI_DOCUMENT = {
         summary: "Quem é a pessoa do token",
         description: "Nome, e-mail, perfil, setor e permissões; escopo e validade do token. Escopo: READ.",
         responses: { "200": { description: "A pessoa", content: json(ref("Me")) }, ...errors() },
+      },
+    },
+    "/api/v1/announcements": {
+      get: {
+        summary: "Avisos em vigor",
+        description:
+          "Os avisos do público da pessoa do token que estão na faixa agora (com a antecedência da manutenção), dos urgentes para os demais, sem o limite de três da tela; cada um diz se a pessoa o dispensou. Escopo: READ.",
+        responses: {
+          "200": { description: "Avisos", content: json({ type: "object", required: ["items"], properties: { items: { type: "array", items: ref("Announcement") } } }) },
+          ...errors(),
+        },
+      },
+    },
+    "/api/v1/sectors/{sectorId}/calendar": {
+      get: {
+        summary: "Calendário efetivo de um setor",
+        description:
+          "Dias, horário e feriados que contam os prazos em horas úteis das solicitações abertas agora no setor: o expediente próprio do setor ou o da organização, o fuso da organização e os feriados das duas listas. Só o gestor, do próprio setor. Escopo: READ.",
+        parameters: [{ name: "sectorId", in: "path", required: true, schema: { type: "string", format: "uuid" } }],
+        responses: { "200": { description: "O calendário", content: json(ref("SectorCalendar")) }, ...errors("invalid_request", "forbidden", "not_found") },
       },
     },
     "/api/v1/services": {
@@ -310,6 +333,53 @@ export const OPENAPI_DOCUMENT = {
           sector: nullable("object", { properties: person.properties }),
           permissions: { type: "array", items: { type: "string", enum: ["SECTOR_SERVICES", "SECTOR_REQUESTS_READ", "QUEUE_SUPERVISION"] } },
           token: { type: "object", properties: { scope: { type: "string", enum: ["READ", "WRITE"] }, expiresAt: dateTime } },
+        },
+      },
+      Announcement: {
+        type: "object",
+        properties: {
+          id: { type: "string", format: "uuid" },
+          title: { type: "string" },
+          body: { type: "string" },
+          kind: { type: "string", enum: ["NOTICE", "MAINTENANCE"] },
+          level: { type: "string", enum: ["INFO", "WARNING"] },
+          audience: {
+            type: "object",
+            properties: {
+              type: { type: "string", enum: ["ALL", "ROLE", "SECTOR"] },
+              role: nullable("string", { enum: ["ADMIN", "MANAGER", "ATTENDANT", "REQUESTER", null] }),
+              sectorId: nullable("string", { format: "uuid" }),
+            },
+          },
+          startsAt: dateTime,
+          endsAt: dateTime,
+          leadHours: nullable("integer", { description: "Horas de antecedência na faixa; só na manutenção." }),
+          phase: nullable("string", { enum: ["scheduled", "in_progress", null], description: "Só na manutenção: antes da janela ou durante." }),
+          dismissible: { type: "boolean" },
+          dismissed: { type: "boolean" },
+        },
+      },
+      SectorCalendar: {
+        type: "object",
+        properties: {
+          sector: person,
+          ownHours: { type: "boolean", description: "Falso quando o setor segue o expediente da organização." },
+          weekdays: { type: "array", items: { type: "integer", minimum: 1, maximum: 7 }, description: "Dias ISO: 1 é segunda-feira." },
+          startTime: { type: "string", description: "HH:MM" },
+          endTime: { type: "string", description: "HH:MM; 24:00 é o fim do dia." },
+          timeZone: { type: "string" },
+          holidays: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                day: { type: "string", format: "date" },
+                name: { type: "string" },
+                yearly: { type: "boolean" },
+                source: { type: "string", enum: ["organization", "sector"] },
+              },
+            },
+          },
         },
       },
       Service: {

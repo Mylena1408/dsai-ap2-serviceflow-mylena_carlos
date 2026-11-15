@@ -34,6 +34,16 @@ export function getMe(request: Request): Promise<Response> {
   return handleApiCall(request, (caller) => endpoints.me(caller));
 }
 
+// SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 2 (SF-258).
+export function getAnnouncements(request: Request): Promise<Response> {
+  return handleApiCall(request, () => endpoints.announcements());
+}
+
+export async function getSectorCalendar(request: Request, { params }: { params: Promise<{ sectorId: string }> }): Promise<Response> {
+  const { sectorId } = await params;
+  return handleApiCall(request, (caller) => endpoints.sectorCalendar(caller, sectorId));
+}
+
 export function getServices(request: Request): Promise<Response> {
   return handleApiCall(request, (caller) => endpoints.services(caller));
 }

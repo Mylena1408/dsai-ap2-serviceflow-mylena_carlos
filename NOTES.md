@@ -3194,3 +3194,12 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Testes antigos ajustados (mudança prevista na seção 2 da SPEC, "o formato da configuração portátil"):** as afirmações "o export escreve a versão 2" passaram a 3 (unitário de export, integração e E2E da configuração portátil); as que usavam a versão 3 como "versão desconhecida" passaram a usar a 4; o teste que monta um arquivo da versão 1 a partir do export também tira as listas da versão 3; os retratos montados nos testes ganharam os três campos novos. Num deles eu tinha posto os campos no objeto errado (um arquivo, não um retrato); o typecheck apontou e corrigi.
 - **Resultados:** typecheck e lint OK; unitários 1903/1903; integração 800/800; `next build` OK; E2E completo 57/57.
 - **CA-COM-01** marcado.
+
+## SF-258 — API pública: avisos e calendário (2026-11-15)
+
+- **Rotas (esclarecimento na SPEC, 7):** `GET /api/v1/announcements` (READ, todos os perfis de token): avisos em vigor para a pessoa, pelas regras da faixa sem o limite de três, com `dismissible`, `dismissed` e `phase`; `GET /api/v1/sectors/{id}/calendar` (READ): calendário efetivo (`ownHours`, dias, horário, fuso da organização, feriados das duas listas com `source`).
+- **Quem lê o calendário (CA-COM-02 na API):** tokens só existem para solicitante, atendente e gestor, e nas telas só o gestor (próprio setor) e o administrador leem o calendário de um setor; então a rota é só do gestor, para o próprio setor. O caso de uso devolve o setor do gestor seja qual for o pedido, e o endpoint responde "não encontrado" quando não é o setor pedido; id inválido é recusado antes de ler.
+- **Código:** `announcementsInForce` (domínio) e `getAnnouncementsInForce` (aplicação) nos avisos; a visão do calendário do setor ganhou `organizationHolidays` (a tela não muda); representações e endpoints na API; OpenAPI e README atualizados. O teste que compara as rotas com o OpenAPI passou sem ajuste.
+- **Testes antigos ajustados:** os dublês do SF-253 ganharam `organizationHolidays`.
+- **Resultados:** typecheck e lint OK; unitários 1908/1908; integração 802/802; `next build` OK; E2E completo 57/57.
+- CA-COM-02 conferido na API; será marcado com a parte de "Análises" (SF-259).

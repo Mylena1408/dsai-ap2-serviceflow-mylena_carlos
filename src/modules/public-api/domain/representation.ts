@@ -349,3 +349,70 @@ export interface ApiPage<T> {
   pageCount: number;
   total: number;
 }
+
+// SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 2 (SF-258): announcements in force and a sector's effective calendar.
+
+export interface ApiAnnouncementSource {
+  id: string;
+  title: string;
+  body: string;
+  kind: "NOTICE" | "MAINTENANCE";
+  level: "INFO" | "WARNING";
+  audience: "ALL" | "ROLE" | "SECTOR";
+  audienceRole: string | null;
+  audienceSectorId: string | null;
+  startsAt: Date;
+  endsAt: Date;
+  leadHours: number | null;
+  phase: "scheduled" | "in_progress" | null;
+  dismissible: boolean;
+  dismissed: boolean;
+}
+
+export function announcementRepresentation(announcement: ApiAnnouncementSource) {
+  return {
+    id: announcement.id,
+    title: announcement.title,
+    body: announcement.body,
+    kind: announcement.kind,
+    level: announcement.level,
+    audience: { type: announcement.audience, role: announcement.audienceRole, sectorId: announcement.audienceSectorId },
+    startsAt: announcement.startsAt.toISOString(),
+    endsAt: announcement.endsAt.toISOString(),
+    leadHours: announcement.leadHours,
+    phase: announcement.phase,
+    dismissible: announcement.dismissible,
+    dismissed: announcement.dismissed,
+  };
+}
+
+const clock = (minute: number) => `${String(Math.floor(minute / 60)).padStart(2, "0")}:${String(minute % 60).padStart(2, "0")}`;
+
+export interface ApiSectorCalendarSource {
+  sector: { id: string; name: string };
+  hours: { weekdays: number[]; startMinute: number; endMinute: number } | null;
+  organization: { weekdays: number[]; startMinute: number; endMinute: number; timeZone: string };
+  holidays: ReadonlyArray<{ day: string; name: string; yearly: boolean }>;
+  organizationHolidays: ReadonlyArray<{ day: string; name: string; yearly: boolean }>;
+}
+
+/**
+ * The calendar that counts the deadlines of requests opened now in the sector: its own hours or the organization's,
+ * always the organization's time zone, and both sets of holidays, each with where it comes from.
+ */
+export function sectorCalendarRepresentation(source: ApiSectorCalendarSource) {
+  const hours = source.hours ?? source.organization;
+  const holidays = [
+    ...source.organizationHolidays.map((holiday) => ({ ...holiday, source: "organization" as const })),
+    ...source.holidays.map((holiday) => ({ ...holiday, source: "sector" as const })),
+  ].sort((a, b) => a.day.localeCompare(b.day) || a.source.localeCompare(b.source));
+  return {
+    sector: { id: source.sector.id, name: source.sector.name },
+    ownHours: source.hours !== null,
+    weekdays: [...hours.weekdays].sort((a, b) => a - b),
+    startTime: clock(hours.startMinute),
+    endTime: clock(hours.endMinute),
+    timeZone: source.organization.timeZone,
+    holidays: holidays.map(({ day, name, yearly, source: origin }) => ({ day, name, yearly, source: origin })),
+  };
+}

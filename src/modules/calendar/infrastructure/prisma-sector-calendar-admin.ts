@@ -27,6 +27,10 @@ export function createPrismaSectorCalendarReader(database: PrismaClient): Sector
       const rows = await database.sectorHoliday.findMany({ where: { sectorId }, orderBy: [{ day: "asc" }, { id: "asc" }] });
       return rows.map(({ id, day, name, yearly }) => ({ id, day: dayText(day), name, yearly }));
     },
+    async organizationHolidays() {
+      const rows = await database.businessHoliday.findMany({ orderBy: [{ day: "asc" }, { id: "asc" }] });
+      return rows.map(({ id, day, name, yearly }) => ({ id, day: dayText(day), name, yearly }));
+    },
     async organization() {
       const { weekdays, startMinute, endMinute, timeZone } = await createPrismaCalendarReader(database).findSettings();
       return { weekdays, startMinute, endMinute, timeZone };

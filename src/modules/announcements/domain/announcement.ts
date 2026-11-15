@@ -199,6 +199,15 @@ export function visibleAnnouncements<T extends AnnouncementRecord>(
     .slice(0, MAX_VISIBLE_ANNOUNCEMENTS);
 }
 
+/**
+ * SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 2 (SF-258): every announcement of the person's audience shown at
+ * this instant, in the strip's order, without the strip's limit of three; dismissing one is a choice of the screen,
+ * so it stays in the list.
+ */
+export function announcementsInForce<T extends AnnouncementRecord>(announcements: readonly T[], viewer: AnnouncementViewer, now: Date): T[] {
+  return announcements.filter((announcement) => reaches(announcement, viewer) && isShownAt(announcement, now)).sort(compareAnnouncements);
+}
+
 /** A maintenance before its window ("programada") or during it ("em andamento"); null for a notice. */
 export function maintenancePhase(announcement: Pick<AnnouncementData, "kind" | "startsAt">, now: Date): "scheduled" | "in_progress" | null {
   if (announcement.kind !== "MAINTENANCE") return null;

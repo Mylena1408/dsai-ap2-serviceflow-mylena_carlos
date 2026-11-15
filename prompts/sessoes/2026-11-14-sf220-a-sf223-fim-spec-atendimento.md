@@ -252,3 +252,12 @@
 > faça a sf-257
 
 75. SF-257: configuração portátil versão 3 (calendários e feriados de setor, avisos futuros); CA-COM-01. Testes antigos que fixavam a versão 2 ajustados. Unitários 1903/1903, integração 800/800, build OK, E2E 57/57.
+
+> pode prosseguir
+
+76. Commit `737c3d1` (SF-257).
+77. SF-258: `GET /api/v1/announcements` e `GET /api/v1/sectors/{id}/calendar` (só o gestor do próprio setor); OpenAPI e README. Unitários 1908/1908, integração 802/802, build OK, E2E 57/57.
+
+> pode prosseguir
+
+78. Commit do SF-258 e início do SF-259 (o código só foi alterado depois do fim do E2E, que usa o servidor de desenvolvimento).
