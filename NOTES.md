@@ -3165,3 +3165,15 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Tropeço no teste:** meu dublê devolvia o calendário com sábado mesmo sem nada próprio no setor; corrigido para imitar o real.
 - **Resultados:** typecheck e lint OK; unitários 1891/1891; integração 791/791; `next build` OK.
 - CA-CAL-01 e CA-CAL-03 conferidos na abertura; serão marcados depois da SF-255 (pausas e prioridade) e da revisão da SF-256.
+
+## Contagem de linhas em `ac515a6` (SF-254, 2026-11-14)
+
+- `sh scripts/cloc-diff.sh`: 91.726 `added` (aplicação 45.652, testes 45.825, scripts 249); líquido 89.238. SF-253 e SF-254 somaram 905 (aplicação 480, testes 425). Faltam 8.274 para as 100.000.
+
+## SF-255 — Pausas, prioridade e reabertura com o calendário guardado (2026-11-14)
+
+- **Regra (esclarecimento na SPEC, 6.3):** retomada da pausa (as três causas), mudança de prioridade e reabertura recalculam com o calendário guardado na abertura; o encaminhamento não toca no calendário nem no vencimento (K8). O escalonamento por regra já não recalculava o vencimento.
+- **Código:** três chamadas de `requestClock` (`sla-pause.ts`, `priority.ts`, `lifecycle-actions.ts`) passaram a receber `slaCalendarSectorId`, que a leitura da solicitação já trazia desde a SF-254. Conferi com uma busca que não sobrou outro cálculo de prazo com o calendário da organização (os outros usos do calendário são de ausências e da cobertura de aprovações, que contam dias da organização).
+- **Teste ajustado:** o primeiro cenário encaminhava uma solicitação já em atendimento e mudava a prioridade como administrador; as regras permitem encaminhar só a aberta e mudar a prioridade só pelo atendente do setor. Ajustei o cenário (o código estava certo).
+- **Resultados:** typecheck e lint OK; unitários 1891/1891; integração 795/795; `next build` OK.
+- **CA-CAL-01** e **CA-CAL-03** marcados. Falta a SF-256 (revisão das telas e E2E da parte D).

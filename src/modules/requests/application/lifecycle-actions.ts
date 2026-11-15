@@ -72,7 +72,7 @@ async function changeLifecycle(
       expectedAssigneeId: request.assignee?.id ?? null,
       toStatus: change.toStatus,
       updatedAt: occurredAt,
-      ...(await change.stamps(occurredAt, request, () => requestClock(transaction, request.slaBusinessHours))),
+      ...(await change.stamps(occurredAt, request, () => requestClock(transaction, request.slaBusinessHours, request.slaCalendarSectorId))),
       ...(ending ? { slaPausedAt: null, expectedSlaPausedAt: request.slaPausedAt ?? null } : {}),
     });
 

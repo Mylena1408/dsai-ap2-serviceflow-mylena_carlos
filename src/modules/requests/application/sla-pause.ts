@@ -36,7 +36,8 @@ export async function resumeColumns(transaction: RequestTransaction, request: Li
     return null;
   }
 
-  const clock = await requestClock(transaction, request.slaBusinessHours);
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 6.3 item 3: the calendar kept at the opening.
+  const clock = await requestClock(transaction, request.slaBusinessHours, request.slaCalendarSectorId);
   const schedule = slaScheduleAfterResume(request.dueAt, request.slaPausedAt, at, request.slaHoursSnapshot, request.priority ?? "NORMAL", clock);
   return { slaPausedAt: null, ...scheduleColumns(schedule, request.slaBusinessHours) } as const;
 }

@@ -2651,7 +2651,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-255 — Pausas, retomadas e prioridade com o calendário guardado
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. Retomada da pausa, mudança de prioridade e reabertura usam o calendário guardado na abertura (`requestClock` com o setor guardado); o encaminhamento mantém o calendário e o vencimento (K8). CA-CAL-01 e CA-CAL-03 verificados e marcados.
 - **Objetivo:** Seção 6.3, parte D (decisões K4 e K8).
 - **Arquivos/módulos esperados:** Prazos, pausas e encaminhamento.
 - **Dependências:** SF-254.

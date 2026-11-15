@@ -202,3 +202,12 @@
 
 60. Commit `efc8e4d` (SF-253).
 61. SF-254: abertura em horas úteis com o calendário efetivo do setor e o setor guardado; aprovação final com o calendário guardado. Script com barras invertidas recusado pelo shell (nada gravado), refeito com o Write. Unitários 1891/1891, integração 791/791, build OK.
+
+> siga
+
+62. Commit `ac515a6` (SF-254).
+63. SF-255: pausa, prioridade e reabertura com o calendário guardado; encaminhamento o mantém. CA-CAL-01 e CA-CAL-03 marcados. Unitários 1891/1891, integração 795/795, build OK.
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+64. Contagem em `ac515a6`: 91.726 `added` (aplicação 45.652, testes 45.825, scripts 249), líquido 89.238.

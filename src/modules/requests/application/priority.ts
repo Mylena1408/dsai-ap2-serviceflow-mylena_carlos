@@ -41,7 +41,8 @@ export async function changeRequestPriority(
             request.slaHoursSnapshot ?? null,
             fromPriority,
             priority,
-            await requestClock(transaction, request.slaBusinessHours),
+            // SPEC 2026-11-09-comunicacao-e-calendarios, 6.3 item 3: the calendar kept at the opening.
+            await requestClock(transaction, request.slaBusinessHours, request.slaCalendarSectorId),
           );
     const { dueAt, ...dueSoon } = scheduleColumns(schedule, request.slaBusinessHours);
     const occurredAt = await transaction.currentTime();
