@@ -311,3 +311,10 @@
 93. Contagem em `579bce1`: 94.046 `added` (aplicação 46.649, testes 47.148, scripts 249), líquido 91.563; faltam 5.954. SF-260 e SF-261 somaram 322.
 
 > faça o commit da sf-262 e siga para a sf-263
+
+94. E2E completo da SF-262: 62 passaram e 1 falhou (área da tabela da equipe com o mesmo nome da seção "Desempenho da equipe"); nomes próprios para as três áreas sem legenda de "Análises"; os 7 E2E que abrem "Análises" passaram. Commit `405b378`.
+95. SF-263: varredura transformada no E2E `responsive.spec.ts` (70 páginas a 360, 768 e 1.280 px; amostra a 320 px; telas acima de 760 px); comparação com o CSS antigo mostrou que o menu do atendente já quebrava o texto dos links a 1.280 px (esclarecimento na SPEC); revisão da parte A (seção 4.5); CA-RSP-01 e 04 marcados.
+
+> faça o commit da sf-263 e siga para a sf-264
+
+96. E2E completo da SF-263 65/65; commit da SF-263.

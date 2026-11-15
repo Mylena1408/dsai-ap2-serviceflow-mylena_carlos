@@ -1,7 +1,7 @@
 # SPEC — Acessibilidade: telas responsivas, alto contraste e leitura em voz alta
 
 **Data:** 2026-11-15
-**Status:** Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"). Decisões L1 a L7 aprovadas como propostas em 2026-11-15 ("pode começar a SPEC de acessibilidade com as decisões propostas"). Em andamento: SF-260 a SF-262 concluídas.
+**Status:** Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"). Decisões L1 a L7 aprovadas como propostas em 2026-11-15 ("pode começar a SPEC de acessibilidade com as decisões propostas"). Em andamento: parte A concluída (SF-260 a SF-263, CA-RSP-01 a 04).
 **Projeto:** ServiceFlow
 **Referências:**
 - WCAG 2.2: 1.4.3 (contraste mínimo, AA), 1.4.6 (contraste aprimorado, AAA), 1.4.10 (refluxo: sem rolagem nas duas direções a 320 px CSS), 1.4.11 (contraste de elementos não textuais), 2.1.1 (teclado), 2.4.7 (foco visível), 4.1.2 (nome, função e valor).
@@ -30,7 +30,7 @@ Hoje o ServiceFlow é usado sobretudo no computador. Esta SPEC faz três coisas 
 
 ### 2.1 Varredura das larguras (SF-260, 2026-11-15)
 
-Feita com `tests/e2e/responsive-survey.spec.ts` (roda só com `RESPONSIVE_SURVEY=1`): 70 páginas (3 sem login, 11 do solicitante, 12 do atendente, 17 do gestor, as 25 seções da administração e 4 da conta da administração), a 360 px e a 768 px, com os dados de demonstração. Uma página "rola de lado" quando a largura do documento passa a da janela; a varredura aponta o elemento mais externo que passa da borda e não está numa área com rolagem própria. **47 ocorrências, de três causas:**
+Feita com `tests/e2e/responsive-survey.spec.ts` (rodava só com `RESPONSIVE_SURVEY=1`; na SF-263 virou o E2E `responsive.spec.ts`, que reprova): 70 páginas (3 sem login, 11 do solicitante, 12 do atendente, 17 do gestor, as 25 seções da administração e 4 da conta da administração), a 360 px e a 768 px, com os dados de demonstração. Uma página "rola de lado" quando a largura do documento passa a da janela; a varredura aponta o elemento mais externo que passa da borda e não está numa área com rolagem própria. **47 ocorrências, de três causas:**
 
 | # | Largura | Onde | Causa | Tarefa |
 |---|---|---|---|---|
@@ -66,16 +66,23 @@ Quem não usa os recursos novos continua com as telas como hoje, com duas exceç
 1. A largura de referência é 360 px (o menor celular comum); a WCAG pede 320 px CSS, conferido por amostra.
 2. A ordem de leitura e de tabulação é a mesma em qualquer largura.
 3. Gráficos e grades de "Análises" e do painel rolam dentro do próprio cartão, como as tabelas.
-4. **Esclarecimento (SF-261, 2026-11-15):** a varredura mostrou que o menu do gestor passa da tela também a 768 px e a 1.280 px (seção 2.1). Por isso, acima de 760 px, um menu que não cabe ao lado da marca **quebra em mais linhas** em vez de empurrar a página; um menu que cabe fica exatamente como antes. O CA-RSP-04 ("acima de 760 px as telas não mudam") vale para as telas que já cabiam; as do gestor mudam só para deixar de rolar de lado. Os links do topo da administração (Ajuda, Meus dados, Alterar senha, Sair) também quebram linha quando não cabem. Na administração, o "Menu" recolhe a lista das seções.
+4. **Esclarecimento (SF-261, 2026-11-15):** a varredura mostrou que o menu do gestor passa da tela também a 768 px e a 1.280 px (seção 2.1). Por isso, acima de 760 px, um menu que não cabe ao lado da marca **quebra em mais linhas** em vez de empurrar a página; um menu que cabe fica exatamente como antes. Conferido na SF-263 com o CSS antigo reaplicado na página: a 1.280 px, o menu do solicitante cabe numa linha e ficou igual; o do atendente já não cabia (o texto dos links quebrava em duas linhas, "Fila do meu / setor") e passou a mostrar os links inteiros em duas linhas; o do gestor rolava a página e também passou a duas linhas. O CA-RSP-04 ("acima de 760 px as telas não mudam") vale para as telas que já cabiam; as do atendente e do gestor mudam só para deixar de quebrar o texto dos links ou de rolar de lado. Os links do topo da administração (Ajuda, Meus dados, Alterar senha, Sair) também quebram linha quando não cabem. Na administração, o "Menu" recolhe a lista das seções.
 6. **Esclarecimento (SF-262, 2026-11-15):** a área de rolagem de cada tabela (componente `TableScroll`) é uma região com nome (a legenda da tabela; sem legenda, o título do gráfico ou um nome curto como "Tabela da equipe", que não repete o nome da seção), alcançável pela tecla Tab em qualquer largura, para que quem usa o teclado role a tabela com as setas. Os alvos de toque de 44 × 44 px valem abaixo de 760 px para todos os botões e links com aparência de botão, não só os do menu; acima disso, os tamanhos não mudam. Os formulários já ficavam em uma coluna abaixo de 760 px; a varredura não achou formulário que passasse da tela.
 5. **Sem JavaScript**, a lista fica visível (o botão só a esconde depois que a página carrega o script), então ninguém perde o menu.
 
 ### 4.4 Critérios de aceitação
 
-- [ ] **CA-RSP-01** — As páginas de cada perfil não rolam de lado a 360 px e a 768 px (E2E com a lista de páginas).
+- [x] **CA-RSP-01** — As páginas de cada perfil não rolam de lado a 360 px e a 768 px (E2E com a lista de páginas). *Verificado em 2026-11-15 (SF-263): E2E `responsive.spec.ts` com as 70 páginas a 360, 768 e 1.280 px (nenhuma rola de lado e todas as de detalhe foram abertas pela lista) e uma amostra de 11 páginas a 320 px (regra 4.3.1).*
 - [x] **CA-RSP-02** — O menu recolhido abre e fecha pelo mouse e pelo teclado, diz seu estado e devolve o foco ao fechar. *Verificado em 2026-11-15 (SF-261): unitário (estado e marcação) e E2E `collapsible-menu.spec.ts` (gestor e administração a 360 px: mouse, Enter, Espaço, Tab, Esc com o foco de volta, link que fecha o menu; botão oculto a 1.280 px).*
 - [x] **CA-RSP-03** — As tabelas rolam dentro de si, com nome, e são alcançáveis pelo teclado. *Verificado em 2026-11-15 (SF-262): unitário (área nomeada com `tabindex="0"`; toda `data-table` do código dentro de uma; a grade de chegadas também) e E2E `table-scroll.spec.ts` (tabela de 900 px a 360 px rola na própria área, sem rolar a página, com Tab e setas; botões e links do menu com 44 × 44 px).*
-- [ ] **CA-RSP-04** — Acima de 760 px as telas não mudam; nenhuma dependência nova.
+- [x] **CA-RSP-04** — Acima de 760 px as telas não mudam; nenhuma dependência nova. *Verificado em 2026-11-15 (SF-263), com o esclarecimento 4.3 item 4: E2E (sem o botão "Menu"; o menu do solicitante numa linha só ao lado da marca e do "Sair"; o do atendente e o do gestor com os links inteiros em mais linhas a 1.280 e 768 px; as seções da administração visíveis a 768 px). `package.json`, `package-lock.json` e `prisma/` sem mudança desde o início da SPEC.*
+
+### 4.5 Revisão da parte A (SF-263, 2026-11-15)
+
+- **Critérios:** CA-RSP-01 a 04 marcados.
+- **O que mudou nas telas:** botão "Menu" abaixo de 760 px nas três áreas e nas seções da administração; menus do atendente e do gestor com os links inteiros em mais linhas acima de 760 px; links do topo da administração que quebram linha; as 23 tabelas de dados e a grade de chegadas com rolagem própria; botões com 44 × 44 px no celular. Nenhuma regra, dado ou permissão mudou; sem migration.
+- **Suítes anteriores:** passaram sem mudar asserções. Uma falha do E2E de "Análises" na SF-262 foi corrigida no código (nome da área da tabela), não no teste.
+- **Fica para depois:** a varredura mede a rolagem lateral com os dados de demonstração; textos muito longos digitados pelas pessoas (nomes de serviço, por exemplo) são cobertos pelas quebras de linha e pela rolagem própria das tabelas, mas não por uma página a mais na lista.
 
 ## 5. Parte B — Alto contraste
 

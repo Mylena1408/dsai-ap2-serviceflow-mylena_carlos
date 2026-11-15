@@ -2735,7 +2735,7 @@ Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessi
 
 ### SF-263 — E2E de responsividade e revisão da parte A
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15: `responsive.spec.ts` (70 páginas a 360, 768 e 1.280 px; amostra a 320 px; telas acima de 760 px); revisão da parte A na seção 4.5 da SPEC. CA-RSP-01 e CA-RSP-04 marcados.
 - **Objetivo:** Parte A.
 - **Arquivos/módulos esperados:** `tests/e2e/`.
 - **Dependências:** SF-261 e SF-262.
