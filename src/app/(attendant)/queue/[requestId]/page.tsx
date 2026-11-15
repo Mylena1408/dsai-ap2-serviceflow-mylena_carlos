@@ -208,7 +208,7 @@ export default async function QueueRequestPage({
     request.stageIndex === null || request.stageIndex === request.stageNamesSnapshot.length - 1;
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
       <nav aria-label="Navegação da fila">
         <Link href="/queue">Voltar à fila</Link>

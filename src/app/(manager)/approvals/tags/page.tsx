@@ -11,7 +11,7 @@ export default async function TagsPage({ searchParams }: TagsPageProps) {
   const [{ tag }, sectors] = await Promise.all([searchParams, listSectorTags()]);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
         <p className="eyebrow">Setor</p>
         <h1>Etiquetas</h1>

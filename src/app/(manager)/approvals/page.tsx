@@ -21,7 +21,7 @@ export default async function ApprovalsPage({ searchParams }: ApprovalsPageProps
   const requests = await listManagerApprovals(view);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="page-header">
         <div className="page-intro">
           <p className="eyebrow">Gestão do setor</p>

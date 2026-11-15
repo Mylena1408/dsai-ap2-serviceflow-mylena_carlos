@@ -55,7 +55,7 @@ export default async function ApiTokensPage({ searchParams }: ApiTokensPageProps
         </nav>
         <SignOutButton />
       </header>
-      <main className="page-shell">
+      <main className="page-shell" id="conteudo" tabIndex={-1}>
         <section aria-labelledby="api-tokens-title" className="account-card">
           <p className="eyebrow">Integrações</p>
           <h1 id="api-tokens-title">Acesso à API</h1>

@@ -251,7 +251,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       : null;
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 2: rendered with the page, so it is fresh on each visit. */}
       <AnnouncementStrip />
       <header className="page-header">

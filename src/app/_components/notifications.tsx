@@ -35,7 +35,7 @@ export function NotificationList({ notifications, markAllAction, preferencesHref
   const unread = notifications.filter(({ readAt }) => readAt === null).length;
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="page-header">
         <div>
           <p className="eyebrow">Avisos</p>

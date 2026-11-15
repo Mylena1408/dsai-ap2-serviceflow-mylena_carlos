@@ -108,7 +108,7 @@ export default async function RequestPage({
   }
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
       <nav aria-label="Navegação das solicitações">
         <Link href="/requests">Minhas solicitações</Link>

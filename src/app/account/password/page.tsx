@@ -38,7 +38,7 @@ export default async function ChangePasswordPage() {
         </nav>
         <SignOutButton />
       </header>
-      <main className="page-shell">
+      <main className="page-shell" id="conteudo" tabIndex={-1}>
         <section aria-labelledby="password-title" className="account-card">
           <p className="eyebrow">Segurança da conta</p>
           <h1 id="password-title">Alterar senha</h1>

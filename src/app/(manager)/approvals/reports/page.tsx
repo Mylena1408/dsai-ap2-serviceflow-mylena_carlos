@@ -9,7 +9,7 @@ export default async function ManagerReportsPage() {
   const list = await listPeriodicReports();
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="page-header">
         <div>
           <p className="eyebrow">Indicadores</p>

@@ -2085,12 +2085,62 @@ summary {
 .accessibility-bar {
   display: flex;
   width: min(100% - 48px, 1120px);
-  min-height: var(--accessibility-bar-height);
-  flex-wrap: wrap;
+  height: var(--accessibility-bar-height);
   align-items: flex-end;
   justify-content: flex-end;
-  gap: 8px;
   margin: 0 auto;
+}
+
+/* SPEC 2026-11-15-acessibilidade, section 7 (SF-269): "Pular para o conteúdo", out of sight until it takes the
+   focus, then at the top left above everything. */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 40;
+  padding: 10px 16px;
+  border: 2px solid var(--brand);
+  border-radius: var(--radius-small);
+  background: var(--surface);
+  color: var(--brand-strong);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* The main content takes the focus from the skip link without drawing a frame around the whole page. */
+main[tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* The "Acessibilidade" button and its panel, open below it, above the page. */
+.accessibility-menu {
+  position: relative;
+}
+
+.accessibility-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  width: min(440px, 100vw - 24px);
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.accessibility-panel[hidden] {
+  display: none;
+}
+
+.accessibility-panel .contrast-toggle {
+  justify-self: start;
 }
 
 /* SF-268: the reading aloud, in the same quiet style as "Alto contraste". */
@@ -2098,10 +2148,10 @@ summary {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
   gap: 8px;
 }
 
+.accessibility-toggle,
 .speech-controls button,
 .contrast-toggle {
   min-height: 40px;
@@ -2112,6 +2162,7 @@ summary {
   font-size: 14px;
 }
 
+.accessibility-toggle:hover:not(:disabled),
 .speech-controls button:hover:not(:disabled),
 .contrast-toggle:hover:not(:disabled) {
   border-color: var(--quiet-border-hover);
@@ -2139,10 +2190,12 @@ summary {
   margin: 0;
   color: var(--muted);
   font-size: 13px;
-  text-align: right;
 }
 
-.contrast-toggle[aria-pressed="true"] {
+.accessibility-toggle[aria-expanded="true"],
+.accessibility-toggle[aria-expanded="true"]:hover:not(:disabled),
+.contrast-toggle[aria-pressed="true"],
+.contrast-toggle[aria-pressed="true"]:hover:not(:disabled) {
   border-color: var(--brand);
   background: var(--brand-soft);
   color: var(--brand-strong);

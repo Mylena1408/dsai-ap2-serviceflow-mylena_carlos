@@ -11,7 +11,7 @@ export default async function CatalogPage() {
   const bundles = await listCatalogBundles();
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="page-header">
         <div>
           <p className="eyebrow">Descubra os serviços</p>

@@ -18,7 +18,7 @@ export default async function ManagerAnalyticsPage({ searchParams }: ManagerAnal
   const [analytics, reports] = await Promise.all([getAnalytics({ period, from, to }), latestPeriodicReports()]);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="page-header">
         <div>
           <p className="eyebrow">Indicadores</p>

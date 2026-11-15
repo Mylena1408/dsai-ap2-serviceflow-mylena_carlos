@@ -38,7 +38,7 @@ export default async function FollowedRequestPage({ params, searchParams }: Foll
   }
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
         <nav aria-label="Navegação das solicitações">
           <Link href="/requests/following">Que eu acompanho</Link>

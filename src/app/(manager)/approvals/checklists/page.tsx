@@ -11,7 +11,7 @@ export default async function ChecklistsPage({ searchParams }: ChecklistsPagePro
   const [{ checklist, open }, services] = await Promise.all([searchParams, listServiceChecklists()]);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
         <p className="eyebrow">Setor</p>
         <h1>Checklists</h1>

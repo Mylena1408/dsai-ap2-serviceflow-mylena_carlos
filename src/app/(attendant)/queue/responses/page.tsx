@@ -46,7 +46,7 @@ export default async function ResponsesPage({ searchParams }: ResponsesPageProps
   }
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="page-header">
         <div>
           <p className="eyebrow">Atendimento</p>

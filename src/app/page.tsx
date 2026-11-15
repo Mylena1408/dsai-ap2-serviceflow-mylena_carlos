@@ -10,7 +10,7 @@ export default async function HomePage() {
 
   if (!user) {
     return (
-      <main className="login-screen">
+      <main className="login-screen" id="conteudo" tabIndex={-1}>
         <section className="login-card" aria-labelledby="entry-title">
           <p className="brand-link">
             <span className="brand-mark" aria-hidden="true">S</span>

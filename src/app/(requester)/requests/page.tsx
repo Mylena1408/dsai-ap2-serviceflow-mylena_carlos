@@ -41,7 +41,7 @@ export default async function RequestListPage({ searchParams }: RequestListPageP
   const now = new Date();
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="page-header">
         <div>
           <p className="eyebrow">Acompanhamento</p>

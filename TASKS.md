@@ -2795,7 +2795,7 @@ Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessi
 
 ### SF-269 — Barra Acessibilidade, Pular para o conteúdo e atalho
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15: botão "Acessibilidade" com painel (leitura e contraste), Esc e clique fora, atalho Alt+Shift+A, "Pular para o conteúdo" para o `main` das 37 telas (esclarecimento na seção 7 da SPEC); unitários e E2E `accessibility-panel.spec.ts`.
 - **Objetivo:** Seção 7 (decisão L7).
 - **Arquivos/módulos esperados:** Layout raiz, componentes.
 - **Dependências:** SF-265 e SF-268.

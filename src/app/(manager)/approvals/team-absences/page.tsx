@@ -12,7 +12,7 @@ export default async function TeamAbsencesPage({ searchParams }: TeamAbsencesPag
   const [{ absence }, overview] = await Promise.all([searchParams, listAttendantAbsences()]);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
         <p className="eyebrow">Equipe</p>
         <h1>Afastamentos da equipe</h1>

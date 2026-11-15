@@ -43,7 +43,7 @@ export default async function AbsencesPage({ searchParams }: AbsencesPageProps) 
   const received = absences.filter((absence) => absence.substitute.id === manager.id);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
         <p className="eyebrow">Aprovações</p>
         <h1>Ausências</h1>

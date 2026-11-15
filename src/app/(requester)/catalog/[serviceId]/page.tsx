@@ -62,7 +62,7 @@ export default async function ServicePage({
   const fieldErrors = error === "fields" ? parseFieldErrors(fieldErrorList, new Set(fields.map(({ id }) => id))) : {};
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
       <nav aria-label="Navegação do catálogo">
         <Link href="/catalog">Voltar ao catálogo</Link>

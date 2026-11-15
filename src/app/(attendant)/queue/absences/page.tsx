@@ -11,7 +11,7 @@ export default async function AttendantAbsencesPage({ searchParams }: AbsencesPa
   const [{ absence }, overview] = await Promise.all([searchParams, listAttendantAbsences()]);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
         <p className="eyebrow">Fila</p>
         <h1>Minhas ausências</h1>

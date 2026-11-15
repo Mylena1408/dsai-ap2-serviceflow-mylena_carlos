@@ -3307,3 +3307,13 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Barra no celular:** com os controles, a barra ocupa quatro linhas a 360 px; é provisório, a SF-269 recolhe tudo no botão "Acessibilidade".
 - **Falha em massa no E2E, corrigida no código:** a primeira rodada completa reprovou 19 dos 49 testes já rodados, todos pelo mesmo motivo: o aviso de estado da leitura era um `<p role="status">` em toda página, e os testes antigos procuram a mensagem da página por `getByRole("status")`, que passou a achar duas. Para quem usa leitor de tela, uma segunda região de estado permanente também é desnecessária; o aviso continua anunciado por `aria-live="polite"`, sem o papel `status`, e o aviso de "sem fala" ficou como texto simples. Conferi que os papéis `group` e `combobox` da barra não colidem com nenhum teste antigo. A rodada foi parada e repetida.
 - **Resultados:** typecheck e lint OK; unitários 2016/2016 (22 novos); integração 803/803; `next build` OK; E2E completo, depois da correção do aviso: **72/72**.
+
+## SF-269 — Botão Acessibilidade, Pular para o conteúdo e atalho (2026-11-15)
+
+- **Domínio** `panel.ts`: `isAccessibilityShortcut` (Alt+Shift+A pela tecla física, `code === "KeyA"`, porque com Alt o `key` muda em alguns teclados; nada com Ctrl ou comando) e `nextPanelState`. Escrito e testado enquanto o E2E da SF-268 rodava, sem ligar a nenhuma página até o commit dela.
+- **Tela** `AccessibilityPanel`: botão com `aria-expanded`, `aria-controls` e `aria-keyshortcuts`; painel `role="group"` "Opções de acessibilidade", com `hidden` quando fechado (os controles continuam montados, e uma leitura segue tocando). Esc fecha e devolve o foco; clique fora fecha sem mexer no foco; o atalho abre com o foco no primeiro controle. O foco é movido depois da troca de estado, num efeito.
+- **Pular para o conteúdo:** primeiro item do `body`, fora da vista até receber o foco; as 37 tags `main` (36 `page-shell` e a da entrada) ganharam `id="conteudo" tabIndex={-1}` por script, e um unitário lê `src/app` e exige isso em toda `main`. O foco no `main` não desenha moldura.
+- **Testes desta SPEC ajustados:** "Alto contraste" agora fica no painel; um arquivo de apoio (`accessibility-panel-helpers.ts`) abre o painel antes de clicar e lê o estado do botão mesmo com o painel fechado (`includeHidden`). Nenhum teste anterior à SPEC mudou.
+- **Capturas:** painel no computador, no celular e no alto contraste conferidos; o estado "ligado" de "Alto contraste" e "Acessibilidade" sumia com o mouse em cima (a regra de hover vencia), e passou a valer também com hover.
+- **Resultados:** typecheck e lint OK; unitários 2021/2021 (5 novos); integração 803/803; `next build` OK; E2E do painel e dos contrastes 9/9.
+- **E2E completo:** 76/76.

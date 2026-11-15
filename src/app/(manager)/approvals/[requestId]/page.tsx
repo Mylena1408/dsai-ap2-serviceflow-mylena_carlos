@@ -111,7 +111,7 @@ export default async function ApprovalPage({ params, searchParams }: ApprovalPag
   const waitingOtherLevel = open && !pending;
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
         <nav aria-label="Navegação das aprovações">
           <Link href="/approvals">Voltar às aprovações</Link>

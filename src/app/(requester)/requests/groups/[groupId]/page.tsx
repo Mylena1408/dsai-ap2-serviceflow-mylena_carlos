@@ -33,7 +33,7 @@ export default async function GroupPage({ params, searchParams }: GroupPageProps
   const error = groupErrorMessage(query.error);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
         <nav aria-label="Navegação das solicitações">
           <Link href="/requests">Minhas solicitações</Link>

@@ -59,7 +59,7 @@ export default async function BundlePage({ params, searchParams }: BundlePagePro
   const fieldErrors = error === "fields" ? parseFieldErrors(fieldErrorList, fieldIds) : {};
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
         <nav aria-label="Navegação do catálogo">
           <Link href="/catalog">Voltar ao catálogo</Link>

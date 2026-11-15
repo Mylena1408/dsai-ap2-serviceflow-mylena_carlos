@@ -70,7 +70,7 @@ export default async function SectorServicesPage({ searchParams }: SectorService
         </nav>
         <SignOutButton />
       </header>
-      <main className="page-shell">
+      <main className="page-shell" id="conteudo" tabIndex={-1}>
         <header className="page-header">
           <div className="page-intro">
             <p className="eyebrow">Permissão adicional</p>

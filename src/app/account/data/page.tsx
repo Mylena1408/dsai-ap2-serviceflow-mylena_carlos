@@ -37,7 +37,7 @@ export default async function PersonalDataPage() {
         </nav>
         <SignOutButton />
       </header>
-      <main className="page-shell">
+      <main className="page-shell" id="conteudo" tabIndex={-1}>
         <section aria-labelledby="personal-data-title" className="account-card">
           <p className="eyebrow">Privacidade</p>
           <h1 id="personal-data-title">Meus dados</h1>

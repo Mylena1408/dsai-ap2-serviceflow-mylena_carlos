@@ -23,7 +23,7 @@ export function EmailPreferencesPage({ preferences, notificationsHref, notice }:
   const message = feedback(notice);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="page-header">
         <div>
           <p className="eyebrow">Avisos</p>

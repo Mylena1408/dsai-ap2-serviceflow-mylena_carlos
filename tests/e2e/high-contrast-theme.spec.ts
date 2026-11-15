@@ -1,15 +1,18 @@
 import { expect, test, type Page } from "@playwright/test";
 import { enterAs } from "./responsive-pages";
+import { contrastToggle, openAccessibility } from "./accessibility-panel-helpers";
 
 // SPEC 2026-11-15-acessibilidade, 5.1 item 2 and 5.3 (SF-264; CA-CON-03): the high contrast theme, switched by its
 // button (SF-265), and the normal theme unchanged around it.
 
 /** Switches the theme as a person does, once the page is hydrated, and waits for the page to follow. */
 async function setContrast(page: Page, high: boolean) {
-  await page.waitForLoadState("networkidle");
-  const toggle = page.getByRole("button", { name: "Alto contraste" });
+  const toggle = contrastToggle(page);
+  await openAccessibility(page);
   if ((await toggle.getAttribute("aria-pressed")) !== String(high)) await toggle.click();
   await expect(toggle).toHaveAttribute("aria-pressed", String(high));
+  // Closed again, so the panel does not cover the page being checked.
+  await page.keyboard.press("Escape");
 }
 
 /** The computed colors of every element of the page, in order. */

@@ -40,3 +40,5 @@ export {
 } from "./domain/speech";
 export { SpeechPlayer, type SpeechEngineLike, type SpeechPlayerOptions, type UtteranceLike } from "./application/speech-player";
 export { domReadingEnvironment } from "./infrastructure/dom-reading";
+// The "Acessibilidade" button and its panel (SF-269): the shortcut, the panel's state and the main content's id.
+export { MAIN_CONTENT_ID, isAccessibilityShortcut, nextPanelState, type PanelEvent, type ShortcutKey } from "./domain/panel";

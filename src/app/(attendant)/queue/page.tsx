@@ -66,7 +66,7 @@ export default async function AttendantQueuePage({ searchParams }: AttendantQueu
   const batchLabels = Object.fromEntries(requests.map((request) => [request.id, `${request.serviceNameSnapshot} (#${request.id.slice(0, 8)})`]));
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="page-header">
         <div>
           <p className="eyebrow">Atendimento</p>

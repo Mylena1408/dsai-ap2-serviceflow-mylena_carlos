@@ -11,7 +11,7 @@ export default async function SectorCalendarPage({ searchParams }: CalendarPageP
   const [{ sectorCalendar }, view] = await Promise.all([searchParams, getSectorCalendarView()]);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <header className="detail-heading">
         <p className="eyebrow">Setor</p>
         <h1>Calendário</h1>

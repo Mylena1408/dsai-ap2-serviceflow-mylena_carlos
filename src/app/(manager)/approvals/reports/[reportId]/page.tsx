@@ -20,7 +20,7 @@ export default async function ManagerReportPage({ params }: { params: Promise<{ 
   }
 
   return (
-    <main className="page-shell">
+    <main className="page-shell" id="conteudo" tabIndex={-1}>
       <p>
         <Link href="/approvals/reports">Voltar aos relatórios</Link>
       </p>

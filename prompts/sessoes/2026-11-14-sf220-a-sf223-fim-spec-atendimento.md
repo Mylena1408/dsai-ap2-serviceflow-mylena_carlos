@@ -362,3 +362,15 @@
 
 110. SF-268: `speech.ts`, `SpeechPlayer`, `dom-reading.ts` e `SpeechControls` na barra; leitura da fila conferida com fala simulada (dois defeitos das regras corrigidos com teste); botões renomeados com "leitura"; unitários 2016/2016.
 111. Primeira rodada completa: 19 falhas pelo mesmo motivo (o aviso da leitura com `role="status"` em toda página); rodada parada, aviso só com `aria-live`, rodada repetida: 72/72. Commit da SF-268.
+
+> faça o commit da sf-268 e siga para a sf-269
+
+> prossiga
+
+112. SF-269: `panel.ts` e unitários (escritos durante o E2E da SF-268), `AccessibilityPanel`, link "Pular para o conteúdo", `id="conteudo"` nas 37 telas, testes da SPEC com o painel, E2E `accessibility-panel.spec.ts`.
+
+> terminou?
+
+> faça o commit da sf-269 e siga para a sf-270
+
+113. E2E completo 76/76; commit da SF-269. E2E da SF-270 escrito enquanto a rodada terminava.

@@ -1,7 +1,7 @@
 # SPEC — Acessibilidade: telas responsivas, alto contraste e leitura em voz alta
 
 **Data:** 2026-11-15
-**Status:** Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"). Decisões L1 a L7 aprovadas como propostas em 2026-11-15 ("pode começar a SPEC de acessibilidade com as decisões propostas"). Em andamento: parte A concluída (SF-260 a SF-263, CA-RSP-01 a 04); parte B concluída (SF-264 a SF-266, CA-CON-01 a 03); parte C: SF-267 e SF-268 concluídas.
+**Status:** Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"). Decisões L1 a L7 aprovadas como propostas em 2026-11-15 ("pode começar a SPEC de acessibilidade com as decisões propostas"). Em andamento: parte A concluída (SF-260 a SF-263, CA-RSP-01 a 04); parte B concluída (SF-264 a SF-266, CA-CON-01 a 03); parte C: SF-267 a SF-269 concluídas.
 **Projeto:** ServiceFlow
 **Referências:**
 - WCAG 2.2: 1.4.3 (contraste mínimo, AA), 1.4.6 (contraste aprimorado, AAA), 1.4.10 (refluxo: sem rolagem nas duas direções a 320 px CSS), 1.4.11 (contraste de elementos não textuais), 2.1.1 (teclado), 2.4.7 (foco visível), 4.1.2 (nome, função e valor).
@@ -151,6 +151,8 @@ Quem não usa os recursos novos continua com as telas como hoje, com duas exceç
 ## 7. A barra "Acessibilidade"
 
 Um botão "Acessibilidade" no topo de todas as telas, inclusive na entrada e no login, abre um painel com o alto contraste e a leitura em voz alta. Ele é o primeiro item alcançado pela tecla Tab depois do link "Pular para o conteúdo" (acrescentado por esta SPEC) e tem o atalho Alt+Shift+A. O painel é acessível por teclado, diz seu estado e fecha com Esc.
+
+**Esclarecimento (SF-269, 2026-11-15):** o painel abre abaixo do botão, por cima da página (a barra do topo volta a ter uma linha só, também no celular), e tem a leitura em voz alta e o "Alto contraste". Ele fecha também com um clique fora; Esc devolve o foco ao botão. O atalho Alt+Shift+A abre o painel de qualquer lugar, com o foco no primeiro controle, e fecha de novo com o foco no botão; ele usa a tecla física (A), que vale em qualquer teclado, e não age com Ctrl ou com a tecla de comando. O painel fechado mantém os controles montados, então uma leitura continua depois de o painel fechar. "Pular para o conteúdo" leva ao `main` de cada tela, que ganhou `id="conteudo"` e `tabIndex={-1}` nas 37 telas (o link funciona sem JavaScript); um unitário exige isso em toda tela nova. Os E2E das SF-264 e SF-265 passaram a abrir o painel antes de usar "Alto contraste" (são testes desta SPEC; os testes anteriores não mudaram).
 
 ## 8. Decisões (aprovadas como propostas em 2026-11-15)
 
