@@ -2631,7 +2631,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-253 — Configuração do calendário e dos feriados do setor
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. Página "Calendário" do gestor (`/approvals/calendar`) e painel "Calendário do setor" na seção "Calendário" da administração (escolha do setor); salvar e tirar o expediente próprio, cadastrar e remover feriados do setor, com auditoria; gestor só no seu setor; CA-CAL-02 verificado.
 - **Objetivo:** Seção 6.1 e 6.3, parte D (decisão K9).
 - **Arquivos/módulos esperados:** Administração e área do gestor.
 - **Dependências:** SF-252.

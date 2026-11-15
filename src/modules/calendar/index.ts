@@ -1,6 +1,8 @@
 import type { PrismaClient } from "@prisma/client";
 import { prisma } from "@/server/db";
 import * as admin from "./application/calendar-admin";
+import * as sectorAdmin from "./application/sector-calendar-admin";
+import { createPrismaSectorCalendarReader, createPrismaSectorCalendarStore } from "./infrastructure/prisma-sector-calendar-admin";
 import {
   createPrismaCalendarReader,
   createPrismaCalendarTransactionRunner,
@@ -51,4 +53,29 @@ export function createHoliday(input: unknown, database: PrismaClient = prisma): 
 
 export function deleteHoliday(input: unknown, database: PrismaClient = prisma): Promise<void> {
   return admin.deleteHoliday(input, createPrismaCalendarTransactionRunner(database));
+}
+
+export { canManageSectorCalendar } from "./domain/sector-calendar";
+export type { SectorCalendarView, SectorHolidayRecord } from "./application/sector-calendar-admin";
+
+/** The screen of a sector's calendar (6.1; SF-253): the administrator chooses the sector, a manager sees their own. */
+export function getSectorCalendarView(sectorId?: unknown, database: PrismaClient = prisma): Promise<sectorAdmin.SectorCalendarView> {
+  return sectorAdmin.getSectorCalendarView(sectorId, createPrismaSectorCalendarReader(database));
+}
+
+export function saveSectorHours(sectorId: unknown, input: unknown, database: PrismaClient = prisma): Promise<void> {
+  return sectorAdmin.saveSectorHours(sectorId, input, createPrismaSectorCalendarStore(database));
+}
+
+/** The sector follows the organization's hours again. */
+export function clearSectorHours(sectorId: unknown, database: PrismaClient = prisma): Promise<{ changed: boolean }> {
+  return sectorAdmin.clearSectorHours(sectorId, createPrismaSectorCalendarStore(database));
+}
+
+export function createSectorHoliday(sectorId: unknown, input: unknown, database: PrismaClient = prisma): Promise<{ id: string }> {
+  return sectorAdmin.createSectorHoliday(sectorId, input, createPrismaSectorCalendarStore(database));
+}
+
+export function deleteSectorHoliday(holidayId: unknown, database: PrismaClient = prisma): Promise<void> {
+  return sectorAdmin.deleteSectorHoliday(holidayId, createPrismaSectorCalendarStore(database));
 }

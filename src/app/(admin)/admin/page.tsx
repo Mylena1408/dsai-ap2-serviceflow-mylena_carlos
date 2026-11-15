@@ -36,7 +36,8 @@ import { ApiTokensSection } from "./_sections/api-tokens/api-tokens-section";
 import { WebhooksSection } from "./_sections/webhooks/webhooks-section";
 import { getWebhookOverview } from "@/modules/webhooks";
 import { listAllApiTokens } from "@/modules/api-tokens";
-import { getCalendarOverview } from "@/modules/calendar";
+import { getCalendarOverview, getSectorCalendarView } from "@/modules/calendar";
+import { SectorCalendarPanel } from "@/app/_components/sector-calendar";
 import { listAbsences, listAttendantAbsences, listSubstituteCandidates } from "@/modules/absences";
 import { AttendantAbsences } from "@/app/_components/attendant-absences";
 import { RecurringSchedules } from "@/app/_components/recurring-schedules";
@@ -92,6 +93,9 @@ type AdminPageProps = {
     report?: string;
     /** SF-251: the result of turning a report on or off. */
     reportSetting?: string;
+    /** SPEC 2026-11-09-comunicacao-e-calendarios, 6.1 (SF-253): the sector whose calendar is open and the result. */
+    calendarSector?: string;
+    sectorCalendar?: string;
   }>;
 };
 
@@ -177,7 +181,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     throw error;
   }
 
-  const [{ entity, error, notice, section, period, from, to, sector, type, actor, page, knowledge, absence, schedule, service, edit, fields, tag, checklist, open, announcementResult, scope, report, reportSetting }, sectors, categories, users, services, documentRequirements, serviceFields, serviceStages, permissions] =
+  const [{ entity, error, notice, section, period, from, to, sector, type, actor, page, knowledge, absence, schedule, service, edit, fields, tag, checklist, open, announcementResult, scope, report, reportSetting, calendarSector, sectorCalendar }, sectors, categories, users, services, documentRequirements, serviceFields, serviceStages, permissions] =
     await Promise.all([
       searchParams,
       listSectors(),
@@ -208,6 +212,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const webhookOverview = selectedSection === "webhooks" ? await getWebhookOverview() : null;
   // SPEC 2026-11-03-pausa-sla-calendario, 5.7: read only when the section is open.
   const calendarOverview = selectedSection === "calendar" ? await getCalendarOverview() : null;
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 6.1 (SF-253): the sectors' calendars, under the organization's.
+  const sectorCalendarView = selectedSection === "calendar" ? await getSectorCalendarView(calendarSector) : null;
   // SPEC 2026-11-07-operacao-e-automacao, 3.3 item 2: read only when the section is open.
   const bundleOverview = selectedSection === "bundles" ? await listBundleOverview() : null;
   // SPEC 2026-11-06-aprofundamento-configurabilidade, 7.3: read only when the section is open.
@@ -368,6 +374,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       {webhookOverview ? <WebhooksSection overview={webhookOverview} /> : null}
 
       {calendarOverview ? <CalendarSection overview={calendarOverview} /> : null}
+      {sectorCalendarView ? <SectorCalendarPanel area="admin" message={sectorCalendar} view={sectorCalendarView} /> : null}
 
       {absencesOverview ? <AbsencesSection message={absence} overview={absencesOverview} /> : null}
       {/* SPEC 2026-11-07-operacao-e-automacao, 4.3 item 7: a section of its own. */}

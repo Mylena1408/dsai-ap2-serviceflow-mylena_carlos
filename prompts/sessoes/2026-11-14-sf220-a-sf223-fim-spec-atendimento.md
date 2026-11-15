@@ -189,3 +189,11 @@
 > deploy antes
 
 57. Backup `serviceflow-2026-11-14-pre-deploy-3.dump` conferido por inteiro (SQL sem as 36 linhas `pg_attver` do Neon, 70/70 tabelas iguais à produção). Migrations `report_notifications` e `sector_calendars` aplicadas no Neon (62, em dia; só as duas tabelas novas, vazias). Commit dos registros e push.
+
+> siga
+
+58. SF-253: página "Calendário" do gestor e painel "Calendário do setor" na administração; expediente próprio e feriados do setor, com auditoria; CA-CAL-02.
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+59. Contagem em `9a5e7f6`: 90.821 `added` (aplicação 45.172, testes 45.400, scripts 249), líquido 88.333. SF-253: unitários 1887/1887, integração 786/786, build OK, E2E 56/56.

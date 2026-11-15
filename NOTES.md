@@ -3143,3 +3143,16 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Backup:** `serviceflow-2026-11-14-pre-deploy-3.dump`, cifrado pelo EFS. **Conferência completa:** convertido em SQL, sem as 36 linhas da opção `pg_attver` do Neon, restaurado com `ON_ERROR_STOP` num banco local; 70 de 70 tabelas com as contagens da produção (seção 22 da SPEC de backup). Resolve a verificação parcial do deploy anterior.
 - **Migrations no Neon:** `20261114400000_report_notifications` e `20261114500000_sector_calendars`; `prisma migrate status` em dia (62); contagens iguais às de antes, mais `SectorCalendar` e `SectorHoliday` vazias.
 - **URL do Neon:** lida do arquivo da responsável, passada só aos processos; nada gravado no repositório.
+
+## Contagem de linhas em `9a5e7f6` (SF-252 e registro do envio, 2026-11-14)
+
+- `sh scripts/cloc-diff.sh`: 90.821 `added` (aplicação 45.172, testes 45.400, scripts 249); líquido 88.333. O SF-252 somou 296 (aplicação 109, testes 185, scripts 2). Faltam 9.179 para as 100.000.
+
+## SF-253 — Configuração do calendário e dos feriados do setor (2026-11-14)
+
+- **Regra (esclarecimento na SPEC, 6.3):** página "Calendário" do gestor (`/approvals/calendar`, link no menu) e painel "Calendário do setor" na seção "Calendário" da administração, com escolha do setor ativo. Salvar o expediente próprio (mesmas regras do da organização; o formulário começa com o horário que o setor segue hoje), voltar ao da organização (apaga o próprio; sem próprio, nada muda nem vai para a auditoria), cadastrar e remover feriados do setor (um por data).
+- **Quem (decisão K9):** administrador em qualquer setor ativo; gestor só no seu; setor de outro gestor, setor inativo e feriado de outro setor respondem "não encontrado" (o gestor não descobre nada dos outros setores); atendente e solicitante sem tela.
+- **Padrão seguido:** o das etiquetas por setor (uma tela compartilhada com `area`, ações com página de volta fixa; o setor só volta no endereço quando tem forma de id).
+- **Auditoria:** "Calendário do setor" (criou, alterou, excluiu) e "Feriado do setor" (criou, excluiu), com os valores de antes nas exclusões.
+- **Resultados:** typecheck e lint OK; unitários 1887/1887; integração 786/786; `next build` OK; E2E completo 56/56 (rodado porque o menu do gestor ganhou um link).
+- **CA-CAL-02** marcado.

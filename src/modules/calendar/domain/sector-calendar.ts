@@ -63,3 +63,8 @@ export function parseSectorHoursInput(input: Omit<CalendarInput, "timeZone">): S
   const { weekdays, startMinute, endMinute } = parseCalendarInput({ ...input, timeZone: "UTC" });
   return { weekdays, startMinute, endMinute };
 }
+
+/** 6.3 item 1 (decision K9): the administrator configures any sector; a manager, only their own. */
+export function canManageSectorCalendar(actor: { role: string; sectorId: string | null }, sectorId: string): boolean {
+  return actor.role === "ADMIN" || (actor.role === "MANAGER" && actor.sectorId === sectorId);
+}

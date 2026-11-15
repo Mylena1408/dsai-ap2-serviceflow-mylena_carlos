@@ -38,6 +38,8 @@ export default function ManagerLayout({
           <Link href="/approvals/tags">Etiquetas</Link>
           {/* SPEC 2026-11-08-atendimento-dia-a-dia, 4.1 item 1. */}
           <Link href="/approvals/checklists">Checklists</Link>
+          {/* SPEC 2026-11-09-comunicacao-e-calendarios, 6.3 item 1 (decision K9). */}
+          <Link href="/approvals/calendar">Calendário</Link>
           <NotificationsLink href="/approvals/notifications" />
           {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 4: only with announcements. */}
           <AnnouncementsLink />
