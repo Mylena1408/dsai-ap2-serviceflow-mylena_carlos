@@ -283,3 +283,15 @@
 > sim, rode o E2E completo e faça o commit
 
 85. PostgreSQL portátil religado; E2E completo 58/58 (com o teste da ajuda). Commit do mapa do site, das SPECs de acessibilidade e de ajuda e da página "Ajuda" (SF-271 e SF-272).
+
+> sim, faça o push
+
+86. Push `0e3acf6..d99f4a7` (sem migrations, sem backup).
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+87. Contagem em `d99f4a7`: 93.724 `added` (aplicação 46.584, testes 46.891, scripts 249), líquido 91.241; faltam 6.276. A página "Ajuda" somou 590.
+
+> pode começar a SPEC de acessibilidade com as decisões propostas
+
+88. Decisões L1 a L7 aprovadas. SF-260: lista de páginas e medida da rolagem lateral (`tests/e2e/responsive-pages.ts`), varredura `responsive-survey.spec.ts` (só com `RESPONSIVE_SURVEY=1`): 70 páginas, 47 ocorrências de três causas, registradas na seção 2.1 da SPEC.

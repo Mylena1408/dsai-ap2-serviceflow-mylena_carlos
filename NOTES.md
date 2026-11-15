@@ -3225,3 +3225,10 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Tropeço conhecido:** o Write trocou os escapes `\u0300-\u036f` da normalização por caracteres invisíveis, como a memória avisa; restaurei com `chr(92)` antes dos testes.
 - **Resultados:** typecheck e lint OK; unitários 1920/1920 (9 novos); integração 803/803; E2E `help.spec.ts` sozinho 1/1. A primeira rodada completa do E2E foi encerrada pelo Claude Code por falta de memória no computador (o build já tinha passado), junto com o PostgreSQL portátil dos testes; a pedido da responsável, o banco foi religado e a rodada completa repetida: **E2E 58/58**.
 - **CA-AJD-01 a 04** marcados.
+
+## SF-260 — Varredura das larguras (2026-11-15)
+
+- **Decisões L1 a L7** da SPEC de acessibilidade aprovadas como propostas pela responsável.
+- **Varredura:** `tests/e2e/responsive-pages.ts` guarda a lista das páginas por perfil (as de detalhe abertas pelo primeiro link da lista), as larguras da decisão L6 e a medida da rolagem lateral (largura do documento contra a da janela; aponta o elemento mais externo que passa da borda, ignorando o que está dentro de uma área com rolagem ou corte próprios). `responsive-survey.spec.ts` usa essa lista e só lista, sem reprovar, por isso só roda com `RESPONSIVE_SURVEY=1`; o E2E da SF-263 vai transformar a mesma medida em asserção.
+- **Resultado:** 70 páginas, 47 ocorrências, todas de menu ou cabeçalho (seção 2.1 da SPEC): menu do atendente (8 links) e do gestor (14) numa linha só a 768 px; links do topo da administração sem quebra a 360 px. Nenhuma tabela empurrou a página com os dados de demonstração.
+- **Resultado do teste:** a varredura passou (1/1, 2,4 min); o restante das suítes fica sem ela, que é pulada sem a variável.

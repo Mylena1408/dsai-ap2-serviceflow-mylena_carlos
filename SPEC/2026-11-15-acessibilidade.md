@@ -1,7 +1,7 @@
 # SPEC — Acessibilidade: telas responsivas, alto contraste e leitura em voz alta
 
 **Data:** 2026-11-15
-**Status:** Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"). **Aguarda a revisão das decisões L1 a L7 (seção 8) antes da primeira tarefa.**
+**Status:** Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"). Decisões L1 a L7 aprovadas como propostas em 2026-11-15 ("pode começar a SPEC de acessibilidade com as decisões propostas"). Em andamento: SF-260 concluída.
 **Projeto:** ServiceFlow
 **Referências:**
 - WCAG 2.2: 1.4.3 (contraste mínimo, AA), 1.4.6 (contraste aprimorado, AAA), 1.4.10 (refluxo: sem rolagem nas duas direções a 320 px CSS), 1.4.11 (contraste de elementos não textuais), 2.1.1 (teclado), 2.4.7 (foco visível), 4.1.2 (nome, função e valor).
@@ -27,6 +27,20 @@ Hoje o ServiceFlow é usado sobretudo no computador. Esta SPEC faz três coisas 
 | Contraste | Cores normais no AA (SF-159); não há tema de alto contraste |
 | Fala | Não há |
 | Verificação automática | O `axe-core` 4.13 já está em `node_modules` (vem do `eslint-plugin-jsx-a11y`); a SF-159 o usou fora das suítes |
+
+### 2.1 Varredura das larguras (SF-260, 2026-11-15)
+
+Feita com `tests/e2e/responsive-survey.spec.ts` (roda só com `RESPONSIVE_SURVEY=1`): 70 páginas (3 sem login, 11 do solicitante, 12 do atendente, 17 do gestor, as 25 seções da administração e 4 da conta da administração), a 360 px e a 768 px, com os dados de demonstração. Uma página "rola de lado" quando a largura do documento passa a da janela; a varredura aponta o elemento mais externo que passa da borda e não está numa área com rolagem própria. **47 ocorrências, de três causas:**
+
+| # | Largura | Onde | Causa | Tarefa |
+|---|---|---|---|---|
+| R1 | 768 px | As 12 páginas do atendente (documento com 872 px) | O menu (`nav`, 654 px, 8 links) fica numa linha só ao lado da marca e empurra o botão "Sair" | SF-261 |
+| R2 | 768 px | As 17 páginas do gestor (documento com 1.307 px) | O menu (1.089 px, 14 links) numa linha só | SF-261 |
+| R3 | 360 px | As 25 seções da administração e "Acesso à API" do administrador (documento com 418 px) | Os links do topo (`page-nav`: Ajuda, Meus dados, Alterar senha, Sair; 386 px) não quebram linha | SF-261 |
+
+**Não rolam de lado:** as páginas sem login, todas as do solicitante e, a 360 px, as do atendente e do gestor (abaixo de 480 px o menu já quebra em várias linhas, regra de uma correção anterior). As 23 tabelas de dados não empurraram a página com os dados de demonstração, porque as células quebram o texto; com textos mais longos ou mais colunas, elas apertam ou empurram a página, então a rolagem própria da SF-262 continua necessária. Os links das seções da administração já rolam na horizontal abaixo de 760 px.
+
+**Correção da estimativa:** os problemas são todos de menu e cabeçalho; isso reforça a SF-261 e não muda as outras tarefas.
 
 ## 3. Garantia
 
@@ -114,7 +128,7 @@ Quem não usa os recursos novos continua com as telas como hoje, com duas exceç
 
 Um botão "Acessibilidade" no topo de todas as telas, inclusive na entrada e no login, abre um painel com o alto contraste e a leitura em voz alta. Ele é o primeiro item alcançado pela tecla Tab depois do link "Pular para o conteúdo" (acrescentado por esta SPEC) e tem o atalho Alt+Shift+A. O painel é acessível por teclado, diz seu estado e fecha com Esc.
 
-## 8. Decisões propostas (aguardam a revisão da responsável)
+## 8. Decisões (aprovadas como propostas em 2026-11-15)
 
 | # | Questão | Proposta | Alternativa |
 |---|---|---|---|

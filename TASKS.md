@@ -2701,11 +2701,11 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ## Acessibilidade — SPEC de 2026-11-15
 
-Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessibilidade.md`). As decisões L1 a L7 da seção 8 aguardam a revisão da responsável antes da SF-260.
+Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessibilidade.md`). As decisões L1 a L7 da seção 8 foram aprovadas como propostas em 2026-11-15.
 
 ### SF-260 — Varredura das larguras e lista dos problemas
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15: 70 páginas a 360 px e 768 px, 47 ocorrências de três causas (menus do atendente e do gestor a 768 px, links do topo da administração a 360 px), registradas na seção 2.1 da SPEC.
 - **Objetivo:** Seção 4, parte A.
 - **Arquivos/módulos esperados:** `tests/e2e/`, registro na SPEC.
 - **Dependências:** Decisões L1 a L7 revisadas.
