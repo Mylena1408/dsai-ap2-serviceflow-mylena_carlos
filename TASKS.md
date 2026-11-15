@@ -2661,7 +2661,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-256 — Telas e E2E da parte D
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. E2E `sector-calendar.spec.ts` da parte D (gestor configura expediente e feriado, solicitação nova guarda o calendário do setor, administrador volta ao expediente da organização e remove o feriado, auditoria com as quatro mudanças); revisão de CA-CAL-01 a 04, todos marcados; parte D concluída.
 - **Objetivo:** Parte D.
 - **Arquivos/módulos esperados:** Telas da parte D.
 - **Dependências:** SF-252 a SF-255.

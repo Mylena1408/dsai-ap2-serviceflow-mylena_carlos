@@ -211,3 +211,12 @@
 > faça a contagem de linhas de código executaveis pelo cloc --diff
 
 64. Contagem em `ac515a6`: 91.726 `added` (aplicação 45.652, testes 45.825, scripts 249), líquido 89.238.
+
+> faça o commit e prossiga para o sf-256
+
+65. Commit `b2a11dd` (SF-255).
+66. SF-256: E2E `sector-calendar.spec.ts` da parte D e revisão de CA-CAL-01 a 04. Primeira rodada completa 55/57: o serviço de 8 h do teste novo duplicou o texto que `sla-pause-calendar.spec.ts` procura, e o teste novo pegava o primeiro gestor do banco; corrigidos no teste (6 h e gestor de demonstração pelo e-mail). Segunda rodada 57/57.
+
+> terminou?
+
+67. Respondido com o andamento (build pronto, E2E rodando) e depois com o resultado.

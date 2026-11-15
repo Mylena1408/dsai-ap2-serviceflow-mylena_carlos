@@ -3177,3 +3177,11 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Teste ajustado:** o primeiro cenário encaminhava uma solicitação já em atendimento e mudava a prioridade como administrador; as regras permitem encaminhar só a aberta e mudar a prioridade só pelo atendente do setor. Ajustei o cenário (o código estava certo).
 - **Resultados:** typecheck e lint OK; unitários 1891/1891; integração 795/795; `next build` OK.
 - **CA-CAL-01** e **CA-CAL-03** marcados. Falta a SF-256 (revisão das telas e E2E da parte D).
+
+## SF-256 — E2E e revisão da parte D (2026-11-15)
+
+- **Telas:** as da SF-253 bastam; a parte D não pede outras (configuração portátil e API ficam na parte E, SF-257 e SF-258).
+- **E2E `sector-calendar.spec.ts`:** o gestor dá ao setor expediente próprio e um feriado (data repetida recusada com mensagem); o solicitante abre uma solicitação em horas úteis, que guarda o calendário do setor; o administrador escolhe o setor, vê o que o gestor fez, volta ao expediente da organização e remove o feriado; a solicitação continua com o calendário guardado (K4); a auditoria tem as quatro mudanças com o perfil de quem as fez. O teste apaga os calendários e feriados de setor antes e depois.
+- **Tropeços no E2E (só no teste, nenhum no código):** (1) a mensagem de erro foi buscada na página inteira e casou também com o anunciador de rotas do Next; passou a ser buscada dentro do painel. (2) Na rodada completa, o serviço de 8 h úteis que o teste cria ficou como um segundo "Prazo-base: 8 h (horas úteis)" na Central de Serviços, e o `sla-pause-calendar.spec.ts` (que busca esse texto único) falhou; o serviço do teste passou a ter 6 h. (3) Também na rodada completa, o próprio teste falhou: ele tomava o primeiro gestor do banco, e outros testes criam gestores; passou a buscar o gestor de demonstração pelo e-mail (`DEMO_ACCOUNTS.MANAGER`). O detalhe desse erro se perdeu porque a pasta de resultados foi sobrescrita ao rodar os dois testes de novo; a rodada completa seguinte passou inteira.
+- **Resultados:** typecheck e lint OK; unitários 1891/1891; integração 795/795; `next build` OK; E2E completo 57/57 (a primeira rodada completa teve as duas falhas acima).
+- **CA-CAL-01 a 04** revistos e marcados; parte D concluída.
