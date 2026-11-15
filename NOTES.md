@@ -3156,3 +3156,12 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Auditoria:** "Calendário do setor" (criou, alterou, excluiu) e "Feriado do setor" (criou, excluiu), com os valores de antes nas exclusões.
 - **Resultados:** typecheck e lint OK; unitários 1887/1887; integração 786/786; `next build` OK; E2E completo 56/56 (rodado porque o menu do gestor ganhou um link).
 - **CA-CAL-02** marcado.
+
+## SF-254 — Prazo da abertura pelo calendário do setor (2026-11-14)
+
+- **Regra (esclarecimento na SPEC, 6.3):** em horas úteis, a abertura conta o prazo com o calendário efetivo do setor do serviço e grava `slaCalendarSectorId` quando o setor tem expediente ou feriado próprio; sem nada próprio, vazio e o calendário da organização, exatamente como antes. Em horas corridas nada é lido. Com aprovação, o setor é gravado na abertura e a aprovação final calcula o prazo com o calendário guardado.
+- **Código:** `openingClock` (novo) decide o relógio e o setor guardado; `requestClock` ganhou o setor guardado (opcional: sem ele, a organização); a transação das solicitações ganhou `loadSectorBusinessCalendar` (opcional para dublês antigos, que seguem com a organização). As outras chamadas de `requestClock` (pausa, prioridade, reabertura) ainda não passam o setor: ficam para a SF-255.
+- **Tropeço:** escrevi outra vez um script de edição em heredoc com barras invertidas; o shell recusou o comando inteiro e nada foi gravado. Refiz salvando o script com o Write, como manda a regra registrada.
+- **Tropeço no teste:** meu dublê devolvia o calendário com sábado mesmo sem nada próprio no setor; corrigido para imitar o real.
+- **Resultados:** typecheck e lint OK; unitários 1891/1891; integração 791/791; `next build` OK.
+- CA-CAL-01 e CA-CAL-03 conferidos na abertura; serão marcados depois da SF-255 (pausas e prioridade) e da revisão da SF-256.

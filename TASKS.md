@@ -2641,7 +2641,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-254 — Prazo da abertura pelo calendário do setor
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-14. A abertura em horas úteis conta o prazo com o calendário efetivo do setor que recebe a solicitação e guarda o setor quando ele tem calendário próprio (`openingClock`); a aprovação final usa o calendário guardado; sem calendário próprio e em horas corridas, tudo como antes. CA-CAL-01 e CA-CAL-03 verificados na abertura (unitário e integração).
 - **Objetivo:** Seção 6.3, parte D (decisão K4).
 - **Arquivos/módulos esperados:** Abertura e prazos.
 - **Dependências:** SF-253.

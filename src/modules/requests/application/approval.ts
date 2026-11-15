@@ -82,7 +82,7 @@ export async function decideApproval(input: unknown, transactions: RequestTransa
                 // (SPEC 2026-11-03-pausa-sla-calendario, 5.2.5).
                 request.slaHoursSnapshot === null || request.slaHoursSnapshot === undefined
                   ? null
-                  : slaScheduleFrom(decidedAt, request.slaHoursSnapshot, request.priority ?? "NORMAL", await requestClock(transaction, request.slaBusinessHours)),
+                  : slaScheduleFrom(decidedAt, request.slaHoursSnapshot, request.priority ?? "NORMAL", await requestClock(transaction, request.slaBusinessHours, request.slaCalendarSectorId)),
                 request.slaBusinessHours,
               ),
             }

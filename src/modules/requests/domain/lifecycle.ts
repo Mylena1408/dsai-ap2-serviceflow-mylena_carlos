@@ -46,6 +46,8 @@ export interface LifecycleRequest {
   stageTargetDaysSnapshot?: number[];
   /** SPEC 2026-11-03-pausa-sla-calendario; optional like the SLA state. */
   slaBusinessHours?: boolean;
+  /** SPEC 2026-11-09-comunicacao-e-calendarios, 6.3 item 3: the sector whose calendar counts the deadline; null = the organization's. */
+  slaCalendarSectorId?: string | null;
   slaPausedAt?: Date | null;
 }
 

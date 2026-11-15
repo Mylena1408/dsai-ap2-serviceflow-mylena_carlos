@@ -1,5 +1,5 @@
 import { Prisma, type PrismaClient } from "@prisma/client";
-import { loadBusinessCalendar } from "@/modules/calendar";
+import { loadBusinessCalendar, loadSectorBusinessCalendar } from "@/modules/calendar";
 import { loadEffectivePermissions, organizationToday } from "@/server/authorization/effective-permissions";
 import type { DistributionCandidate } from "../domain/distribution";
 import {
@@ -379,6 +379,10 @@ export function createPrismaRequestTransaction(
     loadBusinessCalendar() {
       return loadBusinessCalendar(transaction);
     },
+    // SPEC 2026-11-09-comunicacao-e-calendarios, 6.1 and 6.3.
+    loadSectorBusinessCalendar(sectorId) {
+      return loadSectorBusinessCalendar(transaction, sectorId);
+    },
     async currentTime() {
       // now() is the transaction start time: the same value for every statement in it.
       const [row] = await transaction.$queryRaw<Array<{ now: Date }>>`SELECT now() AS "now"`;
@@ -712,6 +716,7 @@ export function createPrismaRequestTransaction(
           stageAssigneeIdsSnapshot: true,
           stageTargetDaysSnapshot: true,
           slaBusinessHours: true,
+          slaCalendarSectorId: true,
           slaPausedAt: true,
           assignee: { select: lifecycleUser },
         },

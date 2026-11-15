@@ -197,3 +197,8 @@
 > faça a contagem de linhas de código executaveis pelo cloc --diff
 
 59. Contagem em `9a5e7f6`: 90.821 `added` (aplicação 45.172, testes 45.400, scripts 249), líquido 88.333. SF-253: unitários 1887/1887, integração 786/786, build OK, E2E 56/56.
+
+> siga
+
+60. Commit `efc8e4d` (SF-253).
+61. SF-254: abertura em horas úteis com o calendário efetivo do setor e o setor guardado; aprovação final com o calendário guardado. Script com barras invertidas recusado pelo shell (nada gravado), refeito com o Write. Unitários 1891/1891, integração 791/791, build OK.

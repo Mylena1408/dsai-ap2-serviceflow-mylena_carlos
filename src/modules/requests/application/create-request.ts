@@ -19,7 +19,7 @@ import {
 import type { RequestWithHistory } from "../domain/request";
 import { approvalColumnsOnOpening, approvalDueAtFrom, effectiveApprovalSectors } from "../domain/approval";
 import { slaScheduleFrom } from "../domain/sla";
-import { requestClock, scheduleColumns } from "./sla-clock";
+import { openingClock, scheduleColumns } from "./sla-clock";
 import { buildRequestSnapshot } from "../domain/snapshot";
 import { readRequestAfterWrite } from "./read-after-write";
 import { distributeOnEntry } from "./distribute";
@@ -201,13 +201,15 @@ export async function openRequest(
     effectiveApprovalSectors(context.service.approvalSectorIds ?? [], context.service.sector.id),
   );
   const approvalState = approval.approvalState;
-  // SPEC 2026-11-03-pausa-sla-calendario, 5.2: the service's clock is copied to the request; the
-  // calendar is read only when a due date is computed in business hours.
+  // SPEC 2026-11-03-pausa-sla-calendario, 5.2: the service's clock is copied to the request. In business hours, the
+  // calendar of the sector that receives it, kept for the rest of its life (SPEC 2026-11-09-comunicacao-e-calendarios,
+  // 6.3 item 3; decision K4): even with approval pending, so the deadline after the approval uses the same calendar.
   const businessHours = context.service.slaBusinessHours === true;
+  const opening = await openingClock(transaction, businessHours, context.service.sector.id);
   const schedule =
     approvalState === "PENDING" || context.service.slaHours === null
       ? null
-      : slaScheduleFrom(openedAt, context.service.slaHours, context.service.defaultPriority, await requestClock(transaction, businessHours));
+      : slaScheduleFrom(openedAt, context.service.slaHours, context.service.defaultPriority, opening.clock);
   const created = await transaction.insertRequest({
     ...buildRequestSnapshot(context.actorId, context.service),
     id: requestId,
@@ -231,6 +233,7 @@ export async function openRequest(
       : {}),
     ...scheduleColumns(schedule, businessHours),
     ...(businessHours ? { slaBusinessHours: true } : {}),
+    ...(opening.calendarSectorId ? { slaCalendarSectorId: opening.calendarSectorId } : {}),
   });
 
   await transaction.insertStatusEvent({

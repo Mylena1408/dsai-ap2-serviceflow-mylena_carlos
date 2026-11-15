@@ -1,3 +1,4 @@
+import type { SectorCalendarParts } from "@/modules/calendar";
 import type { DistributionCandidate, DistributionSettings } from "../domain/distribution";
 import type { SlaResumeCause } from "../domain/sla-pause";
 import type { OpeningAnswer, StageSettings } from "../domain/stages";
@@ -405,6 +406,11 @@ export interface RequestTransaction {
   currentTime(): Promise<Date>;
   /** The business calendar in force (SPEC 2026-11-03-pausa-sla-calendario, 5.1 and 5.2). */
   loadBusinessCalendar(): Promise<BusinessCalendar>;
+  /**
+   * SPEC 2026-11-09-comunicacao-e-calendarios, 6.1 and 6.3: a sector's effective calendar and its own parts. Optional
+   * for older doubles: absent = the organization's calendar for every sector.
+   */
+  loadSectorBusinessCalendar?(sectorId: string): Promise<{ calendar: BusinessCalendar; parts: SectorCalendarParts | null }>;
   findActor(actorId: string): Promise<TransactionActor | null>;
   findServiceForRequest(serviceId: string): Promise<ServiceForRequest | null>;
   /** Active document requirements of the service, in display order. */
@@ -470,6 +476,8 @@ export interface RequestTransaction {
       approvalDueAt?: Date | null;
       /** SPEC 2026-11-03-pausa-sla-calendario, 5.2 and 6. */
       slaBusinessHours?: boolean;
+      /** SPEC 2026-11-09-comunicacao-e-calendarios, 6.3 item 3: only when the sector's calendar counted the deadline. */
+      slaCalendarSectorId?: string;
       dueSoonAt?: Date | null;
       /** SPEC 2026-11-07-operacao-e-automacao, 3.3 item 3: the bundle opening it belongs to. */
       groupId?: string;
