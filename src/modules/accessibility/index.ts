@@ -22,3 +22,21 @@ export {
   type ReadingEnvironment,
   type ReadingNode,
 } from "./domain/reading";
+// The speech of the reading (SF-268): speeds, kept speed, voice, messages, the player and the real page's reading.
+export {
+  DEFAULT_SPEECH_RATE,
+  READING_MESSAGES,
+  SPEECH_RATES,
+  SPEECH_RATE_COOKIE,
+  chooseVoice,
+  isSpeechRate,
+  speechRateCookie,
+  speechRateLabel,
+  speechRateOf,
+  type ReadingMessage,
+  type ReadingState,
+  type SpeechRate,
+  type VoiceInfo,
+} from "./domain/speech";
+export { SpeechPlayer, type SpeechEngineLike, type SpeechPlayerOptions, type UtteranceLike } from "./application/speech-player";
+export { domReadingEnvironment } from "./infrastructure/dom-reading";

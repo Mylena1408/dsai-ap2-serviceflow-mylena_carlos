@@ -140,6 +140,28 @@ describe("what is read from the main content (6.1 item 1)", () => {
     expect(read(el("main", {}, withHeaders, plain))).toEqual(["Nome: Rede; Nota: 5", "a; b"]);
   });
 
+  it("does not read a label that points to its field elsewhere (for=...) on its own", () => {
+    const main = el(
+      "main",
+      {},
+      el("label", { for: "search" }, "Buscar"),
+      field("input", { kind: "text", label: "Buscar", value: "" }, { id: "search", type: "search" }),
+      el("label", {}, "Sem campo dentro nem destino"),
+    );
+    expect(read(main)).toEqual(["Buscar: vazio", "Sem campo dentro nem destino"]);
+  });
+
+  it("keeps apart the words of elements shown apart inside a line, as the screen does", () => {
+    const badge = (words: string) => Object.assign(el("span", { class: "status-pill" }, words), { spaced: true });
+    const spacedEnvironment: ReadingEnvironment = {
+      ...environment,
+      isSpacedApart: (node) => Boolean((node as FakeNode & { spaced?: boolean }).spaced),
+    };
+    const line = el("p", {}, badge("Prioridade: Normal"), badge("Sem prazo"), el("strong", {}, "Seg"), "unda");
+    expect(readingLines(el("main", {}, line), spacedEnvironment)).toEqual(["Prioridade: Normal Sem prazo Segunda"]);
+    expect(read(el("main", {}, line))).toEqual(["Prioridade: NormalSem prazoSegunda"]);
+  });
+
   it("names an alert as such", () => {
     const main = el("main", {}, el("p", { role: "alert" }, "Não foi possível salvar."), el("p", { role: "status" }, "Salvo."));
     expect(read(main)).toEqual(["Alerta: Não foi possível salvar.", "Salvo."]);

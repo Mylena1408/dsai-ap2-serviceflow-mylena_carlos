@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { contrastBootScript } from "@/modules/accessibility";
 import { ContrastToggle } from "@/app/_components/contrast-toggle";
+import { SpeechControls } from "@/app/_components/speech-controls";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -22,7 +23,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       <body>
         {/* SPEC 2026-11-15-acessibilidade, 5.1 item 1 (SF-265): on every screen, the entrance and the login too.
             SF-269 turns this bar into the "Acessibilidade" button with its panel. */}
-        <div className="accessibility-bar">
+        {/* SF-268: the reading aloud joins it; the bar itself is never read (data-reading="skip"). */}
+        <div className="accessibility-bar" data-reading="skip">
+          <SpeechControls />
           <ContrastToggle />
         </div>
         {children}

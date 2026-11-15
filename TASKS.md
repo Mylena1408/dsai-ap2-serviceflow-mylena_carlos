@@ -2785,7 +2785,7 @@ Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessi
 
 ### SF-268 — Controle da fala: voz, página, trecho, pausa e velocidade
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15: `SpeechControls` na barra do topo, `SpeechPlayer` (trechos em fila, pausa, continuar, parar, velocidade), escolha da voz, velocidade no cookie `sf-speech-rate`, aviso sem fala ou sem voz em português, leitura da página real (esclarecimento 6.3 item 6 da SPEC). CA-VOZ-02 e CA-VOZ-03 serão marcados com o E2E da SF-270.
 - **Objetivo:** Seção 6.1 itens 2 a 4 (decisão L2).
 - **Arquivos/módulos esperados:** Componente de fala.
 - **Dependências:** SF-267.

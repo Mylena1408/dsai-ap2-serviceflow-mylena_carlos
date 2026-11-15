@@ -24,6 +24,11 @@ export interface ReadingEnvironment {
   isHidden(element: ReadingNode): boolean;
   /** The label and the value of a field (input, select, textarea). */
   fieldState(field: ReadingNode): FieldState;
+  /**
+   * An element shown apart from its neighbours inside a line (a badge, an inline block): its words get spaces around
+   * them, so "Normal" and "Sem prazo" side by side are not read as one word. Without it, only blocks separate.
+   */
+  isSpacedApart?(element: ReadingNode): boolean;
 }
 
 /** The longest piece handed to the voice at once (6.3 item 2): pause and stop answer at once, nothing is cut. */
@@ -101,7 +106,7 @@ function inlineText(node: ReadingNode, environment: ReadingEnvironment): string 
   if (node.nodeType !== ELEMENT || isLeftOut(node, environment) || isField(node)) return "";
   if (tagOf(node) === "IMG") return ` ${attribute(node, "alt") ?? ""} `;
   const text = children(node).map((child) => inlineText(child, environment)).join("");
-  return BLOCKS.has(tagOf(node)) ? ` ${text} ` : text;
+  return BLOCKS.has(tagOf(node)) || environment.isSpacedApart?.(node) ? ` ${text} ` : text;
 }
 
 /** The fields inside an element, in order, leaving out the hidden ones. */
@@ -184,13 +189,15 @@ export function readingLines(root: ReadingNode, environment: ReadingEnvironment)
       return;
     }
     if (tag === "LABEL") {
-      // The label's words are read with its field ("Nome: Ana"), not again on their own.
+      // The label's words are read with its field ("Nome: Ana"), not again on their own: when it wraps the field,
+      // and when it points to one elsewhere (for="...").
       const fields = fieldsIn(node, environment);
       if (fields.length > 0) {
         flush();
         for (const field of fields) lines.push(describeField(environment.fieldState(field)));
         return;
       }
+      if (attribute(node, "for")) return;
     }
     if (tag === "TABLE") {
       flush();
@@ -209,8 +216,11 @@ export function readingLines(root: ReadingNode, environment: ReadingEnvironment)
       return;
     }
     const block = BLOCKS.has(tag);
+    const spaced = !block && environment.isSpacedApart?.(node) === true;
     if (block) flush();
+    if (spaced) current += " ";
     for (const child of children(node)) walk(child);
+    if (spaced) current += " ";
     if (block) flush();
   };
 

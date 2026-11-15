@@ -357,3 +357,8 @@
 
 108. Contagem em `1c41cb1`: 94.685 `added` (aplicação 46.814, testes 47.622, scripts 249), líquido 92.202; faltam 5.315. SF-262 a SF-265 somaram 639.
 109. Commits da SF-266 e da SF-267.
+
+> siga para a sf-268
+
+110. SF-268: `speech.ts`, `SpeechPlayer`, `dom-reading.ts` e `SpeechControls` na barra; leitura da fila conferida com fala simulada (dois defeitos das regras corrigidos com teste); botões renomeados com "leitura"; unitários 2016/2016.
+111. Primeira rodada completa: 19 falhas pelo mesmo motivo (o aviso da leitura com `role="status"` em toda página); rodada parada, aviso só com `aria-live`, rodada repetida: 72/72. Commit da SF-268.

@@ -2085,12 +2085,24 @@ summary {
 .accessibility-bar {
   display: flex;
   width: min(100% - 48px, 1120px);
-  height: var(--accessibility-bar-height);
+  min-height: var(--accessibility-bar-height);
+  flex-wrap: wrap;
   align-items: flex-end;
   justify-content: flex-end;
+  gap: 8px;
   margin: 0 auto;
 }
 
+/* SF-268: the reading aloud, in the same quiet style as "Alto contraste". */
+.speech-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.speech-controls button,
 .contrast-toggle {
   min-height: 40px;
   padding: 6px 14px;
@@ -2100,11 +2112,34 @@ summary {
   font-size: 14px;
 }
 
+.speech-controls button:hover:not(:disabled),
 .contrast-toggle:hover:not(:disabled) {
   border-color: var(--quiet-border-hover);
   background: var(--quiet-surface-hover);
   color: var(--ink);
   box-shadow: none;
+}
+
+.speech-rate {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.speech-rate select {
+  width: auto;
+  min-height: 40px;
+  padding: 6px 8px;
+}
+
+.speech-status,
+.speech-unavailable {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: right;
 }
 
 .contrast-toggle[aria-pressed="true"] {
