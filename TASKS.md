@@ -2775,7 +2775,7 @@ Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessi
 
 ### SF-267 — Extração do texto para a leitura e divisão em trechos
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15: `readingLines` (o que se lê do conteúdo principal), `describeField`, `readingChunks`, `splitLongText` e `selectionChunks` no módulo `accessibility`, com as regras no esclarecimento 6.3 item 5 da SPEC; unitários com um DOM simulado. O CA-VOZ-01 será marcado com a tela (SF-268) e o E2E (SF-270).
 - **Objetivo:** Seção 6.1 item 1 e 6.3 item 2.
 - **Arquivos/módulos esperados:** Domínio da leitura em voz alta.
 - **Dependências:** Parte B.

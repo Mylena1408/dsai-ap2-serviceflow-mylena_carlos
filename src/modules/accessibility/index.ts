@@ -9,3 +9,16 @@ export {
   effectiveContrast,
   type ContrastChoice,
 } from "./domain/preferences";
+// Reading aloud (SPEC 2026-11-15-acessibilidade, part C; SF-267): what is read and how it is cut.
+export {
+  MAX_CHUNK_LENGTH,
+  describeField,
+  normalizeSpaces,
+  readingChunks,
+  readingLines,
+  selectionChunks,
+  splitLongText,
+  type FieldState,
+  type ReadingEnvironment,
+  type ReadingNode,
+} from "./domain/reading";
