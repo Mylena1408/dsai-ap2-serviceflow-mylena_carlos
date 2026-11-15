@@ -1,3 +1,4 @@
+import { TableScroll } from "./table-scroll";
 import { MAX_ACTIVE_TAGS_PER_SECTOR, MAX_TAG_NAME_LENGTH, TAG_COLORS, TAG_COLOR_KEYS, type SectorTags, type TagColor } from "@/modules/tags";
 import { createSectorTagAction, setSectorTagActiveAction, updateSectorTagAction } from "./sector-tag-actions";
 
@@ -85,54 +86,56 @@ export function SectorTagsPanel({ sectors, area, message }: { sectors: SectorTag
           {tags.length === 0 ? (
             <p className="section-description">Nenhuma etiqueta.</p>
           ) : (
-            <table className="data-table">
-              <caption>Etiquetas de {sector.name}</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Etiqueta</th>
-                  <th scope="col">Situação</th>
-                  <th scope="col">Em uso</th>
-                  <th scope="col">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tags.map((tag) => (
-                  <tr key={tag.id}>
-                    <td>
-                      <TagChip color={tag.color} muted={!tag.isActive} name={tag.name} />
-                    </td>
-                    <td>{tag.isActive ? "Ativa" : "Inativa"}</td>
-                    <td>{tag.inUse === 1 ? "1 solicitação" : `${tag.inUse} solicitações`}</td>
-                    <td>
-                      <details>
-                        <summary>Alterar</summary>
-                        <form action={updateSectorTagAction} aria-label={`Alterar a etiqueta ${tag.name}`} className="inline-form">
+            <TableScroll label={`Etiquetas de ${sector.name}`}>
+              <table className="data-table">
+                <caption>Etiquetas de {sector.name}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Etiqueta</th>
+                    <th scope="col">Situação</th>
+                    <th scope="col">Em uso</th>
+                    <th scope="col">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tags.map((tag) => (
+                    <tr key={tag.id}>
+                      <td>
+                        <TagChip color={tag.color} muted={!tag.isActive} name={tag.name} />
+                      </td>
+                      <td>{tag.isActive ? "Ativa" : "Inativa"}</td>
+                      <td>{tag.inUse === 1 ? "1 solicitação" : `${tag.inUse} solicitações`}</td>
+                      <td>
+                        <details>
+                          <summary>Alterar</summary>
+                          <form action={updateSectorTagAction} aria-label={`Alterar a etiqueta ${tag.name}`} className="inline-form">
+                            <input name="area" type="hidden" value={area} />
+                            <input name="tagId" type="hidden" value={tag.id} />
+                            <label>
+                              Nome
+                              <input defaultValue={tag.name} maxLength={MAX_TAG_NAME_LENGTH} name="name" required />
+                            </label>
+                            <label>
+                              Cor
+                              <ColorSelect defaultValue={tag.color} />
+                            </label>
+                            <button type="submit">Salvar</button>
+                          </form>
+                        </details>
+                        <form action={setSectorTagActiveAction}>
                           <input name="area" type="hidden" value={area} />
                           <input name="tagId" type="hidden" value={tag.id} />
-                          <label>
-                            Nome
-                            <input defaultValue={tag.name} maxLength={MAX_TAG_NAME_LENGTH} name="name" required />
-                          </label>
-                          <label>
-                            Cor
-                            <ColorSelect defaultValue={tag.color} />
-                          </label>
-                          <button type="submit">Salvar</button>
+                          <input name="isActive" type="hidden" value={tag.isActive ? "false" : "true"} />
+                          <button className="button-secondary" type="submit">
+                            {tag.isActive ? "Desativar" : "Reativar"}
+                          </button>
                         </form>
-                      </details>
-                      <form action={setSectorTagActiveAction}>
-                        <input name="area" type="hidden" value={area} />
-                        <input name="tagId" type="hidden" value={tag.id} />
-                        <input name="isActive" type="hidden" value={tag.isActive ? "false" : "true"} />
-                        <button className="button-secondary" type="submit">
-                          {tag.isActive ? "Desativar" : "Reativar"}
-                        </button>
-                      </form>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </TableScroll>
           )}
         </section>
       ))}

@@ -1,3 +1,4 @@
+import { TableScroll } from "./table-scroll";
 import { MAX_ABSENCE_DAYS, absenceInForce, canCancelAbsence, type AttendantAbsenceOverview, type AttendantAbsenceRecord } from "@/modules/absences";
 import { cancelAttendantAbsenceAction, registerAttendantAbsenceAction } from "./attendant-absence-actions";
 
@@ -92,39 +93,41 @@ export function AttendantAbsences({
       {overview.absences.length === 0 ? (
         <p>Nenhuma ausência registrada.</p>
       ) : (
-        <table className="data-table">
-          <caption>Ausências de atendentes registradas</caption>
-          <thead>
-            <tr>
-              <th scope="col">Atendente</th>
-              <th scope="col">Período</th>
-              <th scope="col">Situação</th>
-              <th scope="col">Ação</th>
-            </tr>
-          </thead>
-          <tbody>
-            {overview.absences.map((absence) => (
-              <tr key={absence.id}>
-                <td>{absence.attendant.sectorName ? `${absence.attendant.name} (${absence.attendant.sectorName})` : absence.attendant.name}</td>
-                <td>
-                  {dayText(absence.startsOn)} a {dayText(absence.endsOn)}
-                </td>
-                <td>{attendantAbsenceSituation(absence, overview.today)}</td>
-                <td>
-                  {canCancelAbsence(absence, overview.today) ? (
-                    <form action={cancelAttendantAbsenceAction}>
-                      <input name="area" type="hidden" value={area} />
-                      <input name="absenceId" type="hidden" value={absence.id} />
-                      <button className="button-secondary" type="submit">
-                        Cancelar
-                      </button>
-                    </form>
-                  ) : null}
-                </td>
+        <TableScroll label="Ausências de atendentes registradas">
+          <table className="data-table">
+            <caption>Ausências de atendentes registradas</caption>
+            <thead>
+              <tr>
+                <th scope="col">Atendente</th>
+                <th scope="col">Período</th>
+                <th scope="col">Situação</th>
+                <th scope="col">Ação</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {overview.absences.map((absence) => (
+                <tr key={absence.id}>
+                  <td>{absence.attendant.sectorName ? `${absence.attendant.name} (${absence.attendant.sectorName})` : absence.attendant.name}</td>
+                  <td>
+                    {dayText(absence.startsOn)} a {dayText(absence.endsOn)}
+                  </td>
+                  <td>{attendantAbsenceSituation(absence, overview.today)}</td>
+                  <td>
+                    {canCancelAbsence(absence, overview.today) ? (
+                      <form action={cancelAttendantAbsenceAction}>
+                        <input name="area" type="hidden" value={area} />
+                        <input name="absenceId" type="hidden" value={absence.id} />
+                        <button className="button-secondary" type="submit">
+                          Cancelar
+                        </button>
+                      </form>
+                    ) : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableScroll>
       )}
     </section>
   );

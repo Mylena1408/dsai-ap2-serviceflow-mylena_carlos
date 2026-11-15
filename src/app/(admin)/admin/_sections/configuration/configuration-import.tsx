@@ -1,5 +1,6 @@
 "use client";
 
+import { TableScroll } from "@/app/_components/table-scroll";
 import { useActionState } from "react";
 import type { ImportPreview, ItemKind, ItemStatus } from "@/modules/configuration";
 import { applyImportAction, previewImportAction, type ImportState } from "./actions";
@@ -164,27 +165,29 @@ function PreviewResult({ preview, content, fileName }: { preview: ImportPreview;
             </div>
           ) : null}
           {changing.length > 0 ? (
-            <table className="data-table">
-              <caption>Itens novos e alterados</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Tipo</th>
-                  <th scope="col">Item</th>
-                  <th scope="col">Situação</th>
-                  <th scope="col">O que muda</th>
-                </tr>
-              </thead>
-              <tbody>
-                {changing.map((item) => (
-                  <tr key={`${item.kind}:${item.label}`}>
-                    <td>{KIND_LABELS[item.kind]}</td>
-                    <td>{item.label}</td>
-                    <td>{STATUS_LABELS[item.status]}</td>
-                    <td>{item.changes.map((change) => FIELD_LABELS[change] ?? change).join(", ") || "—"}</td>
+            <TableScroll label="Itens novos e alterados">
+              <table className="data-table">
+                <caption>Itens novos e alterados</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Item</th>
+                    <th scope="col">Situação</th>
+                    <th scope="col">O que muda</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {changing.map((item) => (
+                    <tr key={`${item.kind}:${item.label}`}>
+                      <td>{KIND_LABELS[item.kind]}</td>
+                      <td>{item.label}</td>
+                      <td>{STATUS_LABELS[item.status]}</td>
+                      <td>{item.changes.map((change) => FIELD_LABELS[change] ?? change).join(", ") || "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </TableScroll>
           ) : (
             <p>Tudo no arquivo já está igual neste ambiente: não há o que aplicar.</p>
           )}

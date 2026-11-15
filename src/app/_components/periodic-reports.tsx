@@ -1,3 +1,4 @@
+import { TableScroll } from "./table-scroll";
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
 import {
@@ -73,29 +74,31 @@ export function PeriodicReportListView({
         <p className="empty-state">Nenhum relatório gerado ainda.</p>
       ) : (
         <>
-          <table className="data-table">
-            <caption>Relatórios</caption>
-            <thead>
-              <tr>
-                <th scope="col">Período</th>
-                <th scope="col">Tipo</th>
-                <th scope="col">Escopo</th>
-                <th scope="col">Gerado em</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.reports.map((report) => (
-                <tr key={report.id}>
-                  <td>
-                    <Link href={detailHref(report.id)}>{reportTitle(report)}</Link>
-                  </td>
-                  <td>{PERIODIC_REPORT_KIND_LABELS[report.kind]}</td>
-                  <td>{scopeText(report)}</td>
-                  <td>{generatedAtText(report.generatedAt)}</td>
+          <TableScroll label="Relatórios">
+            <table className="data-table">
+              <caption>Relatórios</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Período</th>
+                  <th scope="col">Tipo</th>
+                  <th scope="col">Escopo</th>
+                  <th scope="col">Gerado em</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {list.reports.map((report) => (
+                  <tr key={report.id}>
+                    <td>
+                      <Link href={detailHref(report.id)}>{reportTitle(report)}</Link>
+                    </td>
+                    <td>{PERIODIC_REPORT_KIND_LABELS[report.kind]}</td>
+                    <td>{scopeText(report)}</td>
+                    <td>{generatedAtText(report.generatedAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableScroll>
           {list.reports.length === REPORT_LIST_SIZE ? <p className="metadata">Mostrando os {REPORT_LIST_SIZE} mais recentes.</p> : null}
         </>
       )}
@@ -129,35 +132,39 @@ export function PeriodicReportView({ report }: { report: PeriodicReportDetail })
         {PERIODIC_REPORT_KIND_LABELS[report.kind]} · {scopeText(report)} · gerado em {generatedAtText(report.generatedAt)}. Os números são os do momento
         da geração.
       </p>
-      <table className="data-table">
-        <caption>Números do período</caption>
-        <tbody>
-          {rows.map(([label, value]) => (
-            <tr key={label}>
-              <th scope="row">{label}</th>
-              <td>{value}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {metrics.topTags.length > 0 ? (
+      <TableScroll label="Números do período">
         <table className="data-table">
-          <caption>Etiquetas mais usadas</caption>
-          <thead>
-            <tr>
-              <th scope="col">Etiqueta</th>
-              <th scope="col">Solicitações</th>
-            </tr>
-          </thead>
+          <caption>Números do período</caption>
           <tbody>
-            {metrics.topTags.map((tag) => (
-              <tr key={tag.name}>
-                <td>{tag.name}</td>
-                <td>{tag.count}</td>
+            {rows.map(([label, value]) => (
+              <tr key={label}>
+                <th scope="row">{label}</th>
+                <td>{value}</td>
               </tr>
             ))}
           </tbody>
         </table>
+      </TableScroll>
+      {metrics.topTags.length > 0 ? (
+        <TableScroll label="Etiquetas mais usadas">
+          <table className="data-table">
+            <caption>Etiquetas mais usadas</caption>
+            <thead>
+              <tr>
+                <th scope="col">Etiqueta</th>
+                <th scope="col">Solicitações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {metrics.topTags.map((tag) => (
+                <tr key={tag.name}>
+                  <td>{tag.name}</td>
+                  <td>{tag.count}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableScroll>
       ) : null}
     </section>
   );

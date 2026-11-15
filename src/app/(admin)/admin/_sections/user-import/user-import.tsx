@@ -1,5 +1,6 @@
 "use client";
 
+import { TableScroll } from "@/app/_components/table-scroll";
 import { useActionState } from "react";
 import type { ImportLineOutcome, ImportSummary, UserImportPreview } from "@/modules/user-import";
 import { applyUserImportAction, previewUserImportAction, type UserImportState } from "./actions";
@@ -44,31 +45,33 @@ export function outcomeText(line: ImportLineOutcome, lineErrors: Record<string, 
 
 export function LinesTable({ lines, caption, lineErrors }: { lines: readonly ImportLineOutcome[]; caption: string; lineErrors: Record<string, string> }) {
   return (
-    <table className="data-table">
-      <caption>{caption}</caption>
-      <thead>
-        <tr>
-          <th scope="col">Linha</th>
-          <th scope="col">Nome</th>
-          <th scope="col">E-mail</th>
-          <th scope="col">Perfil</th>
-          <th scope="col">Setor</th>
-          <th scope="col">Resultado</th>
-        </tr>
-      </thead>
-      <tbody>
-        {lines.map((line) => (
-          <tr key={line.line}>
-            <td>{line.line}</td>
-            <td>{line.values.nome || "—"}</td>
-            <td>{line.values.email || "—"}</td>
-            <td>{line.values.perfil || "—"}</td>
-            <td>{line.values.setor || "—"}</td>
-            <td>{outcomeText(line, lineErrors)}</td>
+    <TableScroll label={caption}>
+      <table className="data-table">
+        <caption>{caption}</caption>
+        <thead>
+          <tr>
+            <th scope="col">Linha</th>
+            <th scope="col">Nome</th>
+            <th scope="col">E-mail</th>
+            <th scope="col">Perfil</th>
+            <th scope="col">Setor</th>
+            <th scope="col">Resultado</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {lines.map((line) => (
+            <tr key={line.line}>
+              <td>{line.line}</td>
+              <td>{line.values.nome || "—"}</td>
+              <td>{line.values.email || "—"}</td>
+              <td>{line.values.perfil || "—"}</td>
+              <td>{line.values.setor || "—"}</td>
+              <td>{outcomeText(line, lineErrors)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </TableScroll>
   );
 }
 

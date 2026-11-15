@@ -122,7 +122,8 @@ textarea:focus {
 }
 
 button:focus-visible,
-a:focus-visible {
+a:focus-visible,
+.table-scroll:focus-visible {
   outline: 3px solid rgb(23 107 105 / 35%);
   outline-offset: 3px;
 }
@@ -1298,8 +1299,12 @@ p {
     margin-left: auto;
   }
 
-  .app-topbar .sign-out-button {
+  /* SPEC 2026-11-15-acessibilidade, 4.1 item 3 (SF-262): touch targets of at least 44 × 44 px on phones. */
+  button,
+  .sign-out-button,
+  .button-link-secondary {
     min-height: 44px;
+    min-width: 44px;
   }
 
   .app-topbar nav {
@@ -1796,7 +1801,9 @@ p {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
 }
 
-.heatmap-scroll {
+/* SPEC 2026-11-15-acessibilidade, 4.1 item 2 (SF-262): every data table and the arrivals grid scroll inside their
+   own area (TableScroll), so a wide table never pushes the page sideways. */
+.table-scroll {
   max-width: 100%;
   overflow-x: auto;
 }
@@ -1850,7 +1857,7 @@ p {
 }
 
 /* Hidden labels are absolutely positioned: the scroll box must contain them, or they widen the page. */
-.heatmap-scroll {
+.table-scroll {
   position: relative;
 }
 

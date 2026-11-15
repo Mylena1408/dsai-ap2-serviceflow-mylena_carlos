@@ -1,7 +1,7 @@
 # SPEC — Acessibilidade: telas responsivas, alto contraste e leitura em voz alta
 
 **Data:** 2026-11-15
-**Status:** Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"). Decisões L1 a L7 aprovadas como propostas em 2026-11-15 ("pode começar a SPEC de acessibilidade com as decisões propostas"). Em andamento: SF-260 e SF-261 concluídas.
+**Status:** Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"). Decisões L1 a L7 aprovadas como propostas em 2026-11-15 ("pode começar a SPEC de acessibilidade com as decisões propostas"). Em andamento: SF-260 a SF-262 concluídas.
 **Projeto:** ServiceFlow
 **Referências:**
 - WCAG 2.2: 1.4.3 (contraste mínimo, AA), 1.4.6 (contraste aprimorado, AAA), 1.4.10 (refluxo: sem rolagem nas duas direções a 320 px CSS), 1.4.11 (contraste de elementos não textuais), 2.1.1 (teclado), 2.4.7 (foco visível), 4.1.2 (nome, função e valor).
@@ -67,13 +67,14 @@ Quem não usa os recursos novos continua com as telas como hoje, com duas exceç
 2. A ordem de leitura e de tabulação é a mesma em qualquer largura.
 3. Gráficos e grades de "Análises" e do painel rolam dentro do próprio cartão, como as tabelas.
 4. **Esclarecimento (SF-261, 2026-11-15):** a varredura mostrou que o menu do gestor passa da tela também a 768 px e a 1.280 px (seção 2.1). Por isso, acima de 760 px, um menu que não cabe ao lado da marca **quebra em mais linhas** em vez de empurrar a página; um menu que cabe fica exatamente como antes. O CA-RSP-04 ("acima de 760 px as telas não mudam") vale para as telas que já cabiam; as do gestor mudam só para deixar de rolar de lado. Os links do topo da administração (Ajuda, Meus dados, Alterar senha, Sair) também quebram linha quando não cabem. Na administração, o "Menu" recolhe a lista das seções.
+6. **Esclarecimento (SF-262, 2026-11-15):** a área de rolagem de cada tabela (componente `TableScroll`) é uma região com nome (a legenda da tabela; sem legenda, o título do gráfico ou um nome curto como "Tabela da equipe", que não repete o nome da seção), alcançável pela tecla Tab em qualquer largura, para que quem usa o teclado role a tabela com as setas. Os alvos de toque de 44 × 44 px valem abaixo de 760 px para todos os botões e links com aparência de botão, não só os do menu; acima disso, os tamanhos não mudam. Os formulários já ficavam em uma coluna abaixo de 760 px; a varredura não achou formulário que passasse da tela.
 5. **Sem JavaScript**, a lista fica visível (o botão só a esconde depois que a página carrega o script), então ninguém perde o menu.
 
 ### 4.4 Critérios de aceitação
 
 - [ ] **CA-RSP-01** — As páginas de cada perfil não rolam de lado a 360 px e a 768 px (E2E com a lista de páginas).
 - [x] **CA-RSP-02** — O menu recolhido abre e fecha pelo mouse e pelo teclado, diz seu estado e devolve o foco ao fechar. *Verificado em 2026-11-15 (SF-261): unitário (estado e marcação) e E2E `collapsible-menu.spec.ts` (gestor e administração a 360 px: mouse, Enter, Espaço, Tab, Esc com o foco de volta, link que fecha o menu; botão oculto a 1.280 px).*
-- [ ] **CA-RSP-03** — As tabelas rolam dentro de si, com nome, e são alcançáveis pelo teclado.
+- [x] **CA-RSP-03** — As tabelas rolam dentro de si, com nome, e são alcançáveis pelo teclado. *Verificado em 2026-11-15 (SF-262): unitário (área nomeada com `tabindex="0"`; toda `data-table` do código dentro de uma; a grade de chegadas também) e E2E `table-scroll.spec.ts` (tabela de 900 px a 360 px rola na própria área, sem rolar a página, com Tab e setas; botões e links do menu com 44 × 44 px).*
 - [ ] **CA-RSP-04** — Acima de 760 px as telas não mudam; nenhuma dependência nova.
 
 ## 5. Parte B — Alto contraste

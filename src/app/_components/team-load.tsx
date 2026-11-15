@@ -1,3 +1,4 @@
+import { TableScroll } from "./table-scroll";
 import { atLimit, type SectorLoad } from "@/modules/requests";
 import { DISTRIBUTION_MODE_LABELS } from "@/modules/sectors";
 
@@ -32,25 +33,27 @@ export function TeamLoad({ loads }: { loads: readonly SectorLoad[] | null }) {
           {load.members.length === 0 ? (
             <p>Nenhum atendente ativo.</p>
           ) : (
-            <table className="data-table">
-              <caption>Carga de {load.sectorName}</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Atendente</th>
-                  <th scope="col">Solicitações ativas</th>
-                  <th scope="col">Situação</th>
-                </tr>
-              </thead>
-              <tbody>
-                {load.members.map((member) => (
-                  <tr key={member.id}>
-                    <td>{member.name}</td>
-                    <td>{member.activeRequests}</td>
-                    <td>{memberSituation(member, load)}</td>
+            <TableScroll label={`Carga de ${load.sectorName}`}>
+              <table className="data-table">
+                <caption>Carga de {load.sectorName}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Atendente</th>
+                    <th scope="col">Solicitações ativas</th>
+                    <th scope="col">Situação</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {load.members.map((member) => (
+                    <tr key={member.id}>
+                      <td>{member.name}</td>
+                      <td>{member.activeRequests}</td>
+                      <td>{memberSituation(member, load)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </TableScroll>
           )}
         </div>
       ))}

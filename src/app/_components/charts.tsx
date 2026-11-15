@@ -1,3 +1,4 @@
+import { TableScroll } from "./table-scroll";
 import { WEEKDAY_LABELS, intensityStep, type ArrivalGrid, type OnTimeGroup } from "@/modules/reports";
 import {
   BAR_GAP,
@@ -92,24 +93,26 @@ export function ColumnPairChart({
       title={title}
       note={note}
       table={
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th scope="col">Intervalo</th>
-              <th scope="col">{names[0]}</th>
-              <th scope="col">{names[1]}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {points.map((point) => (
-              <tr key={point.label}>
-                <th scope="row">{point.label}</th>
-                <td>{point.first}</td>
-                <td>{point.second}</td>
+        <TableScroll label={title}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Intervalo</th>
+                <th scope="col">{names[0]}</th>
+                <th scope="col">{names[1]}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {points.map((point) => (
+                <tr key={point.label}>
+                  <th scope="row">{point.label}</th>
+                  <td>{point.first}</td>
+                  <td>{point.second}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableScroll>
       }
     >
       <ul className="chart-legend">
@@ -175,22 +178,24 @@ export function LineChart({
       title={title}
       note={note}
       table={
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th scope="col">Intervalo</th>
-              <th scope="col">{valueName}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {points.map((point) => (
-              <tr key={point.label}>
-                <th scope="row">{point.label}</th>
-                <td>{point.value === null ? "—" : formatValue(point.value, unit)}</td>
+        <TableScroll label={title}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th scope="col">Intervalo</th>
+                <th scope="col">{valueName}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {points.map((point) => (
+                <tr key={point.label}>
+                  <th scope="row">{point.label}</th>
+                  <td>{point.value === null ? "—" : formatValue(point.value, unit)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableScroll>
       }
     >
       <svg className="chart-svg" viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`} role="img" aria-labelledby={`${id}-title`}>
@@ -277,7 +282,7 @@ export function ArrivalHeatmap({ grid }: { grid: ArrivalGrid }) {
       {grid.total === 0 ? (
         <p className="metadata">Nenhuma solicitação aberta no período.</p>
       ) : (
-        <div className="heatmap-scroll">
+        <TableScroll label="Quando as solicitações chegam">
           <table className="heatmap">
             <thead>
               <tr>
@@ -308,7 +313,7 @@ export function ArrivalHeatmap({ grid }: { grid: ArrivalGrid }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableScroll>
       )}
     </figure>
   );

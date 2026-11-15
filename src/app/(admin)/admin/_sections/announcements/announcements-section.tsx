@@ -1,3 +1,4 @@
+import { TableScroll } from "@/app/_components/table-scroll";
 import {
   ANNOUNCEMENT_AUDIENCE_LABELS,
   ANNOUNCEMENT_KIND_LABELS,
@@ -130,62 +131,64 @@ export function AnnouncementsSection({ overview, message }: { overview: Announce
       {overview.announcements.length === 0 ? (
         <p className="section-description">Nenhum aviso em andamento, programado ou encerrado nos últimos 90 dias.</p>
       ) : (
-        <table className="data-table">
-          <caption>Avisos</caption>
-          <thead>
-            <tr>
-              <th scope="col">Aviso</th>
-              <th scope="col">Tipo</th>
-              <th scope="col">Público</th>
-              <th scope="col">Período</th>
-              <th scope="col">Situação</th>
-              <th scope="col">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {overview.announcements.map((item) => (
-              <tr key={item.id}>
-                <td>
-                  <strong>{item.title}</strong>
-                  <br />
-                  <span className="metadata">Criado por {item.createdByName}</span>
-                </td>
-                <td>{item.kind === "MAINTENANCE" ? ANNOUNCEMENT_KIND_LABELS.MAINTENANCE : `${ANNOUNCEMENT_KIND_LABELS.NOTICE} · ${ANNOUNCEMENT_LEVEL_LABELS[item.level]}`}</td>
-                <td>{audienceText(item)}</td>
-                <td>{periodText(item)}</td>
-                <td>{STATUS_LABELS[item.status]}</td>
-                <td>
-                  {item.status !== "ended" ? (
-                    <details>
-                      <summary>Alterar</summary>
-                      <form action={updateAnnouncementAction} aria-label={`Alterar o aviso ${item.title}`} className="stacked-form">
-                        <input name="announcementId" type="hidden" value={item.id} />
-                        <AnnouncementFields idPrefix={`announcement-${item.id}`} item={item} sectors={overview.sectors} />
-                        <button type="submit">Salvar</button>
-                      </form>
-                    </details>
-                  ) : null}
-                  {item.status === "current" ? (
-                    <form action={closeAnnouncementAction}>
-                      <input name="announcementId" type="hidden" value={item.id} />
-                      <button aria-label={`Encerrar o aviso ${item.title}`} className="button-secondary" type="submit">
-                        Encerrar
-                      </button>
-                    </form>
-                  ) : null}
-                  {item.status === "scheduled" ? (
-                    <form action={deleteAnnouncementAction}>
-                      <input name="announcementId" type="hidden" value={item.id} />
-                      <button aria-label={`Apagar o aviso ${item.title}`} className="button-secondary" type="submit">
-                        Apagar
-                      </button>
-                    </form>
-                  ) : null}
-                </td>
+        <TableScroll label="Avisos">
+          <table className="data-table">
+            <caption>Avisos</caption>
+            <thead>
+              <tr>
+                <th scope="col">Aviso</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Público</th>
+                <th scope="col">Período</th>
+                <th scope="col">Situação</th>
+                <th scope="col">Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {overview.announcements.map((item) => (
+                <tr key={item.id}>
+                  <td>
+                    <strong>{item.title}</strong>
+                    <br />
+                    <span className="metadata">Criado por {item.createdByName}</span>
+                  </td>
+                  <td>{item.kind === "MAINTENANCE" ? ANNOUNCEMENT_KIND_LABELS.MAINTENANCE : `${ANNOUNCEMENT_KIND_LABELS.NOTICE} · ${ANNOUNCEMENT_LEVEL_LABELS[item.level]}`}</td>
+                  <td>{audienceText(item)}</td>
+                  <td>{periodText(item)}</td>
+                  <td>{STATUS_LABELS[item.status]}</td>
+                  <td>
+                    {item.status !== "ended" ? (
+                      <details>
+                        <summary>Alterar</summary>
+                        <form action={updateAnnouncementAction} aria-label={`Alterar o aviso ${item.title}`} className="stacked-form">
+                          <input name="announcementId" type="hidden" value={item.id} />
+                          <AnnouncementFields idPrefix={`announcement-${item.id}`} item={item} sectors={overview.sectors} />
+                          <button type="submit">Salvar</button>
+                        </form>
+                      </details>
+                    ) : null}
+                    {item.status === "current" ? (
+                      <form action={closeAnnouncementAction}>
+                        <input name="announcementId" type="hidden" value={item.id} />
+                        <button aria-label={`Encerrar o aviso ${item.title}`} className="button-secondary" type="submit">
+                          Encerrar
+                        </button>
+                      </form>
+                    ) : null}
+                    {item.status === "scheduled" ? (
+                      <form action={deleteAnnouncementAction}>
+                        <input name="announcementId" type="hidden" value={item.id} />
+                        <button aria-label={`Apagar o aviso ${item.title}`} className="button-secondary" type="submit">
+                          Apagar
+                        </button>
+                      </form>
+                    ) : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableScroll>
       )}
     </section>
   );

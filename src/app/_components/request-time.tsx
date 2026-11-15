@@ -1,3 +1,4 @@
+import { TableScroll } from "./table-scroll";
 import { MAX_ENTRY_NOTE_LENGTH, estimateLabel, formatMinutes, type RequestTimeView, type TimeEntryView, type TimeEventView } from "@/modules/time-entries";
 
 // A request's time on the team's screens (SPEC 2026-11-08-atendimento-dia-a-dia, 5.1 item 2, 5.3 and 13.2 item 1;
@@ -98,54 +99,56 @@ export function RequestTime({
         </form>
       ) : null}
       {view.entries.length > 0 ? (
-        <table className="data-table">
-          <caption>Lançamentos</caption>
-          <thead>
-            <tr>
-              <th scope="col">Dia</th>
-              <th scope="col">Duração</th>
-              <th scope="col">Quem</th>
-              <th scope="col">Nota</th>
-              {edit ? <th scope="col">Ações</th> : null}
-            </tr>
-          </thead>
-          <tbody>
-            {view.entries.map((entry) => (
-              <tr key={entry.id}>
-                <td>{dayLabel(entry.workedOn)}</td>
-                <td>{formatMinutes(entry.minutes)}</td>
-                <td>{entry.userName}</td>
-                <td>{entry.note ?? "—"}</td>
-                {edit ? (
-                  <td>
-                    {entry.canChange ? (
-                      <>
-                        <details>
-                          <summary>Alterar</summary>
-                          <form action={edit.updateAction} aria-label={`Alterar o lançamento de ${dayLabel(entry.workedOn)}`} className="inline-form">
+        <TableScroll label="Lançamentos">
+          <table className="data-table">
+            <caption>Lançamentos</caption>
+            <thead>
+              <tr>
+                <th scope="col">Dia</th>
+                <th scope="col">Duração</th>
+                <th scope="col">Quem</th>
+                <th scope="col">Nota</th>
+                {edit ? <th scope="col">Ações</th> : null}
+              </tr>
+            </thead>
+            <tbody>
+              {view.entries.map((entry) => (
+                <tr key={entry.id}>
+                  <td>{dayLabel(entry.workedOn)}</td>
+                  <td>{formatMinutes(entry.minutes)}</td>
+                  <td>{entry.userName}</td>
+                  <td>{entry.note ?? "—"}</td>
+                  {edit ? (
+                    <td>
+                      {entry.canChange ? (
+                        <>
+                          <details>
+                            <summary>Alterar</summary>
+                            <form action={edit.updateAction} aria-label={`Alterar o lançamento de ${dayLabel(entry.workedOn)}`} className="inline-form">
+                              <input name="requestId" type="hidden" value={requestId} />
+                              <input name="entryId" type="hidden" value={entry.id} />
+                              <TimeFields entry={entry} view={view} />
+                              <button type="submit">Salvar</button>
+                            </form>
+                          </details>
+                          <form action={edit.deleteAction}>
                             <input name="requestId" type="hidden" value={requestId} />
                             <input name="entryId" type="hidden" value={entry.id} />
-                            <TimeFields entry={entry} view={view} />
-                            <button type="submit">Salvar</button>
+                            <button aria-label={`Apagar o lançamento de ${dayLabel(entry.workedOn)}`} className="button-secondary" type="submit">
+                              Apagar
+                            </button>
                           </form>
-                        </details>
-                        <form action={edit.deleteAction}>
-                          <input name="requestId" type="hidden" value={requestId} />
-                          <input name="entryId" type="hidden" value={entry.id} />
-                          <button aria-label={`Apagar o lançamento de ${dayLabel(entry.workedOn)}`} className="button-secondary" type="submit">
-                            Apagar
-                          </button>
-                        </form>
-                      </>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                ) : null}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                        </>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                  ) : null}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableScroll>
       ) : null}
     </section>
   );

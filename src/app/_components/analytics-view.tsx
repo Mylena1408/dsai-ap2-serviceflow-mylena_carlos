@@ -1,3 +1,4 @@
+import { TableScroll } from "./table-scroll";
 import type { Analytics, AttendantDashboard, ReportPeriod, ReportSector, WorkSummary } from "@/modules/reports";
 import { formatMinutes } from "@/modules/time-entries";
 import { ArrivalHeatmap, ColumnPairChart, LineChart, PercentBars } from "./charts";
@@ -28,25 +29,27 @@ function percent(value: number | null): string {
 /** Hours and entries per line, shared by "Análises" and the time report (SPEC 2026-11-08-atendimento-dia-a-dia). */
 export function HoursTable({ caption, label, groups }: { caption: string; label: string; groups: ReadonlyArray<{ key: string; label: string; minutes: number; entries: number }> }) {
   return (
-    <table className="data-table">
-      <caption>{caption}</caption>
-      <thead>
-        <tr>
-          <th scope="col">{label}</th>
-          <th scope="col">Horas</th>
-          <th scope="col">Lançamentos</th>
-        </tr>
-      </thead>
-      <tbody>
-        {groups.map((group) => (
-          <tr key={group.key}>
-            <td>{group.label}</td>
-            <td>{formatMinutes(group.minutes)}</td>
-            <td>{group.entries}</td>
+    <TableScroll label={caption}>
+      <table className="data-table">
+        <caption>{caption}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{label}</th>
+            <th scope="col">Horas</th>
+            <th scope="col">Lançamentos</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {groups.map((group) => (
+            <tr key={group.key}>
+              <td>{group.label}</td>
+              <td>{formatMinutes(group.minutes)}</td>
+              <td>{group.entries}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </TableScroll>
   );
 }
 
@@ -315,28 +318,30 @@ export function AnalyticsView({
           {sla.stages.length === 0 ? (
             <p className="metadata">Nenhuma concluída no período passou por etapas.</p>
           ) : (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th scope="col">Serviço · etapa</th>
-                  <th scope="col">Média</th>
-                  <th scope="col">Mediana</th>
-                  <th scope="col">Passagens</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sla.stages.map((stage) => (
-                  <tr key={`${stage.serviceName}·${stage.stageName}`}>
-                    <th scope="row">
-                      {stage.serviceName} · {stage.stageName}
-                    </th>
-                    <td>{stage.times ? hours(stage.times.averageHours) : "—"}</td>
-                    <td>{stage.times ? hours(stage.times.medianHours) : "—"}</td>
-                    <td>{stage.count}</td>
+            <TableScroll label="Tabela das etapas">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Serviço · etapa</th>
+                    <th scope="col">Média</th>
+                    <th scope="col">Mediana</th>
+                    <th scope="col">Passagens</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {sla.stages.map((stage) => (
+                    <tr key={`${stage.serviceName}·${stage.stageName}`}>
+                      <th scope="row">
+                        {stage.serviceName} · {stage.stageName}
+                      </th>
+                      <td>{stage.times ? hours(stage.times.averageHours) : "—"}</td>
+                      <td>{stage.times ? hours(stage.times.medianHours) : "—"}</td>
+                      <td>{stage.count}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </TableScroll>
           )}
         </section>
 
@@ -372,27 +377,29 @@ export function AnalyticsView({
             {analytics.satisfaction.byService.length === 0 ? (
               <p className="metadata">Nenhuma avaliação no período.</p>
             ) : (
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Serviço</th>
-                    <th scope="col">Média</th>
-                    <th scope="col">Avaliações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {analytics.satisfaction.byService.map((row) => (
-                    <tr key={row.label}>
-                      <th scope="row">{row.label}</th>
-                      <td>
-                        {numbers.format(row.average)}
-                        {row.fewData ? <span className="tag-muted"> poucos dados</span> : null}
-                      </td>
-                      <td>{row.count}</td>
+              <TableScroll label="Tabela das notas por serviço">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Serviço</th>
+                      <th scope="col">Média</th>
+                      <th scope="col">Avaliações</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {analytics.satisfaction.byService.map((row) => (
+                      <tr key={row.label}>
+                        <th scope="row">{row.label}</th>
+                        <td>
+                          {numbers.format(row.average)}
+                          {row.fewData ? <span className="tag-muted"> poucos dados</span> : null}
+                        </td>
+                        <td>{row.count}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TableScroll>
             )}
           </section>
         </div>
@@ -460,7 +467,7 @@ export function AnalyticsView({
         {analytics.team.length === 0 ? (
           <p className="metadata">Nenhum atendente com solicitações concluídas no período ou pendentes agora.</p>
         ) : (
-          <div className="heatmap-scroll">
+          <TableScroll label="Tabela da equipe">
             <table className="data-table">
               <thead>
                 <tr>
@@ -485,7 +492,7 @@ export function AnalyticsView({
                 ))}
               </tbody>
             </table>
-          </div>
+          </TableScroll>
         )}
         <p className="metadata">Em ordem alfabética. Cada pessoa aparece pelas solicitações em que é a responsável.</p>
       </section>

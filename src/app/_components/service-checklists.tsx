@@ -1,3 +1,4 @@
+import { TableScroll } from "./table-scroll";
 import {
   MAX_ACTIVE_CHECKLIST_ITEMS,
   MAX_CHECKLIST_TEXT_LENGTH,
@@ -140,89 +141,91 @@ export function ServiceChecklistsPanel({
             {items.length === 0 ? (
               <p className="section-description">Sem checklist: as solicitações deste serviço seguem como hoje.</p>
             ) : (
-              <table className="data-table">
-                <caption>Checklist de {service.name}</caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Ordem</th>
-                    <th scope="col">Item</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Aplica-se</th>
-                    <th scope="col">Situação</th>
-                    <th scope="col">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item) => {
-                    const index = active.findIndex(({ id }) => id === item.id);
-                    return (
-                      <tr key={item.id}>
-                        <td>{item.isActive ? index + 1 : "—"}</td>
-                        <td>{item.text}</td>
-                        <td>{item.isRequired ? "Obrigatório" : "Opcional"}</td>
-                        <td>{conditionText(item, conditionFields, fieldLabels)}</td>
-                        <td>{item.isActive ? "Ativo" : "Inativo"}</td>
-                        <td>
-                          <details>
-                            <summary>Alterar</summary>
-                            <form action={updateChecklistItemAction} aria-label={`Alterar o item ${item.text}`} className="inline-form">
+              <TableScroll label={`Checklist de ${service.name}`}>
+                <table className="data-table">
+                  <caption>Checklist de {service.name}</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Ordem</th>
+                      <th scope="col">Item</th>
+                      <th scope="col">Tipo</th>
+                      <th scope="col">Aplica-se</th>
+                      <th scope="col">Situação</th>
+                      <th scope="col">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.map((item) => {
+                      const index = active.findIndex(({ id }) => id === item.id);
+                      return (
+                        <tr key={item.id}>
+                          <td>{item.isActive ? index + 1 : "—"}</td>
+                          <td>{item.text}</td>
+                          <td>{item.isRequired ? "Obrigatório" : "Opcional"}</td>
+                          <td>{conditionText(item, conditionFields, fieldLabels)}</td>
+                          <td>{item.isActive ? "Ativo" : "Inativo"}</td>
+                          <td>
+                            <details>
+                              <summary>Alterar</summary>
+                              <form action={updateChecklistItemAction} aria-label={`Alterar o item ${item.text}`} className="inline-form">
+                                <Hidden area={area} serviceId={service.id} />
+                                <input name="itemId" type="hidden" value={item.id} />
+                                <label>
+                                  Texto
+                                  <input defaultValue={item.text} maxLength={MAX_CHECKLIST_TEXT_LENGTH} name="text" required />
+                                </label>
+                                <label>
+                                  Tipo
+                                  <RequiredSelect defaultValue={item.isRequired} />
+                                </label>
+                                <button type="submit">Salvar</button>
+                              </form>
+                              {/* SPEC 2026-11-08-atendimento-dia-a-dia, 13.1 item 1 (decision J1). */}
+                              <form action={setChecklistItemConditionAction} aria-label={`Condição do item ${item.text}`} className="inline-form">
+                                <Hidden area={area} serviceId={service.id} />
+                                <input name="itemId" type="hidden" value={item.id} />
+                                <label>
+                                  Aplica-se
+                                  <ConditionSelect fields={conditionFields} item={item} />
+                                </label>
+                                <button type="submit">Salvar condição</button>
+                              </form>
+                            </details>
+                            {item.isActive && index > 0 ? (
+                              <form action={moveChecklistItemAction}>
+                                <Hidden area={area} serviceId={service.id} />
+                                <input name="itemId" type="hidden" value={item.id} />
+                                <input name="direction" type="hidden" value="up" />
+                                <button aria-label={`Subir ${item.text}`} className="button-secondary" type="submit">
+                                  Subir
+                                </button>
+                              </form>
+                            ) : null}
+                            {item.isActive && index < active.length - 1 ? (
+                              <form action={moveChecklistItemAction}>
+                                <Hidden area={area} serviceId={service.id} />
+                                <input name="itemId" type="hidden" value={item.id} />
+                                <input name="direction" type="hidden" value="down" />
+                                <button aria-label={`Descer ${item.text}`} className="button-secondary" type="submit">
+                                  Descer
+                                </button>
+                              </form>
+                            ) : null}
+                            <form action={setChecklistItemActiveAction}>
                               <Hidden area={area} serviceId={service.id} />
                               <input name="itemId" type="hidden" value={item.id} />
-                              <label>
-                                Texto
-                                <input defaultValue={item.text} maxLength={MAX_CHECKLIST_TEXT_LENGTH} name="text" required />
-                              </label>
-                              <label>
-                                Tipo
-                                <RequiredSelect defaultValue={item.isRequired} />
-                              </label>
-                              <button type="submit">Salvar</button>
-                            </form>
-                            {/* SPEC 2026-11-08-atendimento-dia-a-dia, 13.1 item 1 (decision J1). */}
-                            <form action={setChecklistItemConditionAction} aria-label={`Condição do item ${item.text}`} className="inline-form">
-                              <Hidden area={area} serviceId={service.id} />
-                              <input name="itemId" type="hidden" value={item.id} />
-                              <label>
-                                Aplica-se
-                                <ConditionSelect fields={conditionFields} item={item} />
-                              </label>
-                              <button type="submit">Salvar condição</button>
-                            </form>
-                          </details>
-                          {item.isActive && index > 0 ? (
-                            <form action={moveChecklistItemAction}>
-                              <Hidden area={area} serviceId={service.id} />
-                              <input name="itemId" type="hidden" value={item.id} />
-                              <input name="direction" type="hidden" value="up" />
-                              <button aria-label={`Subir ${item.text}`} className="button-secondary" type="submit">
-                                Subir
+                              <input name="isActive" type="hidden" value={item.isActive ? "false" : "true"} />
+                              <button aria-label={`${item.isActive ? "Desativar" : "Reativar"} ${item.text}`} className="button-secondary" type="submit">
+                                {item.isActive ? "Desativar" : "Reativar"}
                               </button>
                             </form>
-                          ) : null}
-                          {item.isActive && index < active.length - 1 ? (
-                            <form action={moveChecklistItemAction}>
-                              <Hidden area={area} serviceId={service.id} />
-                              <input name="itemId" type="hidden" value={item.id} />
-                              <input name="direction" type="hidden" value="down" />
-                              <button aria-label={`Descer ${item.text}`} className="button-secondary" type="submit">
-                                Descer
-                              </button>
-                            </form>
-                          ) : null}
-                          <form action={setChecklistItemActiveAction}>
-                            <Hidden area={area} serviceId={service.id} />
-                            <input name="itemId" type="hidden" value={item.id} />
-                            <input name="isActive" type="hidden" value={item.isActive ? "false" : "true"} />
-                            <button aria-label={`${item.isActive ? "Desativar" : "Reativar"} ${item.text}`} className="button-secondary" type="submit">
-                              {item.isActive ? "Desativar" : "Reativar"}
-                            </button>
-                          </form>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </TableScroll>
             )}
             {active.length < MAX_ACTIVE_CHECKLIST_ITEMS ? (
               <form action={createChecklistItemAction} aria-label={`Novo item do checklist de ${service.name}`} className="inline-form">

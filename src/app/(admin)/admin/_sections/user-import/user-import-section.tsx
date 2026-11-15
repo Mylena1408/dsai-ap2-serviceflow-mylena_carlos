@@ -1,3 +1,4 @@
+import { TableScroll } from "@/app/_components/table-scroll";
 import { formatAnnouncementInstant } from "@/modules/announcements";
 import { IMPORT_FILE_ERROR_LABELS, IMPORT_LINE_ERROR_LABELS, MAX_IMPORT_ROWS, type UserImportHistoryItem } from "@/modules/user-import";
 import { UserImport } from "./user-import";
@@ -25,35 +26,37 @@ export function UserImportSection({ history }: { history: readonly UserImportHis
       {history.length === 0 ? (
         <p className="section-description">Nenhuma importação ainda.</p>
       ) : (
-        <table className="data-table">
-          <caption>Importações anteriores</caption>
-          <thead>
-            <tr>
-              <th scope="col">Quando</th>
-              <th scope="col">Quem</th>
-              <th scope="col">Criadas</th>
-              <th scope="col">Ignoradas</th>
-              <th scope="col">Com erro</th>
-              <th scope="col">Relatório</th>
-            </tr>
-          </thead>
-          <tbody>
-            {history.map((item) => (
-              <tr key={item.id}>
-                <td>{formatAnnouncementInstant(item.createdAt)}</td>
-                <td>{item.actorName}</td>
-                <td>{item.createdCount}</td>
-                <td>{item.skippedCount}</td>
-                <td>{item.errorCount}</td>
-                <td>
-                  <a aria-label={`Relatório da importação de ${formatAnnouncementInstant(item.createdAt)}`} download href={`/api/user-imports/${item.id}/report.csv`}>
-                    CSV
-                  </a>
-                </td>
+        <TableScroll label="Importações anteriores">
+          <table className="data-table">
+            <caption>Importações anteriores</caption>
+            <thead>
+              <tr>
+                <th scope="col">Quando</th>
+                <th scope="col">Quem</th>
+                <th scope="col">Criadas</th>
+                <th scope="col">Ignoradas</th>
+                <th scope="col">Com erro</th>
+                <th scope="col">Relatório</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {history.map((item) => (
+                <tr key={item.id}>
+                  <td>{formatAnnouncementInstant(item.createdAt)}</td>
+                  <td>{item.actorName}</td>
+                  <td>{item.createdCount}</td>
+                  <td>{item.skippedCount}</td>
+                  <td>{item.errorCount}</td>
+                  <td>
+                    <a aria-label={`Relatório da importação de ${formatAnnouncementInstant(item.createdAt)}`} download href={`/api/user-imports/${item.id}/report.csv`}>
+                      CSV
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableScroll>
       )}
     </section>
   );

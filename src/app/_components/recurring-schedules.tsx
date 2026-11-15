@@ -1,3 +1,4 @@
+import { TableScroll } from "./table-scroll";
 import Link from "next/link";
 import {
   FAILURES_TO_PAUSE,
@@ -168,77 +169,79 @@ export function RecurringSchedules({ screen, area }: { screen: ScheduleScreen; a
       {overview.schedules.length === 0 ? (
         <p>Nenhuma agenda cadastrada.</p>
       ) : (
-        <table className="data-table">
-          <caption>Agendas cadastradas</caption>
-          <thead>
-            <tr>
-              <th scope="col">Agenda</th>
-              <th scope="col">Serviço</th>
-              <th scope="col">Solicitante</th>
-              <th scope="col">Frequência</th>
-              <th scope="col">Próxima abertura</th>
-              <th scope="col">Estado</th>
-              <th scope="col">Últimas execuções</th>
-              <th scope="col">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {overview.schedules.map((schedule) => {
-              const warning = scheduleWarning(schedule);
-              return (
-                <tr key={schedule.id}>
-                  <td>
-                    {schedule.name}
-                    <br />
-                    <span className="metadata">Criada por {schedule.createdBy.name}</span>
-                  </td>
-                  <td>
-                    {schedule.service.name} ({schedule.service.sectorName})
-                  </td>
-                  <td>{schedule.requester.name}</td>
-                  <td>
-                    {frequencyText(schedule)}
-                    <br />
-                    <span className="metadata">{periodText(schedule)}</span>
-                  </td>
-                  <td>{schedule.nextOn ? dayText(schedule.nextOn) : "—"}</td>
-                  <td>
-                    {SCHEDULE_STATUS_LABELS[schedule.status]}
-                    {warning ? (
-                      <>
-                        <br />
-                        <strong className="field-error">{warning}</strong>
-                      </>
-                    ) : null}
-                  </td>
-                  <td>
-                    {schedule.runs.length === 0 ? (
-                      "Nenhuma ainda"
-                    ) : (
-                      <ul className="plain-list">
-                        {schedule.runs.map((run) => (
-                          <li key={run.scheduledOn}>{runText(run)}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </td>
-                  <td>
-                    {schedule.actions.includes("edit") ? <Link href={link(`edit=${schedule.id}`)}>Alterar</Link> : null}
-                    {schedule.actions.includes("pause") ? (
-                      <StateButton action={pauseScheduleAction} area={area} label="Pausar" scheduleId={schedule.id} secondary />
-                    ) : null}
-                    {schedule.actions.includes("resume") ? (
-                      <StateButton action={resumeScheduleAction} area={area} label="Retomar" scheduleId={schedule.id} />
-                    ) : null}
-                    {schedule.actions.includes("end") ? (
-                      <StateButton action={endScheduleAction} area={area} label="Encerrar" scheduleId={schedule.id} secondary />
-                    ) : null}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <TableScroll label="Agendas cadastradas">
+          <table className="data-table">
+            <caption>Agendas cadastradas</caption>
+            <thead>
+              <tr>
+                <th scope="col">Agenda</th>
+                <th scope="col">Serviço</th>
+                <th scope="col">Solicitante</th>
+                <th scope="col">Frequência</th>
+                <th scope="col">Próxima abertura</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Últimas execuções</th>
+                <th scope="col">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {overview.schedules.map((schedule) => {
+                const warning = scheduleWarning(schedule);
+                return (
+                  <tr key={schedule.id}>
+                    <td>
+                      {schedule.name}
+                      <br />
+                      <span className="metadata">Criada por {schedule.createdBy.name}</span>
+                    </td>
+                    <td>
+                      {schedule.service.name} ({schedule.service.sectorName})
+                    </td>
+                    <td>{schedule.requester.name}</td>
+                    <td>
+                      {frequencyText(schedule)}
+                      <br />
+                      <span className="metadata">{periodText(schedule)}</span>
+                    </td>
+                    <td>{schedule.nextOn ? dayText(schedule.nextOn) : "—"}</td>
+                    <td>
+                      {SCHEDULE_STATUS_LABELS[schedule.status]}
+                      {warning ? (
+                        <>
+                          <br />
+                          <strong className="field-error">{warning}</strong>
+                        </>
+                      ) : null}
+                    </td>
+                    <td>
+                      {schedule.runs.length === 0 ? (
+                        "Nenhuma ainda"
+                      ) : (
+                        <ul className="plain-list">
+                          {schedule.runs.map((run) => (
+                            <li key={run.scheduledOn}>{runText(run)}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </td>
+                    <td>
+                      {schedule.actions.includes("edit") ? <Link href={link(`edit=${schedule.id}`)}>Alterar</Link> : null}
+                      {schedule.actions.includes("pause") ? (
+                        <StateButton action={pauseScheduleAction} area={area} label="Pausar" scheduleId={schedule.id} secondary />
+                      ) : null}
+                      {schedule.actions.includes("resume") ? (
+                        <StateButton action={resumeScheduleAction} area={area} label="Retomar" scheduleId={schedule.id} />
+                      ) : null}
+                      {schedule.actions.includes("end") ? (
+                        <StateButton action={endScheduleAction} area={area} label="Encerrar" scheduleId={schedule.id} secondary />
+                      ) : null}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </TableScroll>
       )}
       <p className="section-description">Encerrar é definitivo: a agenda deixa de abrir solicitações e fica só no histórico.</p>
     </section>

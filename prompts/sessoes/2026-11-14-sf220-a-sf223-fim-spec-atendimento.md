@@ -300,3 +300,14 @@
 
 89. Commit `fde48eb` (SF-260).
 90. SF-261: varredura ampliada para 1.280 px (o menu do gestor passava da tela também no computador); componente `CollapsibleNav` nas três áreas e nas seções da administração; menu que quebra linha acima de 760 px (esclarecimento 4.3 itens 4 e 5 na SPEC); E2E `collapsible-menu.spec.ts`; varredura sem nenhuma ocorrência; CA-RSP-02 marcado.
+
+> faça o commit da sf-261 e siga para a sf-262
+
+91. E2E completo da SF-261 60/60; commit `579bce1`.
+92. SF-262: `TableScroll` nas 23 tabelas de dados e na grade de chegadas; alvos de toque de 44 px abaixo de 760 px; unitário que exige a área em toda `data-table`; E2E `table-scroll.spec.ts`; CA-RSP-03 marcado.
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+93. Contagem em `579bce1`: 94.046 `added` (aplicação 46.649, testes 47.148, scripts 249), líquido 91.563; faltam 5.954. SF-260 e SF-261 somaram 322.
+
+> faça o commit da sf-262 e siga para a sf-263

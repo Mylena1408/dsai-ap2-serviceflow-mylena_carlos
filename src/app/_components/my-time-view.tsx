@@ -1,3 +1,4 @@
+import { TableScroll } from "./table-scroll";
 import { formatMinutes, type MyTime } from "@/modules/time-entries";
 import { dayLabel } from "./request-time";
 
@@ -18,42 +19,46 @@ export function MyTimeView({ time, period }: { time: MyTime; period: { firstDay:
         <p className="section-description">Nenhuma hora lançada no período.</p>
       ) : (
         <>
-          <table className="data-table">
-            <caption>Minhas horas por dia</caption>
-            <thead>
-              <tr>
-                <th scope="col">Dia</th>
-                <th scope="col">Horas</th>
-              </tr>
-            </thead>
-            <tbody>
-              {time.byDay.map((row) => (
-                <tr key={row.day}>
-                  <td>{dayLabel(row.day)}</td>
-                  <td>{formatMinutes(row.minutes)}</td>
+          <TableScroll label="Minhas horas por dia">
+            <table className="data-table">
+              <caption>Minhas horas por dia</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Dia</th>
+                  <th scope="col">Horas</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <table className="data-table">
-            <caption>Minhas horas por serviço</caption>
-            <thead>
-              <tr>
-                <th scope="col">Serviço</th>
-                <th scope="col">Horas</th>
-                <th scope="col">Lançamentos</th>
-              </tr>
-            </thead>
-            <tbody>
-              {time.byService.map((row) => (
-                <tr key={row.label}>
-                  <td>{row.label}</td>
-                  <td>{formatMinutes(row.minutes)}</td>
-                  <td>{row.entries}</td>
+              </thead>
+              <tbody>
+                {time.byDay.map((row) => (
+                  <tr key={row.day}>
+                    <td>{dayLabel(row.day)}</td>
+                    <td>{formatMinutes(row.minutes)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableScroll>
+          <TableScroll label="Minhas horas por serviço">
+            <table className="data-table">
+              <caption>Minhas horas por serviço</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Serviço</th>
+                  <th scope="col">Horas</th>
+                  <th scope="col">Lançamentos</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {time.byService.map((row) => (
+                  <tr key={row.label}>
+                    <td>{row.label}</td>
+                    <td>{formatMinutes(row.minutes)}</td>
+                    <td>{row.entries}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableScroll>
         </>
       )}
     </section>

@@ -2725,7 +2725,7 @@ Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessi
 
 ### SF-262 — Tabelas com rolagem própria, formulários e alvos de toque
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15: as 23 tabelas de dados e a grade de chegadas dentro de `TableScroll` (região com nome, alcançável por Tab); botões com 44 × 44 px abaixo de 760 px (esclarecimento 4.3 item 6 da SPEC). CA-RSP-03 marcado.
 - **Objetivo:** Seção 4.1 itens 2 e 3.
 - **Arquivos/módulos esperados:** `src/app/_components/`, `globals.css`.
 - **Dependências:** SF-260.
