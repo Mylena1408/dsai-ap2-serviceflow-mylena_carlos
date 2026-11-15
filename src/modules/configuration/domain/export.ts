@@ -2,7 +2,9 @@ import { timeOfMinute } from "@/shared/business-clock";
 import {
   CONFIGURATION_FORMAT,
   CONFIGURATION_VERSION,
+  announcementKey,
   keyOf,
+  type AnnouncementItem,
   type ConfigurationData,
   type ConfigurationFile,
   type FieldItem,
@@ -85,6 +87,14 @@ export interface ConfigurationSnapshot {
   calendar: { weekdays: number[]; startMinute: number; endMinute: number; timeZone: string } | null;
   holidays: Array<{ day: string; name: string; yearly: boolean }>;
   bundles: Array<{ name: string; description: string | null; serviceIds: string[]; isActive: boolean }>;
+  /** Version 3 (SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 1): the sectors' own hours. */
+  sectorCalendars: Array<{ sectorId: string; weekdays: number[]; startMinute: number; endMinute: number }>;
+  /** Version 3: the sectors' holidays ("YYYY-MM-DD"). */
+  sectorHolidays: Array<{ sectorId: string; day: string; name: string; yearly: boolean }>;
+  /** Version 3: the announcements that have not started yet when read. */
+  announcements: Array<
+    Omit<AnnouncementItem, "audienceSector" | "startsAt" | "endsAt"> & { audienceSectorId: string | null; startsAt: Date; endsAt: Date }
+  >;
   /** The e-mail of each person the configuration refers to, by id. */
   emails: Record<string, string>;
 }
@@ -136,6 +146,10 @@ export function buildConfigurationData(snapshot: ConfigurationSnapshot): Configu
       tags: ofSector(snapshot.tags, sector.id)
         .sort(byKey((tag) => tag.name))
         .map(({ name, color, isActive }) => ({ name, color, isActive })),
+      calendar: sectorCalendar(snapshot.sectorCalendars.find((calendar) => calendar.sectorId === sector.id)),
+      holidays: ofSector(snapshot.sectorHolidays, sector.id)
+        .sort((a, b) => a.day.localeCompare(b.day))
+        .map(({ day, name, yearly }) => ({ day, name, yearly })),
     })),
     categories: [...snapshot.categories].sort(byKey((category) => category.name)).map(({ name, isActive }) => ({ name, isActive })),
     services: [...snapshot.services].sort(byKey((service) => service.name)).map((service) => ({
@@ -212,6 +226,24 @@ export function buildConfigurationData(snapshot: ConfigurationSnapshot): Configu
       services: bundle.serviceIds.map((id) => serviceName.get(id)).filter(present),
       isActive: bundle.isActive,
     })),
+    announcements: snapshot.announcements
+      .map(({ audienceSectorId, startsAt, endsAt, ...announcement }) => ({
+        ...announcement,
+        audienceSector: audienceSectorId === null ? null : (sectorName.get(audienceSectorId) ?? null),
+        startsAt: startsAt.toISOString(),
+        endsAt: endsAt.toISOString(),
+      }))
+      .sort((a, b) => announcementKey(a).localeCompare(announcementKey(b), "pt-BR")),
+  };
+}
+
+/** A sector's own hours as the file carries them; null when it follows the organization's. */
+function sectorCalendar(calendar: ConfigurationSnapshot["sectorCalendars"][number] | undefined) {
+  if (!calendar) return null;
+  return {
+    weekdays: [...calendar.weekdays].sort((a, b) => a - b),
+    startTime: timeOfMinute(calendar.startMinute),
+    endTime: timeOfMinute(calendar.endMinute),
   };
 }
 

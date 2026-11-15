@@ -10,12 +10,16 @@ import { z } from "zod";
 // and each service's checklist model. The import accepts both versions: a version 1 file has neither list and
 // leaves the destination's tags and checklists as they are; a version 2 file has both lists in every sector
 // and service.
+//
+// Version 3 (SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 1; SF-257) also carries each sector's own business
+// hours and holidays, and the announcements that have not started yet. A version 1 or 2 file has none of them and
+// leaves the destination's as they are; a version 3 file has them in every sector and the announcements' list.
 
 export const CONFIGURATION_FORMAT = "serviceflow-config";
 /** The version the export writes. */
-export const CONFIGURATION_VERSION = 2;
+export const CONFIGURATION_VERSION = 3;
 /** The versions the import accepts. */
-export const CONFIGURATION_VERSIONS = [1, 2] as const;
+export const CONFIGURATION_VERSIONS = [1, 2, 3] as const;
 export const MAX_CONFIGURATION_BYTES = 2 * 1024 * 1024;
 
 // Generous bounds that only stop abuse; the screens' limits are checked by the preview. Lists also hold the
@@ -46,6 +50,11 @@ const cannedResponseSchema = z.object({ title: name, body: text(20_000), isActiv
 /** Version 2: the color by its palette key ("blue"); the screen's palette is checked by the preview. */
 const tagSchema = z.object({ name, color: text(40), isActive: z.boolean() }).strict();
 
+/** Version 3: a sector's own hours, as its screen shows them ("HH:MM"); the time zone is the organization's. */
+const sectorCalendarSchema = z.object({ weekdays: list(z.number().int(), 7), startTime: text(5), endTime: text(5) }).strict();
+
+const holidaySchema = z.object({ day: text(10), name, yearly: z.boolean() }).strict();
+
 const sectorSchema = z
   .object({
     name,
@@ -56,8 +65,12 @@ const sectorSchema = z
     redistributeOnAbsence: z.boolean(),
     escalationRules: list(escalationRuleSchema, 500),
     cannedResponses: list(cannedResponseSchema, 2_000),
-    /** Version 2 only. */
+    /** Version 2 and later. */
     tags: list(tagSchema, 1_000).optional(),
+    /** Version 3: the sector's own hours, or null when it follows the organization's. */
+    calendar: sectorCalendarSchema.nullable().optional(),
+    /** Version 3: the sector's holidays, on top of the organization's. */
+    holidays: list(holidaySchema, 5_000).optional(),
   })
   .strict();
 
@@ -136,7 +149,7 @@ const serviceSchema = z
     documents: list(documentSchema, 200),
     stages: list(stageSchema, 200),
     articles: list(articleSchema, 500),
-    /** Version 2 only. */
+    /** Version 2 and later. */
     checklist: list(checklistItemSchema, 500).optional(),
   })
   .strict();
@@ -160,7 +173,24 @@ const calendarSchema = z
   })
   .strict();
 
-const holidaySchema = z.object({ day: text(10), name, yearly: z.boolean() }).strict();
+/**
+ * Version 3: an announcement that has not started yet (SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 1); the
+ * instants as ISO text, the audience's sector by name. The screen's rules are checked by the preview.
+ */
+const announcementSchema = z
+  .object({
+    title: name,
+    body: text(2_000),
+    kind: z.enum(["NOTICE", "MAINTENANCE"]),
+    level: z.enum(["INFO", "WARNING"]),
+    audience: z.enum(["ALL", "ROLE", "SECTOR"]),
+    audienceRole: z.enum(["ADMIN", "MANAGER", "ATTENDANT", "REQUESTER"]).nullable(),
+    audienceSector: name.nullable(),
+    startsAt: text(40),
+    endsAt: text(40),
+    leadHours: z.number().int().nullable(),
+  })
+  .strict();
 
 const bundleSchema = z
   .object({ name, description: text(2_000).nullable(), services: list(name, 20), isActive: z.boolean() })
@@ -175,6 +205,8 @@ export const configurationDataSchema = z
     calendar: calendarSchema.nullable(),
     holidays: list(holidaySchema, 5_000),
     bundles: list(bundleSchema, 1_000),
+    /** Version 3 only. */
+    announcements: list(announcementSchema, 1_000).optional(),
   })
   .strict();
 
@@ -187,18 +219,24 @@ export const configurationFileSchema = z
   })
   .strict()
   .superRefine((file, context) => {
-    // Version 1 never has the tags and the checklists; version 2 always has them.
-    const v2 = file.version === 2;
-    const expect = (present: boolean, path: Array<string | number>) => {
-      if (present === v2) return;
+    // Version 1 never has the tags and the checklists; versions 2 and 3 always have them. Only version 3 has the
+    // sectors' calendars and holidays and the announcements.
+    const expect = (present: boolean, since: 2 | 3, path: Array<string | number>) => {
+      const wanted = file.version >= since;
+      if (present === wanted) return;
       context.addIssue({
         code: "custom",
         path: ["data", ...path],
-        message: v2 ? "Version 2 needs this list." : "Version 1 does not have this list.",
+        message: wanted ? `Version ${file.version} needs this list.` : `Version ${file.version} does not have this list.`,
       });
     };
-    file.data.sectors.forEach((sector, index) => expect(sector.tags !== undefined, ["sectors", index, "tags"]));
-    file.data.services.forEach((service, index) => expect(service.checklist !== undefined, ["services", index, "checklist"]));
+    file.data.sectors.forEach((sector, index) => {
+      expect(sector.tags !== undefined, 2, ["sectors", index, "tags"]);
+      expect(sector.calendar !== undefined, 3, ["sectors", index, "calendar"]);
+      expect(sector.holidays !== undefined, 3, ["sectors", index, "holidays"]);
+    });
+    file.data.services.forEach((service, index) => expect(service.checklist !== undefined, 2, ["services", index, "checklist"]));
+    expect(file.data.announcements !== undefined, 3, ["announcements"]);
   });
 
 export type ConfigurationFile = z.infer<typeof configurationFileSchema>;
@@ -209,6 +247,12 @@ export type FieldItem = ServiceItem["fields"][number];
 export type StageItem = ServiceItem["stages"][number];
 export type TagItem = NonNullable<SectorItem["tags"]>[number];
 export type ChecklistItem = NonNullable<ServiceItem["checklist"]>[number];
+export type SectorCalendarItem = NonNullable<SectorItem["calendar"]>;
+export type HolidayItem = ConfigurationData["holidays"][number];
+export type AnnouncementItem = NonNullable<ConfigurationData["announcements"]>[number];
+
+/** An announcement has no name of its own: its start and title identify it ("2026-12-01T12:00:00.000Z Manutenção"). */
+export const announcementKey = (announcement: Pick<AnnouncementItem, "startsAt" | "title">) => `${announcement.startsAt} ${announcement.title}`;
 
 /** How a key is compared: the database compares these names ignoring case (citext). */
 export const keyOf = (value: string) => value.trim().toLocaleLowerCase("pt-BR");
@@ -242,7 +286,9 @@ export function repeatedKeys(data: ConfigurationData): string[] {
     check(`${sector.name} › regras de escalonamento`, sector.escalationRules.map((rule) => rule.name));
     check(`${sector.name} › respostas prontas`, sector.cannedResponses.map((response) => response.title));
     check(`${sector.name} › etiquetas`, (sector.tags ?? []).map((tag) => tag.name));
+    check(`${sector.name} › feriados`, (sector.holidays ?? []).map((holiday) => holiday.day));
   }
+  check("avisos", (data.announcements ?? []).map(announcementKey));
   for (const service of data.services) {
     check(`${service.name} › campos`, service.fields.map((field) => field.label));
     check(`${service.name} › documentos`, service.documents.map((document) => document.name));

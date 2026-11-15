@@ -32,6 +32,9 @@ const empty: ConfigurationSnapshot = {
   calendar: null,
   holidays: [],
   bundles: [],
+  sectorCalendars: [],
+  sectorHolidays: [],
+  announcements: [],
   emails: {},
 };
 const content = JSON.stringify({

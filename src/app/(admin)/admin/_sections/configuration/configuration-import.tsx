@@ -24,6 +24,10 @@ const KIND_LABELS: Record<ItemKind, string> = {
   calendar: "Calendário",
   holiday: "Feriado",
   bundle: "Pacote",
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 1 (version 3).
+  sectorCalendar: "Calendário do setor",
+  sectorHoliday: "Feriado do setor",
+  announcement: "Aviso",
 };
 
 const STATUS_LABELS: Record<ItemStatus, string> = { new: "Novo", changed: "Alterado", equal: "Igual" };
@@ -71,6 +75,14 @@ const FIELD_LABELS: Record<string, string> = {
   yearly: "todo ano",
   color: "cor",
   text: "texto",
+  // Version 3: the announcements' fields.
+  kind: "tipo de aviso",
+  level: "nível",
+  audienceRole: "perfil do público",
+  audienceSector: "setor do público",
+  startsAt: "início",
+  endsAt: "fim",
+  leadHours: "antecedência",
 };
 
 const count = (value: number, one: string, many: string) => `${value} ${value === 1 ? one : many}`;

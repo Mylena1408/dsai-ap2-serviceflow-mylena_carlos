@@ -2671,7 +2671,7 @@ Tarefas derivadas da seção 21 da SPEC principal. Anexos estavam fora do escopo
 
 ### SF-257 — Configuração portátil versão 3
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15. Configuração portátil versão 3: expediente próprio e feriados de cada setor e avisos que ainda não começaram; importação por chave com as regras das telas e auditoria, sem apagar nada; versões 1 e 2 aceitas. CA-COM-01 verificado.
 - **Objetivo:** Seção 7, item 1, parte E.
 - **Arquivos/módulos esperados:** `src/modules/configuration/`.
 - **Dependências:** Parte D concluída.

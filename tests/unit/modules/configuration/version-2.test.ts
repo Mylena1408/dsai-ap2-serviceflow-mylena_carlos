@@ -108,8 +108,9 @@ const facts: DestinationFacts = { sectorsWithPendingRequests: [], sectorsWithAct
 const empty = (): ConfigurationData => ({ sectors: [], categories: [], services: [], accessRoles: [], calendar: null, holidays: [], bundles: [] });
 
 describe("the format's versions (decision I19)", () => {
-  it("exports version 2; accepts version 1 without the new lists and version 2 with them", () => {
-    expect(CONFIGURATION_VERSION).toBe(2);
+  it("accepts version 1 without the new lists and version 2 with them (the export writes version 3 since SF-257)", () => {
+    // SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 1: the export moved to version 3; version 2 is still accepted.
+    expect(CONFIGURATION_VERSION).toBe(3);
     expect(configurationFileSchema.safeParse(fileOf(2, data())).success).toBe(true);
     expect(configurationFileSchema.safeParse(fileOf(1, withoutVersion2(data()))).success).toBe(true);
   });
@@ -121,7 +122,8 @@ describe("the format's versions (decision I19)", () => {
     };
     expect(paths(fileOf(1, data()))).toEqual(["data.sectors.0.tags", "data.services.0.checklist"]);
     expect(paths(fileOf(2, withoutVersion2(data())))).toEqual(["data.sectors.0.tags", "data.services.0.checklist"]);
-    expect(paths(fileOf(3, data()))).toEqual(["version"]);
+    // Version 3 exists since SF-257; a version the import does not know is refused by the version itself.
+    expect(paths(fileOf(4, data()))).toEqual(["version"]);
   });
 });
 
@@ -187,6 +189,9 @@ describe("the exported tags and checklists", () => {
     calendar: null,
     holidays: [],
     bundles: [],
+    sectorCalendars: [],
+    sectorHolidays: [],
+    announcements: [],
     emails: {},
   });
 
@@ -319,6 +324,9 @@ describe("the preview of a version 2 file", () => {
     calendar: null,
     holidays: [],
     bundles: [],
+    sectorCalendars: [],
+    sectorHolidays: [],
+    announcements: [],
     emails: {},
   };
   const store = (): ConfigurationImportStore => ({

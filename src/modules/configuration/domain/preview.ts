@@ -1,4 +1,4 @@
-import { keyOf, repeatedKeys, type ConfigurationData } from "./format";
+import { announcementKey, keyOf, repeatedKeys, type ConfigurationData } from "./format";
 
 // The import's preview (SPEC 2026-11-07-operacao-e-automacao, 6.3 item 4): each item of the file is
 // matched by its natural key with what exists and classified as new, changed (with the fields that change)
@@ -20,7 +20,11 @@ export type ItemKind =
   | "accessRole"
   | "calendar"
   | "holiday"
-  | "bundle";
+  | "bundle"
+  // SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 1 (version 3).
+  | "sectorCalendar"
+  | "sectorHoliday"
+  | "announcement";
 
 export type ItemStatus = "new" | "changed" | "equal";
 
@@ -63,12 +67,15 @@ export const ITEM_KIND_LABELS: Record<ItemKind, string> = {
   calendar: "Calendário",
   holiday: "Feriado",
   bundle: "Pacote",
+  sectorCalendar: "Calendário do setor",
+  sectorHoliday: "Feriado do setor",
+  announcement: "Aviso",
 };
 
 export const MAX_PREVIEW_PROBLEMS = 50;
 
 /** Nested lists are items of their own, never a field that changes. */
-const NESTED = new Set(["escalationRules", "cannedResponses", "tags", "fields", "documents", "stages", "articles", "checklist"]);
+const NESTED = new Set(["escalationRules", "cannedResponses", "tags", "fields", "documents", "stages", "articles", "checklist", "calendar", "holidays"]);
 
 export function changedFields(file: object, destination: object): string[] {
   const left = file as Record<string, unknown>;
@@ -175,6 +182,12 @@ export function classifyItems(data: ConfigurationData, destination: Configuratio
     // A version 1 file has no tags: nothing to classify.
     const tags = byKey(current?.tags ?? [], (tag) => tag.name);
     for (const tag of sector.tags ?? []) add("tag", pathOf(sector.name, tag.name), classify(tag, tags.get(keyOf(tag.name))));
+    // Version 3: own hours (none in the file keeps the destination's) and holidays.
+    if (sector.calendar) add("sectorCalendar", pathOf(sector.name, "Calendário"), classify(sector.calendar, current?.calendar ?? undefined));
+    const sectorHolidays = byKey(current?.holidays ?? [], (holiday) => holiday.day);
+    for (const holiday of sector.holidays ?? []) {
+      add("sectorHoliday", pathOf(sector.name, `${holiday.day} ${holiday.name}`), classify(holiday, sectorHolidays.get(keyOf(holiday.day))));
+    }
   }
 
   const categories = byKey(destination.categories, (category) => category.name);
@@ -207,6 +220,12 @@ export function classifyItems(data: ConfigurationData, destination: Configuratio
 
   const bundles = byKey(destination.bundles, (bundle) => bundle.name);
   for (const bundle of data.bundles) add("bundle", bundle.name, classify(bundle, bundles.get(keyOf(bundle.name))));
+
+  // Version 3: the announcements, by start and title.
+  const announcements = byKey(destination.announcements ?? [], announcementKey);
+  for (const announcement of data.announcements ?? []) {
+    add("announcement", announcementKey(announcement), classify(announcement, announcements.get(keyOf(announcementKey(announcement)))));
+  }
 
   return items;
 }
@@ -241,7 +260,9 @@ function collectKeys(data: ConfigurationData): string[] {
     push(`${sector.name} › regras de escalonamento`, sector.escalationRules.map((rule) => rule.name));
     push(`${sector.name} › respostas prontas`, sector.cannedResponses.map((response) => response.title));
     push(`${sector.name} › etiquetas`, (sector.tags ?? []).map((tag) => tag.name));
+    push(`${sector.name} › feriados`, (sector.holidays ?? []).map((holiday) => holiday.day));
   }
+  push("avisos", (data.announcements ?? []).map(announcementKey));
   for (const service of data.services) {
     push(`${service.name} › campos`, service.fields.map((field) => field.label));
     push(`${service.name} › documentos`, service.documents.map((document) => document.name));

@@ -1,10 +1,10 @@
 import type { AuditEntityType, Prisma, PrismaClient } from "@prisma/client";
 import { createPrismaAuditScope, planAuditEntry, type AuditActor } from "@/modules/audit";
-import { parseCalendarInput } from "@/modules/calendar";
+import { parseCalendarInput, parseSectorHoursInput } from "@/modules/calendar";
 import { runSerializableTransaction } from "@/server/db/serializable-transaction";
 import { BUSINESS_CALENDAR_AUDIT_ID } from "@/shared/business-clock";
 import type { ConfigurationApplyStore, ConfigurationApplyTransaction, ImportPlan } from "../application/apply-import";
-import { keyOf, type ConfigurationData } from "../domain/format";
+import { announcementKey, keyOf, type ConfigurationData } from "../domain/format";
 import { pathOf, type ItemKind, type ItemStatus } from "../domain/preview";
 import { CONFIGURATION_ENTITY_ID, CONFIGURATION_ENTITY_LABEL, readSnapshot } from "./prisma-configuration-export";
 import { readFacts, readPeople } from "./prisma-configuration-import";
@@ -16,6 +16,8 @@ import { readFacts, readPeople } from "./prisma-configuration-import";
 // the conditions, which point to fields), documents, stages, articles, checklist items, the sectors' rules,
 // responses and tags, roles, the calendar, holidays and bundles. Nothing is deleted. A version 1 file has no
 // tags or checklists, so the destination's stay as they are (SPEC 2026-11-08-atendimento-dia-a-dia, 9.1 item 1).
+// Version 3 adds the sectors' own hours and holidays and the announcements, after the sectors they name
+// (SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 1); a version 1 or 2 file leaves the destination's as they are.
 
 type Tx = Prisma.TransactionClient;
 
@@ -276,6 +278,41 @@ async function writePlan(client: Tx, plan: ImportPlan, actor: AuditActor): Promi
     }
   }
 
+  // Version 3: the sectors' own hours and holidays, audited as on the sector calendar's screen. A sector whose
+  // file has no hours keeps the destination's (nothing is deleted).
+  for (const sector of data.sectors) {
+    const sectorId = sectorIds.get(keyOf(sector.name))!;
+    if (sector.calendar && statusOf("sectorCalendar", pathOf(sector.name, "Calendário")) !== "equal") {
+      const hours = parseSectorHoursInput(sector.calendar);
+      const existing = await client.sectorCalendar.findUnique({ where: { sectorId }, select: { id: true } });
+      const values = { ...hours, updatedAt: now, updatedById: actor.id };
+      await save(
+        "SECTOR_CALENDAR",
+        existing ? "changed" : "new",
+        existing?.id ?? null,
+        () => client.sectorCalendar.create({ data: { sectorId, ...values }, select: { id: true } }),
+        (id) => client.sectorCalendar.update({ where: { id }, data: values, select: { id: true } }),
+      );
+    }
+    if (!sector.holidays) continue;
+    const sectorHolidayIds = new Map(
+      (await client.sectorHoliday.findMany({ where: { sectorId }, select: { id: true, day: true } })).map(({ id, day }) => [day.toISOString().slice(0, 10), id]),
+    );
+    for (const holiday of sector.holidays) {
+      await save(
+        "SECTOR_HOLIDAY",
+        statusOf("sectorHoliday", pathOf(sector.name, `${holiday.day} ${holiday.name}`)),
+        sectorHolidayIds.get(holiday.day) ?? null,
+        () =>
+          client.sectorHoliday.create({
+            data: { sectorId, day: dateOf(holiday.day), name: holiday.name, yearly: holiday.yearly, createdById: actor.id },
+            select: { id: true },
+          }),
+        (existing) => client.sectorHoliday.update({ where: { id: existing }, data: { name: holiday.name, yearly: holiday.yearly }, select: { id: true } }),
+      );
+    }
+  }
+
   // Access roles.
   const roleIds = idsByKey((await client.accessRole.findMany({ select: { id: true, name: true } })).map(({ id, name }) => ({ id, key: name })));
   for (const role of data.accessRoles) {
@@ -328,6 +365,34 @@ async function writePlan(client: Tx, plan: ImportPlan, actor: AuditActor): Promi
       () => client.serviceBundle.create({ data: values, select: { id: true } }),
       (existing) => client.serviceBundle.update({ where: { id: existing }, data: values, select: { id: true } }),
     );
+  }
+
+  // Version 3: the announcements, matched by start and title among the ones not started yet, audited as on their
+  // screen; the person who imports is their author.
+  if (data.announcements) {
+    const scheduled = await client.announcement.findMany({ where: { startsAt: { gt: now } }, select: { id: true, title: true, startsAt: true } });
+    const announcementIds = new Map(scheduled.map(({ id, title, startsAt }) => [keyOf(announcementKey({ title, startsAt: startsAt.toISOString() })), id]));
+    for (const announcement of data.announcements) {
+      const values = {
+        title: announcement.title,
+        body: announcement.body,
+        kind: announcement.kind,
+        level: announcement.level,
+        audience: announcement.audience,
+        audienceRole: announcement.audienceRole,
+        audienceSectorId: announcement.audienceSector === null ? null : sectorIds.get(keyOf(announcement.audienceSector))!,
+        startsAt: new Date(announcement.startsAt),
+        endsAt: new Date(announcement.endsAt),
+        leadHours: announcement.leadHours,
+      };
+      await save(
+        "ANNOUNCEMENT",
+        statusOf("announcement", announcementKey(announcement)),
+        announcementIds.get(keyOf(announcementKey(announcement))) ?? null,
+        () => client.announcement.create({ data: { ...values, createdById: actor.id }, select: { id: true } }),
+        (existing) => client.announcement.update({ where: { id: existing }, data: values, select: { id: true } }),
+      );
+    }
   }
 }
 

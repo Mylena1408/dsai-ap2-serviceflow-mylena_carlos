@@ -50,7 +50,8 @@ const checklistOf = (serviceId: string) => prisma.serviceChecklistItem.findMany(
 describe("the portable configuration's version 2 (CA-CMP-01)", () => {
   it("exports the sectors' tags and the services' checklists, without ids", async () => {
     const { content, file, sector, service, system, urgent, check } = await scenario();
-    expect(file.version).toBe(2);
+    // Version 3 since SF-257 (SPEC 2026-11-09-comunicacao-e-calendarios, 7 item 1); its tags and checklists are the same.
+    expect(file.version).toBe(3);
     for (const id of [system.id, urgent.id, check.id]) expect(content).not.toContain(id);
     expect(file.data.sectors.find(({ name }) => name === sector.name)?.tags).toEqual([
       { name: "Antiga", color: "gray", isActive: false },
@@ -140,15 +141,20 @@ describe("the portable configuration's version 2 (CA-CMP-01)", () => {
 
   it("a version 1 file is still accepted and leaves the destination's tags and checklists untouched", async () => {
     const { file, sector, service } = await scenario();
-    // A file as version 1 wrote it: no tags or checklists.
+    // A file as version 1 wrote it: no tags or checklists (nor version 3's calendars, holidays and announcements,
+    // which the export carries since SF-257).
+    const { announcements: _announcements, ...withoutAnnouncements } = file.data;
+    void _announcements;
     const legacy = {
       ...file,
       version: 1,
       data: {
-        ...file.data,
+        ...withoutAnnouncements,
         sectors: file.data.sectors.map((item) => {
           const copy = { ...item };
           delete copy.tags;
+          delete copy.calendar;
+          delete copy.holidays;
           return copy;
         }),
         services: file.data.services.map((item) => {

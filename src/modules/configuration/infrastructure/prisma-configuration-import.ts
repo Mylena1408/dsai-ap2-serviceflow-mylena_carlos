@@ -9,11 +9,13 @@ import { readConfigurationSnapshot } from "./prisma-configuration-export";
 type Client = PrismaClient | Prisma.TransactionClient;
 
 export async function readFacts(client: Client) {
-  const [pending, attendants] = await Promise.all([
+  const [pending, attendants, [{ now }]] = await Promise.all([
     client.sector.findMany({ where: { requests: { some: { status: { in: ["OPEN", "IN_PROGRESS"] } } } }, select: { name: true } }),
     client.sector.findMany({ where: { users: { some: { role: "ATTENDANT", isActive: true } } }, select: { name: true } }),
+    // Version 3: the announcements' end is checked against the database's clock.
+    client.$queryRaw<Array<{ now: Date }>>`SELECT now() AS "now"`,
   ]);
-  return { sectorsWithPendingRequests: pending.map(({ name }) => name), sectorsWithActiveAttendants: attendants.map(({ name }) => name) };
+  return { sectorsWithPendingRequests: pending.map(({ name }) => name), sectorsWithActiveAttendants: attendants.map(({ name }) => name), now };
 }
 
 export async function readPeople(client: Client, emails: readonly string[]) {

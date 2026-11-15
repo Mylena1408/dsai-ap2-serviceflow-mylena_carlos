@@ -1,6 +1,7 @@
 import type { ZodType } from "zod";
 import { categoryInputSchema } from "@/modules/categories";
-import { parseCalendarInput, parseHolidayInput } from "@/modules/calendar";
+import { announcementInputSchema, assertEndsInFuture, toLocalDateTimeInput } from "@/modules/announcements";
+import { parseCalendarInput, parseHolidayInput, parseSectorHoursInput } from "@/modules/calendar";
 import { cannedResponseInputSchema } from "@/modules/canned-responses";
 import { MAX_ACTIVE_CHECKLIST_ITEMS, checklistItemInputSchema } from "@/modules/checklists";
 import { documentRequirementInputSchema, MAX_ACTIVE_DOCUMENT_REQUIREMENTS } from "@/modules/document-requirements";
@@ -25,7 +26,7 @@ import { MAX_ACTIVE_SERVICE_STAGES, serviceStageInputSchema, serviceStageSetting
 import { assertApprovalLevels, parseSlaHours, serviceApprovalInputSchema, serviceInputSchema } from "@/modules/services";
 import { MAX_ACTIVE_TAGS_PER_SECTOR, tagInputSchema } from "@/modules/tags";
 import { ApplicationError, ValidationError } from "@/server/errors";
-import { keyOf, type ConfigurationData, type FieldItem, type ServiceItem } from "./format";
+import { announcementKey, keyOf, type AnnouncementItem, type ConfigurationData, type FieldItem, type ServiceItem } from "./format";
 import { byKey, classify, pathOf, type PreviewMessage } from "./preview";
 
 // The import's preview checks the file with the same rules as each configuration screen (SPEC
@@ -38,6 +39,8 @@ export interface DestinationFacts {
   /** Names of sectors with open or in-progress requests, and with active attendants. */
   sectorsWithPendingRequests: readonly string[];
   sectorsWithActiveAttendants: readonly string[];
+  /** The database's instant, for the announcements' end (version 3); the machine's when absent. */
+  now?: Date;
 }
 
 /** Valid ids that stand for references resolved by name, so the screens' schemas can be reused. */
@@ -205,6 +208,20 @@ export function validateConfiguration(file: ConfigurationData, destination: Conf
       const active = [...merge(current?.tags ?? [], sector.tags ?? [], (item) => item.name).values()].filter((item) => item.isActive);
       if (active.length > MAX_ACTIVE_TAGS_PER_SECTOR) {
         problem(pathOf(path, "tags"), `Um setor tem no máximo ${MAX_ACTIVE_TAGS_PER_SECTOR} etiquetas ativas.`);
+      }
+    }
+
+    // Version 3: the sector's own hours and holidays, by the sector calendar's screen (SPEC
+    // 2026-11-09-comunicacao-e-calendarios, 6.3 item 2).
+    if (sector.calendar && changing(sector.calendar, current?.calendar ?? undefined)) {
+      rule(() => parseSectorHoursInput(sector.calendar!), pathOf(path, "calendar"), "O calendário do setor não segue as regras da tela.", true);
+    }
+    const currentHolidays = byKey(current?.holidays ?? [], (item) => item.day);
+    for (const holiday of sector.holidays ?? []) {
+      if (changing(holiday, currentHolidays.get(keyOf(holiday.day)))) {
+        const holidayPath = pathOf(path, "holidays", holiday.day);
+        rule(() => parseHolidayInput(holiday), holidayPath, "O feriado do setor não segue as regras da tela.", true);
+        trimmed(holiday.name, pathOf(holidayPath, "name"));
       }
     }
   }
@@ -486,6 +503,51 @@ export function validateConfiguration(file: ConfigurationData, destination: Conf
         }).length === 0;
       if (!usable) problem(pathOf(path, "services", name), "O serviço não existe ou não pode estar num pacote (inativo, com categoria ou setor inativo, ou com documentos exigidos).");
     }
+  }
+
+  // Version 3: the announcements, by the announcements' screen (SPEC 2026-11-09-comunicacao-e-calendarios, 3.3).
+  const destinationAnnouncements = byKey(destination.announcements ?? [], announcementKey);
+  const now = facts.now ?? new Date();
+  for (const announcement of file.announcements ?? []) {
+    if (!changing(announcement, destinationAnnouncements.get(keyOf(announcementKey(announcement))))) continue;
+    validateAnnouncement(announcement, pathOf("announcements", announcementKey(announcement)));
+  }
+
+  function validateAnnouncement(announcement: AnnouncementItem, path: string): void {
+    const startsAt = new Date(announcement.startsAt);
+    const endsAt = new Date(announcement.endsAt);
+    if (Number.isNaN(startsAt.getTime()) || Number.isNaN(endsAt.getTime()) || startsAt.toISOString() !== announcement.startsAt || endsAt.toISOString() !== announcement.endsAt) {
+      problem(path, "O início e o fim precisam ser instantes ISO (2026-12-01T12:00:00.000Z).");
+      return;
+    }
+    check(
+      announcementInputSchema,
+      {
+        title: announcement.title,
+        body: announcement.body,
+        kind: announcement.kind,
+        level: announcement.level,
+        audience: announcement.audience,
+        audienceRole: announcement.audienceRole ?? undefined,
+        audienceSectorId: announcement.audienceSector === null ? undefined : placeholder(0),
+        startsAt: toLocalDateTimeInput(startsAt),
+        endsAt: toLocalDateTimeInput(endsAt),
+        leadHours: announcement.leadHours ?? undefined,
+      },
+      path,
+    );
+    trimmed(announcement.title, pathOf(path, "title"));
+    trimmed(announcement.body, pathOf(path, "body"));
+    // The screen's level: a maintenance is always "Atenção"; the audience's field only for that audience.
+    if (announcement.kind === "MAINTENANCE" && announcement.level !== "WARNING") problem(pathOf(path, "level"), "Uma manutenção é sempre do nível Atenção.");
+    if ((announcement.audience === "ROLE") !== (announcement.audienceRole !== null)) problem(pathOf(path, "audienceRole"), "O perfil vai só no aviso para um perfil.");
+    if ((announcement.audience === "SECTOR") !== (announcement.audienceSector !== null)) problem(pathOf(path, "audienceSector"), "O setor vai só no aviso para um setor.");
+    if ((announcement.kind === "MAINTENANCE") !== (announcement.leadHours !== null)) problem(pathOf(path, "leadHours"), "A antecedência vai só na manutenção.");
+    // 3.3 item 2: the audience's sector exists and is active in the state the import leaves.
+    if (announcement.audienceSector !== null && !activeSector(announcement.audienceSector)) {
+      problem(pathOf(path, "audienceSector"), "O setor do público não existe ou não está ativo.");
+    }
+    rule(() => assertEndsInFuture({ endsAt }, now), pathOf(path, "endsAt"), "O aviso já terminou.");
   }
 
   return problems;

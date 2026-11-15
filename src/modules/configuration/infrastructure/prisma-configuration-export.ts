@@ -16,8 +16,28 @@ const order = [{ createdAt: "asc" as const }, { id: "asc" as const }];
 
 /** The configuration read with `client`; inside a transaction, the import's application reads it this way. */
 export async function readSnapshot(client: Prisma.TransactionClient): Promise<ConfigurationSnapshot> {
-  const [sectors, escalationRules, cannedResponses, categories, services, fields, documents, stages, articles, accessRoles, calendar, holidays, bundles, tags, checklistItems] =
-    await Promise.all([
+  // Version 3: only the announcements that have not started yet, by the database's clock.
+  const [{ now }] = await client.$queryRaw<Array<{ now: Date }>>`SELECT now() AS "now"`;
+  const [
+    sectors,
+    escalationRules,
+    cannedResponses,
+    categories,
+    services,
+    fields,
+    documents,
+    stages,
+    articles,
+    accessRoles,
+    calendar,
+    holidays,
+    bundles,
+    tags,
+    checklistItems,
+    sectorCalendars,
+    sectorHolidays,
+    announcements,
+  ] = await Promise.all([
       client.sector.findMany({
         orderBy: order,
         select: { id: true, name: true, isActive: true, escalateOverdue: true, distributionMode: true, maxActivePerAttendant: true, redistributeOnAbsence: true },
@@ -99,6 +119,24 @@ export async function readSnapshot(client: Prisma.TransactionClient): Promise<Co
         orderBy: order,
         select: { serviceId: true, text: true, isRequired: true, position: true, isActive: true, conditionFieldId: true, conditionValue: true },
       }),
+      client.sectorCalendar.findMany({ orderBy: { sectorId: "asc" }, select: { sectorId: true, weekdays: true, startMinute: true, endMinute: true } }),
+      client.sectorHoliday.findMany({ orderBy: [{ sectorId: "asc" }, { day: "asc" }], select: { sectorId: true, day: true, name: true, yearly: true } }),
+      client.announcement.findMany({
+        where: { startsAt: { gt: now } },
+        orderBy: [{ startsAt: "asc" }, { id: "asc" }],
+        select: {
+          title: true,
+          body: true,
+          kind: true,
+          level: true,
+          audience: true,
+          audienceRole: true,
+          audienceSectorId: true,
+          startsAt: true,
+          endsAt: true,
+          leadHours: true,
+        },
+      }),
     ]);
 
   const userIds = new Set<string>();
@@ -129,6 +167,9 @@ export async function readSnapshot(client: Prisma.TransactionClient): Promise<Co
     calendar,
     holidays: holidays.map((holiday) => ({ ...holiday, day: holiday.day.toISOString().slice(0, 10) })),
     bundles,
+    sectorCalendars,
+    sectorHolidays: sectorHolidays.map((holiday) => ({ ...holiday, day: holiday.day.toISOString().slice(0, 10) })),
+    announcements,
     emails: Object.fromEntries(people.map((person) => [person.id, person.email])),
   };
 }
