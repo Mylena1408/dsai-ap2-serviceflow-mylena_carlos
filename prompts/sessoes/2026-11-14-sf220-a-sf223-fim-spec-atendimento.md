@@ -220,3 +220,15 @@
 > terminou?
 
 67. Respondido com o andamento (build pronto, E2E rodando) e depois com o resultado.
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+68. Contagem em `b2a11dd`: 91.822 `added` (aplicação 45.652, testes 45.921, scripts 249), líquido 89.334.
+
+> comece a fazer modificações na tela para o usuário visando a responsividade das telas, opção de colocar contraste, opção de fala para atendimento de pessoas com baixa visão. Antes,estime quanto tempo de trabalho e horas vai ser necessário para implementar e quantas linhas de código podem ser geradas
+
+69. Levantamento (41 páginas, 23 tabelas, 3 regras de tela pequena no CSS, nenhum tema de alto contraste, 87 cores fora das variáveis, nenhuma leitura em voz alta) e estimativa: 12 a 18 h em 7 a 9 tarefas, 850 a 1.450 linhas de TS contadas e 400 a 650 de CSS (não contado). Nada implementado: pede SPEC antes (AGENTS.md); três decisões propostas (cookie para as escolhas, leitura em voz alta sem comandos por voz, sem escala de letra).
+
+> termine a sf-256
+
+70. Commit `6895fa0` (SF-256).
