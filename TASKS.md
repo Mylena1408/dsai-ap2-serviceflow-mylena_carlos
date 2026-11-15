@@ -2765,7 +2765,7 @@ Telas responsivas, alto contraste e leitura em voz alta (`SPEC/2026-11-15-acessi
 
 ### SF-266 — Varredura do axe-core nos dois temas e E2E da parte B
 
-- **Estado:** Pendente.
+- **Estado:** Concluída em 2026-11-15: `accessibility-scan.spec.ts` nas 70 páginas e nos dois temas, sem violação depois de corrigir quatro alvos pequenos; revisão da parte B na seção 5.5 da SPEC. CA-CON-02 marcado.
 - **Objetivo:** Seção 5.4 (decisão L5).
 - **Arquivos/módulos esperados:** `tests/e2e/`.
 - **Dependências:** SF-265.

@@ -21,7 +21,7 @@ export default async function HomePage() {
           <p>Escolha um perfil para explorar o ServiceFlow.</p>
           <DemoSignInButtons />
           {/* SPEC 2026-11-15-ajuda-faq, 2 item 4: help before signing in. */}
-          <p>
+          <p className="entrance-help">
             <Link href="/help">Ajuda e perguntas frequentes</Link>
           </p>
         </section>

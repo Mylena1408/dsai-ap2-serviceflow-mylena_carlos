@@ -2064,6 +2064,22 @@ p {
   margin: 8px 0 0;
 }
 
+/* SPEC 2026-11-15-acessibilidade, 5.4 (SF-266): targets of at least 24 x 24 px with room around them (WCAG 2.2,
+   2.5.8), found by the axe-core scan: the line that opens a details, and the help link below the entrance buttons. */
+summary {
+  min-height: 24px;
+}
+
+.entrance-help {
+  margin: 18px 0 0;
+}
+
+.entrance-help a {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+}
+
 /* SPEC 2026-11-15-acessibilidade, 5.1 item 1 (SF-265): the bar at the top of every screen with "Alto contraste",
    aligned with the area's top bar; SF-269 turns it into the "Acessibilidade" button and its panel. */
 .accessibility-bar {

@@ -1,7 +1,7 @@
 # SPEC — Acessibilidade: telas responsivas, alto contraste e leitura em voz alta
 
 **Data:** 2026-11-15
-**Status:** Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"). Decisões L1 a L7 aprovadas como propostas em 2026-11-15 ("pode começar a SPEC de acessibilidade com as decisões propostas"). Em andamento: parte A concluída (SF-260 a SF-263, CA-RSP-01 a 04); parte B: SF-264 e SF-265 concluídas.
+**Status:** Escrita em 2026-11-15, a pedido da responsável ("escreva a SPEC de acessibilidade"). Decisões L1 a L7 aprovadas como propostas em 2026-11-15 ("pode começar a SPEC de acessibilidade com as decisões propostas"). Em andamento: parte A concluída (SF-260 a SF-263, CA-RSP-01 a 04); parte B concluída (SF-264 a SF-266, CA-CON-01 a 03).
 **Projeto:** ServiceFlow
 **Referências:**
 - WCAG 2.2: 1.4.3 (contraste mínimo, AA), 1.4.6 (contraste aprimorado, AAA), 1.4.10 (refluxo: sem rolagem nas duas direções a 320 px CSS), 1.4.11 (contraste de elementos não textuais), 2.1.1 (teclado), 2.4.7 (foco visível), 4.1.2 (nome, função e valor).
@@ -109,8 +109,16 @@ Quem não usa os recursos novos continua com as telas como hoje, com duas exceç
 ### 5.4 Critérios de aceitação
 
 - [x] **CA-CON-01** — A opção liga e desliga o tema na hora, em todas as telas, e a escolha vale nas próximas visitas. *Verificado em 2026-11-15 (SF-265): E2E `contrast-preference.spec.ts` (liga na entrada, sem login; o cookie vale um ano; a próxima visita, o login e a área do solicitante já abrem no alto contraste; desligado, volta ao normal na hora e na visita seguinte; o botão está na entrada, no login, na ajuda, nas três áreas e na administração) e unitários da preferência e do script.*
-- [ ] **CA-CON-02** — A varredura do `axe-core` não acusa violação AA nas páginas da lista, nos dois temas, nem de contraste aprimorado (7:1) no alto contraste.
+- [x] **CA-CON-02** — A varredura do `axe-core` não acusa violação AA nas páginas da lista, nos dois temas, nem de contraste aprimorado (7:1) no alto contraste. *Verificado em 2026-11-15 (SF-266): E2E `accessibility-scan.spec.ts` com o `axe-core` 4.13 de `node_modules` (decisão L5) nas 70 páginas, nos dois temas, com as regras WCAG 2.0, 2.1 e 2.2 A/AA e, no alto contraste, também a de contraste aprimorado (7:1). A primeira varredura achou só alvos pequenos (2.5.8) no tema normal, em 4 páginas, corrigidos (seção 5.5); depois, nenhuma violação nos dois temas.*
 - [x] **CA-CON-03** — O tema normal não muda (as cores de hoje ficam iguais); sem escolha, vale a preferência do sistema. *Primeira metade verificada em 2026-11-15 (SF-264): as cores calculadas de todos os elementos das 72 páginas (26.915 estilos, com os pseudoelementos) foram comparadas antes e depois da troca, sem nenhuma diferença; o E2E `high-contrast-theme.spec.ts` liga e desliga o tema e confere que cada elemento volta às cores de antes. Segunda metade verificada na SF-265: sem escolha, o tema segue `prefers-contrast: more`, também quando ela muda com a página aberta, sem gravar cookie (E2E e unitários com as dez combinações de cookie e sistema).*
+
+### 5.5 Revisão da parte B (SF-266, 2026-11-15)
+
+- **Critérios:** CA-CON-01 a 03 marcados.
+- **Varredura:** a primeira rodada no tema normal achou um único tipo de violação, `target-size` (WCAG 2.2, 2.5.8, alvo de pelo menos 24 × 24 px ou com espaço em volta), em 4 páginas: o link "Ajuda e perguntas frequentes" logo abaixo dos botões da entrada (20 px de altura, colado neles; acrescentado na SF-272) e a linha que abre cada serviço em "Checklists" (23,3 px), no gestor e na administração. Correção: toda linha de abrir (`summary`) com pelo menos 24 px, e o link da entrada com 24 px e espaço acima. No alto contraste, nenhuma violação, nem de 7:1.
+- **Conferência da varredura:** um texto cinza (`#777`) posto de propósito no alto contraste foi acusado pela regra de 7:1; o `axe-core` deixa como "inconclusivos" só os números dos eixos dos gráficos (texto curto demais para julgar), que usam `--muted`, conferida em 7:1 pelo unitário do tema.
+- **Garantia:** o tema normal tem as mesmas cores de antes (SF-264); as únicas mudanças visíveis para quem não usa o alto contraste são o botão "Alto contraste" no topo e os alvos de 24 px acima.
+- **Dependência do `axe-core`:** ele vem do `eslint-plugin-jsx-a11y` (via `eslint-config-next`), não do `package.json`; se um dia sair de lá, a varredura falha ao injetar o arquivo, e a escolha passa a ser declarar a dependência (alternativa da decisão L5).
 
 ## 6. Parte C — Leitura em voz alta
 

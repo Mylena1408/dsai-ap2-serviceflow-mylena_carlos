@@ -340,3 +340,20 @@
 > faça o commit da sf-265 e siga para a sf-266
 
 103. E2E completo 69/70: o teste do tema da SF-264 punha o atributo na mão e corria contra a hidratação; passou a usar o botão (3 rodadas verdes). Commit da SF-265.
+104. SF-266: E2E `accessibility-scan.spec.ts` (axe-core nas 70 páginas, dois temas); 4 alvos pequenos corrigidos; varredura conferida com um texto de baixo contraste plantado; revisão da parte B (seção 5.5); CA-CON-02 marcado.
+105. O E2E completo e o PostgreSQL portátil foram encerrados por falta de memória.
+
+> sim, rode o E2E completo e faça o commit
+
+106. PostgreSQL religado; E2E completo 72/72.
+
+> siga para a sf-267
+
+107. SF-267 escrita em arquivos novos enquanto o E2E rodava (domínio sem uso nas páginas); registros dela depois do commit da SF-266.
+
+> faça o commit da sf-266 e da sf-267
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+108. Contagem em `1c41cb1`: 94.685 `added` (aplicação 46.814, testes 47.622, scripts 249), líquido 92.202; faltam 5.315. SF-262 a SF-265 somaram 639.
+109. Commits da SF-266 e da SF-267.
