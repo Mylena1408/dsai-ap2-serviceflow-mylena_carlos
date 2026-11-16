@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCatalogReaderKind, groupPublishedServices, listPublishedServices } from "@/modules/services";
 import { CATALOG_SECTION_TITLES } from "@/shared/requester-kinds";
 import { listCatalogBundles } from "@/modules/service-bundles";
+import { STUDENT_GUIDE_PATH, STUDENT_GUIDE_TITLE } from "@/modules/help";
 import { requireRequesterPageAccess } from "../page-access";
 
 export default async function CatalogPage() {
@@ -34,6 +35,12 @@ export default async function CatalogPage() {
             ? "Você vê os serviços oferecidos ao público geral e os que valem para todos."
             : "Você vê os serviços oferecidos aos alunos e os que valem para todos."}
         </p>
+        {/* SPEC 2026-11-16-guia-do-estudante, 2 item 7: the guide for the students. */}
+        {kind === "STUDENT" ? (
+          <p>
+            <Link href={STUDENT_GUIDE_PATH}>{STUDENT_GUIDE_TITLE}</Link>: como pedir, acompanhar e avaliar um serviço.
+          </p>
+        ) : null}
       </section>
       {bundles.length > 0 ? (
         <section className="content-section" aria-labelledby="catalog-bundles">

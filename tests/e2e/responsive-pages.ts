@@ -14,7 +14,8 @@ export type CheckedPage = { path: string } | { from: string; link: RegExp; name:
 
 const ID = "[0-9a-f-]{36}";
 
-export const PUBLIC_PAGES: CheckedPage[] = [{ path: "/" }, { path: "/login" }, { path: "/help" }];
+// SPEC 2026-11-16-guia-do-estudante, rule 3: the student's guide, without a session and as a requester.
+export const PUBLIC_PAGES: CheckedPage[] = [{ path: "/" }, { path: "/login" }, { path: "/help" }, { path: "/help/aluno" }];
 
 const ACCOUNT_PAGES: CheckedPage[] = [
   { path: "/help" },
@@ -35,6 +36,7 @@ export const PROFILE_PAGES: Record<Profile, CheckedPage[]> = {
     { from: "/catalog", link: new RegExp(`^/catalog/${ID}$`), name: "/catalog/{id}" },
     // SPEC 2026-11-15-mapa-de-servicos, CA-MAP-05.
     { path: "/catalog/map" },
+    { path: "/help/aluno" },
     { path: "/requests" },
     { from: "/requests", link: new RegExp(`^/requests/${ID}$`), name: "/requests/{id}" },
     { path: "/requests/following" },

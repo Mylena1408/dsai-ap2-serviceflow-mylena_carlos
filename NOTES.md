@@ -3369,3 +3369,16 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Resultados (antes do E2E completo):** typecheck, lint e build OK; unitários 2.045/2.045 (com os novos); integração verde, com os testes novos `requester-kinds`, `configuration-version-4`, `queue-requester-kind` e `reports-requester-kind`; E2E `requester-kinds.spec.ts` 1/1.
 - **Pendente da conversa anterior, sem commit:** a correção do teste de concorrência do lote (`queue-batch.test.ts`).
 - **E2E completo:** a primeira rodada foi encerrada pelo Claude Code por falta de memória (12 testes tinham passado); a pedido da responsável, banco religado e rodada repetida: 81 de 83, com as duas falhas pelos mesmos efeitos já registrados (a versão 4 da configuração e a coluna nova do CSV, em `configuration-portable.spec.ts` e `dashboard.spec.ts`); asserções atualizadas e os dois testes passaram.
+
+## Envio dos tipos de solicitante para a produção (2026-11-16)
+
+- **Rotina:** backup → conferência → migration → push, a pedido da responsável ("faça o push").
+- **Backup:** `serviceflow-2026-11-16-pre-deploy.dump`, cifrado pelo EFS. A conferência completa falhou na primeira tentativa por uma permissão ao papel `neon_superuser` (só existe no Neon) no fim do SQL: os dados tinham entrado, mas o `psql` parou com erro. Refeita com `pg_restore --no-acl`: 72 de 72 tabelas com as mesmas contagens da produção (a primeira comparação também acusou diferença só por fim de linha CRLF; `diff --strip-trailing-cr`).
+- **Migration no Neon:** `20261116100000_requester_kinds`, `prisma migrate status` em dia (63). Produção depois: mesmas contagens, 5 solicitantes "Aluno", 9 serviços "ambos", 38 solicitações "Aluno"; nenhum outro perfil com tipo.
+
+## SF-282 e SF-283 — Guia rápido do estudante (2026-11-16)
+
+- **Pedido:** "crie o manual do aluno, um guia rápido para solicitar serviços" e, depois, "prossiga com o guia do estudante do nível superior". Dos três formatos oferecidos, o agente seguiu a recomendação já feita (página dentro da Ajuda), registrada na SPEC como escolha do agente, revisável.
+- **Conteúdo no código,** como a Ajuda: sete passos, "Antes de enviar", as situações (com os rótulos compartilhados das telas) e "Sozinho ou com atendimento". Um teste procura no código cada nome de tela citado, para o guia não envelhecer calado quando uma tela mudar de nome.
+- **Leitura mínima:** só o perfil e, para o solicitante, o tipo; os nomes de tela viram links só para o solicitante.
+- **Resultados:** unitários 2.081/2.081; lint, typecheck e build OK; E2E do guia, da Ajuda, dos tipos, do mapa, responsivo e axe verdes (10 de 10). Integração não rodada (nada de banco mudou).

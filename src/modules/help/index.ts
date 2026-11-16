@@ -11,3 +11,21 @@ export {
   type HelpRole,
   type HelpTopic,
 } from "./domain/help";
+// The student's quick guide (SPEC 2026-11-16-guia-do-estudante; SF-282).
+export {
+  BEFORE_SENDING,
+  NEEDS_ATTENDANCE,
+  ON_YOUR_OWN,
+  STUDENT_GUIDE_PATH,
+  STUDENT_GUIDE_STEPS,
+  STUDENT_GUIDE_TITLE,
+  guideLinksEnabled,
+  guideNoticeFor,
+  guideScreenLabels,
+  guideSituations,
+  type GuideNotice,
+  type GuideScreen,
+  type GuideSituation,
+  type GuideStep,
+  type GuideViewer,
+} from "./domain/student-guide";

@@ -2384,6 +2384,76 @@ main[tabindex="-1"]:focus {
   margin: 0;
 }
 
+/* SPEC 2026-11-16-guia-do-estudante (SF-282): the numbered steps, the tips and the situations of the student's
+   quick guide; printed, only the guide (G5). */
+.guide-notice {
+  margin: 0 0 18px;
+}
+
+.guide-steps {
+  margin: 0;
+  padding-left: 24px;
+}
+
+.guide-steps > li {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+
+.guide-steps > li:first-child {
+  border-top: 0;
+}
+
+.guide-steps h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.guide-steps ul,
+.guide-checklist {
+  margin: 0 0 6px;
+  padding-left: 20px;
+}
+
+.guide-tip {
+  margin: 6px 0 0;
+  padding: 8px 12px;
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-small);
+  background: var(--brand-soft);
+}
+
+.guide-tip .eyebrow {
+  margin-right: 6px;
+}
+
+.guide-situations {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.guide-situations dt {
+  font-weight: 600;
+}
+
+.guide-situations dd {
+  margin: 0;
+  color: var(--muted);
+}
+
+@media print {
+  body:has(.student-guide) .app-topbar,
+  body:has(.student-guide) .accessibility-bar,
+  body:has(.student-guide) .skip-link {
+    display: none;
+  }
+
+  .student-guide .guide-steps > li {
+    break-inside: avoid;
+  }
+}
+
 /* SPEC 2026-11-15-acessibilidade, part B (SF-264; decision L4): the high contrast theme, on when the page carries
    data-contrast="high" (SF-265 sets it). Black background, white text, links and focus in yellow, every border
    visible, links always underlined, no gradient nor shadow. Text tokens reach at least 7:1 on black (AAA, 1.4.6) and

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
 import { SignOutButton } from "@/modules/auth";
-import { searchHelp, type HelpRole } from "@/modules/help";
+import { STUDENT_GUIDE_PATH, STUDENT_GUIDE_TITLE, searchHelp, type HelpRole } from "@/modules/help";
 import { getCurrentUser } from "@/server/auth";
 import { HelpContent } from "@/app/_components/help";
 
@@ -44,6 +44,10 @@ export default async function HelpPage({ searchParams }: HelpPageProps) {
             <p className="eyebrow">Ajuda</p>
             <h1>Ajuda e perguntas frequentes</h1>
             <p>Como usar o ServiceFlow{role ? " no seu perfil" : ""}. Procure pela busca ou abra cada pergunta.</p>
+            {/* SPEC 2026-11-16-guia-do-estudante, 2 item 7. */}
+            <p>
+              Estudante? Veja o <Link href={STUDENT_GUIDE_PATH}>{STUDENT_GUIDE_TITLE}</Link>, do primeiro acesso à avaliação.
+            </p>
           </div>
         </header>
         <HelpContent result={result} />

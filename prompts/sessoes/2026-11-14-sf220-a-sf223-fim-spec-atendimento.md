@@ -450,3 +450,17 @@
 > religue o banco de dados de testes,rode o E2E conpleto e faça o commit
 
 131. Banco religado; E2E completo 81/83 (versão 4 e coluna do CSV em dois E2E antigos; asserções atualizadas, 2/2). Commits da correção do teste do lote e da SPEC dos tipos de solicitante.
+
+> religue o banco de dados de testes,rode o E2E conpleto e faça o commit
+
+> faça o push
+
+132. Backup cifrado, conferência (72 tabelas iguais, agora com `pg_restore --no-acl` por causa do papel `neon_superuser`), migration `20261116100000_requester_kinds` no Neon (63/63) e push de `dc1678f` e `a67300c`.
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+133. 98.027 linhas adicionadas sobre a baseline (+859 dos tipos de solicitante); faltam 1.973 para 100.000.
+
+> prossiga com o guia do estudante do nivel superior
+
+134. SPEC `2026-11-16-guia-do-estudante.md` (formato: página na Ajuda) e SF-282 e SF-283: guia em `/help/aluno`, links na Ajuda e no catálogo do aluno, testes unitários e E2E.

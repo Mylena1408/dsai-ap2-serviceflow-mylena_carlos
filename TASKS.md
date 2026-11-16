@@ -2905,3 +2905,17 @@ O solicitante passa a ter um tipo (aluno, interno; público geral, externo), cad
 - **Estado:** Concluída em 2026-11-16: E2E `requester-kinds.spec.ts`; revisão na seção 10 da SPEC (5 de 5 critérios).
 - **SPEC:** `SPEC/2026-11-16-tipos-de-solicitante.md`.
 
+## Guia rápido do estudante — SPEC de 2026-11-16
+
+Guia passo a passo para o estudante de nível superior pedir serviços (`SPEC/2026-11-16-guia-do-estudante.md`), na página `/help/aluno`. Pedido da responsável em 2026-11-16. Concluída em 2026-11-16.
+
+### SF-282 — Conteúdo do guia, a página e os links
+
+- **Estado:** Concluída em 2026-11-16: `src/modules/help/domain/student-guide.ts`, página `/help/aluno`, componente `student-guide.tsx`, links na Ajuda e no catálogo do aluno, estilos e impressão.
+- **SPEC:** `SPEC/2026-11-16-guia-do-estudante.md`.
+
+### SF-283 — Testes e revisão final
+
+- **Estado:** Concluída em 2026-11-16: unitário `student-guide.test.ts`, E2E `student-guide.spec.ts`, guia na verificação responsiva e na varredura axe; revisão na seção 9 da SPEC (5 de 5 critérios).
+- **SPEC:** `SPEC/2026-11-16-guia-do-estudante.md`.
+
