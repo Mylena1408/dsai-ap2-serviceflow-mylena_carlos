@@ -2836,3 +2836,37 @@ Página "Ajuda" com perguntas frequentes por perfil e busca (`SPEC/2026-11-15-aj
 - **Critérios de conclusão:** CA-AJD-01 a 04.
 - **Testes relacionados:** Unitários e E2E.
 - **SPEC:** `SPEC/2026-11-15-ajuda-faq.md`.
+
+## Mapa de serviços do solicitante — SPEC de 2026-11-15
+
+Página "Mapa de serviços" na área do solicitante, com o desenho dos setores e das ligações entre os serviços e os três grupos (resolve sozinho, atendimento, atendimento especializado) (`SPEC/2026-11-15-mapa-de-servicos.md`). Decisões M1 a M3 escolhidas pela responsável em 2026-11-15.
+
+### SF-273 — Módulo do mapa: processos, classificação e leitura do banco
+
+- **Estado:** Concluída em 2026-11-15: módulo `service-map` (domínio, leitura do banco, verificação de perfil); 15 unitários e 2 de integração.
+- **Objetivo:** Seção 4 da SPEC.
+- **Arquivos/módulos esperados:** `src/modules/service-map/`.
+- **Dependências:** SPEC aprovada.
+- **Critérios de conclusão:** CA-MAP-02 e CA-MAP-03 pelas regras.
+- **Testes relacionados:** Unitários e integração.
+- **SPEC:** `SPEC/2026-11-15-mapa-de-servicos.md`.
+
+### SF-274 — Página /catalog/map com o desenho, os grupos e os links
+
+- **Estado:** Concluída em 2026-11-15: página, desenho dos setores, três grupos, caminho de cada serviço, links no menu e no catálogo; 6 unitários da tela.
+- **Objetivo:** Seção 3 da SPEC.
+- **Arquivos/módulos esperados:** `src/app/(requester)/catalog/map/`, `src/app/_components/`, layout do solicitante, `globals.css`.
+- **Dependências:** SF-273.
+- **Critérios de conclusão:** CA-MAP-01 e CA-MAP-04.
+- **Testes relacionados:** Unitários.
+- **SPEC:** `SPEC/2026-11-15-mapa-de-servicos.md`.
+
+### SF-275 — E2E, varreduras e revisão final do mapa
+
+- **Estado:** Concluída em 2026-11-15: E2E `service-map.spec.ts`, página nas varreduras de larguras e do `axe-core`, revisão final na seção 9 da SPEC (5 de 5 critérios).
+- **Objetivo:** Seções 6 e 7 da SPEC.
+- **Arquivos/módulos esperados:** `tests/e2e/`, SPEC.
+- **Dependências:** SF-274.
+- **Critérios de conclusão:** CA-MAP-05 e revisão de todos os critérios.
+- **Testes relacionados:** E2E.
+- **SPEC:** `SPEC/2026-11-15-mapa-de-servicos.md`.

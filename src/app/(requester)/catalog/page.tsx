@@ -20,6 +20,8 @@ export default async function CatalogPage() {
         </div>
         <nav className="page-nav" aria-label="Navegação do solicitante">
           <Link href="/requests">Minhas solicitações</Link>
+          {/* SPEC 2026-11-15-mapa-de-servicos, section 3 item 5. */}
+          <Link href="/catalog/map">Mapa de serviços</Link>
         </nav>
       </header>
       {bundles.length > 0 ? (

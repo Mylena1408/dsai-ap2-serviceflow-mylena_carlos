@@ -2213,6 +2213,158 @@ main[tabindex="-1"]:focus {
   }
 }
 
+/* SPEC 2026-11-15-mapa-de-servicos (SF-274): the requester's map of services. The drawing scales with the card;
+   the three groups carry a colored mark beside the text, never the color alone. */
+.map-diagram {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  margin: 8px auto 12px;
+}
+
+.map-sector rect {
+  fill: var(--brand-soft);
+  stroke: var(--brand);
+  stroke-width: 1.5;
+}
+
+.map-sector-name {
+  fill: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.map-sector-count {
+  fill: var(--muted);
+  font-size: 11px;
+}
+
+.map-link {
+  stroke: var(--brand-strong);
+  stroke-width: 2;
+}
+
+.map-link-bundle {
+  stroke-dasharray: 6 5;
+}
+
+.map-arrow-head {
+  fill: var(--brand-strong);
+}
+
+.map-links,
+.map-actions,
+.map-reasons {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+.map-legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-legend li {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-left-width: 6px;
+  border-radius: var(--radius-small);
+  font-size: 13px;
+}
+
+.map-legend-self {
+  border-left-color: var(--success);
+}
+
+.map-legend-attendance {
+  border-left-color: var(--brand);
+}
+
+.map-legend-specialized {
+  border-left-color: var(--star);
+}
+
+.map-cards {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--card-line);
+  border-radius: var(--radius-small);
+  background: var(--card-surface);
+}
+
+.map-card h4,
+.map-card p {
+  margin: 0;
+}
+
+.map-path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 6px 22px;
+  margin: 4px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-step {
+  position: relative;
+  display: grid;
+  min-width: 90px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+  background: var(--surface);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+/* The arrow between two steps is drawing only: the ordered list already says the order. */
+.map-step:not(:last-child)::after {
+  position: absolute;
+  top: 50%;
+  right: -17px;
+  color: var(--muted);
+  content: "→" / "";
+  transform: translateY(-50%);
+}
+
+.map-step-approval {
+  border-color: var(--star);
+}
+
+.map-step-attendance {
+  border-color: var(--brand);
+}
+
+.map-step-sector {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.map-documents {
+  font-size: 13px;
+}
+
 /* SPEC 2026-11-15-acessibilidade, part B (SF-264; decision L4): the high contrast theme, on when the page carries
    data-contrast="high" (SF-265 sets it). Black background, white text, links and focus in yellow, every border
    visible, links always underlined, no gradient nor shadow. Text tokens reach at least 7:1 on black (AAA, 1.4.6) and

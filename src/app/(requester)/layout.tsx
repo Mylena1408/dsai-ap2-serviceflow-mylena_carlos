@@ -21,6 +21,8 @@ export default function RequesterLayout({
         {/* SPEC 2026-11-15-acessibilidade, 4.1 item 1: behind the "Menu" button below 760 px. */}
         <CollapsibleNav label="Navegação principal">
           <Link href="/catalog">Catálogo</Link>
+          {/* SPEC 2026-11-15-mapa-de-servicos, decision M1. */}
+          <Link href="/catalog/map">Mapa de serviços</Link>
           <Link href="/requests">Minhas solicitações</Link>
           <NotificationsLink href="/notifications" />
           {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 4: only with announcements. */}

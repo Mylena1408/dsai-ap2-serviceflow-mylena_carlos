@@ -404,3 +404,12 @@
 
 > terminada esta tarefa verifique as possibilidades de incrementar microserviços para o usuário
 
+> deixe aqui o link de acesso
+
+121. Links do sistema publicado, da ajuda, da API, do repositório e do Actions.
+
+> na aba de usuário instale uma area que apresenta de maneira ilustrativa os serviços e os relacionamentos entre os microsserviços,para que o usuário possa se localizar e descreva quais tipos de problemas ele pode resolver sozinho e quais precisa de atendimento ou acompanhamento espaecializado, considere atividade especializada aquela que necessite com mais de um processo para concluir
+
+122. Perguntas: área do solicitante, serviços da organização, classificação pela configuração (escolhidas). SPEC `2026-11-15-mapa-de-servicos.md`; SF-273 a SF-275: módulo `service-map`, página `/catalog/map`, E2E e varreduras.
+
+> reporte os resultados em português do Brasil

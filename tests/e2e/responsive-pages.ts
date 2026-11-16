@@ -33,6 +33,8 @@ export const PROFILE_PAGES: Record<Profile, CheckedPage[]> = {
   Solicitante: [
     { path: "/catalog" },
     { from: "/catalog", link: new RegExp(`^/catalog/${ID}$`), name: "/catalog/{id}" },
+    // SPEC 2026-11-15-mapa-de-servicos, CA-MAP-05.
+    { path: "/catalog/map" },
     { path: "/requests" },
     { from: "/requests", link: new RegExp(`^/requests/${ID}$`), name: "/requests/{id}" },
     { path: "/requests/following" },
