@@ -1,7 +1,7 @@
 # SPEC — Política de backup e recuperação do banco
 
 **Data:** 2026-11-02
-**Status:** Aprovada em 2026-11-02 pela responsável (opção "Semanal + antes de deploy"). Teste de restauração executado em 2026-11-02 (seção 6).
+**Status:** Aprovada em 2026-11-02 pela responsável (opção "Semanal + antes de deploy"). Teste de restauração executado em 2026-11-02 (seção 6). **Concluída em 2026-11-02** (SF-028; 3 de 3 critérios); a rotina segue em uso a cada migration de produção (último registro: 2026-11-16).
 **Projeto:** ServiceFlow
 **Referências:** `SPEC/2026-09-30-catalogo-e-solicitacoes.md` (seção 18, "Política de backup e recuperação do banco definida para o ambiente de execução antes de uso com dados reais"; seção 21, objetos do bucket), `SPEC/2026-11-02-auditoria-lgpd.md` (dados pessoais), tarefa SF-028
 

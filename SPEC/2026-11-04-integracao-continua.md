@@ -1,7 +1,7 @@
 # SPEC — Integração contínua (CI) no GitHub Actions
 
 **Data:** 2026-11-04  
-**Status:** Aprovada  
+**Status:** Aprovada. **Concluída em 2026-11-16** (SF-143; CA-CI-06 verificado com o primeiro workflow inteiro verde, execução `43842882354`).  
 **Projeto:** ServiceFlow  
 
 ## 1. Objetivo
@@ -42,7 +42,7 @@ A responsável aprovou em 2026-11-06 ("comece pelo item 1"; opção "Binário of
 Novos critérios:
 
 - [x] CA-CI-05: o CI varre o histórico completo com gitleaks em versão e SHA-256 fixos, e falha se encontrar segredo. *Verificado em 2026-11-06: a mesma versão rodou localmente sobre os 202 commits, com 0 achados depois da revisão dos 2 falsos positivos; checksum e extração simulados.*
-- [ ] CA-CI-06: o workflow passa inteiro no GitHub. *A verificar na primeira execução depois do push.*
+- [x] CA-CI-06: o workflow passa inteiro no GitHub. *Verificado em 2026-11-16: execução `43842882354`, commit `5890c36`, concluída com sucesso (busca de segredos, typecheck, lint, build, unitários, integração e E2E).*
 
 **Atualização 2026-11-06 (depois do push de `30c2a4e`):** a execução `42157711665` passou pelo gitleaks, pela integração e pela instalação do Playwright, o que confirma as correções 1 a 3. A falha foi no passo de E2E, sem anotação que dissesse qual teste. O Playwright passa a usar também o reporter `github` quando `CI` está definido, para que a próxima execução mostre o teste que falhou nas anotações públicas.
 
@@ -65,3 +65,4 @@ A responsável aprovou em 2026-11-08 ("pode fazer a opção 2"). Duas execuçõe
 
 **Atualização 2026-11-16 (commit `a67300c`):** pela primeira vez desde 2026-11-14 o workflow chegou ao fim do E2E: 82 de 83 aprovados (a busca de segredos, o typecheck, o lint, o build, os unitários e a integração passaram). A falha foi o menu do solicitante a 1280 px, que no Linux do CI quebra em duas linhas por causa da fonte; o teste foi ajustado (seção 12 da SPEC de acessibilidade). O CA-CI-06 continua aberto até uma execução inteira verde.
 
+**Atualização 2026-11-16 (execução `43842882354`, commit `5890c36`):** o workflow passou inteiro, o primeiro verde desde `f4bad83` (14/11). CA-CI-06 marcado. A execução do commit `6eafee3` (só o README) foi cancelada pelo GitHub quando chegou o push seguinte.

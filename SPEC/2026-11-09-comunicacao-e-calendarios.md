@@ -1,7 +1,7 @@
 # SPEC — Comunicação, importação, relatórios e calendários
 
 **Data:** 2026-11-09
-**Status:** Revisada com a responsável em 2026-11-09 ("vamos revisar"), perto do fim da SPEC `2026-11-08-atendimento-dia-a-dia`, como ela pediu ("deixe a spec 2 para quando a spec 1 estiver perto do fim, me avise e revisamos"). Cobre os itens 7 a 10 do levantamento de funcionalidades para a meta. As quatro decisões da revisão estão na seção 8 (K1 a K4); as demais (K5 em diante) foram adotadas como recomendadas e podem ser revistas por ela antes de cada parte. A implementação começa depois da SPEC 1.
+**Status:** Revisada com a responsável em 2026-11-09 ("vamos revisar"), perto do fim da SPEC `2026-11-08-atendimento-dia-a-dia`, como ela pediu ("deixe a spec 2 para quando a spec 1 estiver perto do fim, me avise e revisamos"). Cobre os itens 7 a 10 do levantamento de funcionalidades para a meta. As quatro decisões da revisão estão na seção 8 (K1 a K4); as demais (K5 em diante) foram adotadas como recomendadas e podem ser revistas por ela antes de cada parte. A implementação começa depois da SPEC 1. **Concluída em 2026-11-15** (SF-234 a SF-259; 19 de 19 critérios).
 **Projeto:** ServiceFlow
 **Referências:**
 - `SPEC/2026-11-08-atendimento-dia-a-dia.md` (SPEC 1; garantia e exclusões de segurança repetidas aqui);

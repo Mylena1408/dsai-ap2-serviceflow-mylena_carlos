@@ -1,7 +1,7 @@
 # SPEC — Aprofundamento da configurabilidade
 
 **Data:** 2026-11-06
-**Status:** Aprovada em 2026-11-06. A responsável aprovou os cinco itens do grupo "aprofundar o que torna o sistema configurável" (campos, aprovações, fluxos, permissões e escalonamento). As decisões G1 a G20 da seção 10 foram adotadas como recomendadas e podem ser revistas por ela antes do início de cada parte.
+**Status:** Aprovada em 2026-11-06. A responsável aprovou os cinco itens do grupo "aprofundar o que torna o sistema configurável" (campos, aprovações, fluxos, permissões e escalonamento). As decisões G1 a G20 da seção 10 foram adotadas como recomendadas e podem ser revistas por ela antes do início de cada parte. **Concluída em 2026-11-07** (SF-161 a SF-174; 34 de 34 critérios).
 **Projeto:** ServiceFlow
 **Referências:**
 - `SPEC/2026-11-01-campos-personalizados.md` (seção 4: "número decimal", "máscaras", "buscar pelas respostas" fora de escopo);

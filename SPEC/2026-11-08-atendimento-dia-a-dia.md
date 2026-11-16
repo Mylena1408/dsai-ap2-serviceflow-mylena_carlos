@@ -1,7 +1,7 @@
 # SPEC — Atendimento no dia a dia
 
 **Data:** 2026-11-08
-**Status:** Aprovada em 2026-11-08. A responsável escolheu, do levantamento de funcionalidades para a meta, os itens 1 a 10 e deixou de fora o item 11 (segurança da conta), para não mexer na segurança nem em princípios de acesso já decididos. Esta é a primeira de duas SPECs: ela cobre os itens 1 a 6 e os complementos ("faça a SPEC 1 com os complementos"); os itens 7 a 10 ficam para a SPEC 2. As decisões I1 a I24 da seção 10 foram adotadas como recomendadas e podem ser revistas por ela antes do início de cada parte.
+**Status:** Aprovada em 2026-11-08. A responsável escolheu, do levantamento de funcionalidades para a meta, os itens 1 a 10 e deixou de fora o item 11 (segurança da conta), para não mexer na segurança nem em princípios de acesso já decididos. Esta é a primeira de duas SPECs: ela cobre os itens 1 a 6 e os complementos ("faça a SPEC 1 com os complementos"); os itens 7 a 10 ficam para a SPEC 2. As decisões I1 a I24 da seção 10 foram adotadas como recomendadas e podem ser revistas por ela antes do início de cada parte. **Concluída em 2026-11-14** (SF-194 a SF-233; 35 de 35 critérios).
 **Projeto:** ServiceFlow
 **Referências:**
 - `SPEC/2026-09-30-catalogo-e-solicitacoes.md` (abertura, regras de status);

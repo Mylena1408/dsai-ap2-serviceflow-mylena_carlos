@@ -1,7 +1,7 @@
 # SPEC — Operação e automação do atendimento
 
 **Data:** 2026-11-07
-**Status:** Aprovada em 2026-11-07. A responsável escolheu cinco itens do levantamento de funcionalidades para a meta ("faça a SPEC com os itens 2, 3, 4, 6 e 7"): solicitações vinculadas e pacotes, distribuição automática na fila, solicitações recorrentes, exportação e importação da configuração, visões salvas e ações em lote. As decisões H1 a H22 da seção 9 foram adotadas como recomendadas e podem ser revistas por ela antes do início de cada parte.
+**Status:** Aprovada em 2026-11-07. A responsável escolheu cinco itens do levantamento de funcionalidades para a meta ("faça a SPEC com os itens 2, 3, 4, 6 e 7"): solicitações vinculadas e pacotes, distribuição automática na fila, solicitações recorrentes, exportação e importação da configuração, visões salvas e ações em lote. As decisões H1 a H22 da seção 9 foram adotadas como recomendadas e podem ser revistas por ela antes do início de cada parte. **Concluída em 2026-11-08** (SF-175 a SF-193; 30 de 30 critérios).
 **Projeto:** ServiceFlow
 **Referências:**
 - `SPEC/2026-09-30-catalogo-e-solicitacoes.md` (abertura, regras de status, seção 19);
