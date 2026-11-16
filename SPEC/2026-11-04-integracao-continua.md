@@ -58,3 +58,6 @@ A responsável aprovou em 2026-11-08 ("pode fazer a opção 2"). Duas execuçõe
 - Conferido localmente: o comando novo baixou o arquivo e o SHA-256 bateu com o fixado no CI.
 
 - Resultado: a execução `42472539280` passou em todos os passos, inclusive a varredura de segredos.
+
+**Atualização 2026-11-15 (verificação das integrações):** o workflow falhou em todos os 7 pushes desde 2026-11-14 (o último verde foi `f4bad83`), sempre no passo da busca de segredos, o que impediu o build e os testes no GitHub. O gitleaks 8.30.1 (mesma versão do CI, checksum conferido, saída mascarada), rodado localmente com autorização da responsável, achou 2 ocorrências, ambas a senha sintética do teste de importação de usuários (`tests/integration/user-import-apply.test.ts`, linhas 106 e 110 do commit `20295ca`). Revisadas e registradas em `.gitleaksignore`; a varredura do histórico ficou sem achados. A varredura da pasta inteira só achou, além das quatro revisadas, arquivos fora do git (`.next` e os `.env` locais). O CA-CI-06 continua aberto até a primeira execução verde depois do push.
+

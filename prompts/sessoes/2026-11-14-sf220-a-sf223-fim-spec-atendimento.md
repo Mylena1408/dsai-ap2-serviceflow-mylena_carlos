@@ -394,3 +394,13 @@
 
 118. Os 24 critérios sem marca conferidos contra os testes e marcados com a evidência; CA-DEMO-01 substituído pela seção 24; ampliações posteriores anotadas; status "Concluída".
 
+> verifique todas as integrações e me retorne o relatorio
+
+119. Pergunta: serviços externos (escolhido). Verificação só de leitura (site, API, MCP, cron, Neon, armazenamento, e-mail, webhooks, CI); CI falhando desde 14/11 no gitleaks.
+
+> autorizo que execute o gitleaks 8.30.1
+
+120. Gitleaks 8.30.1 oficial: 2 achados (senha sintética do teste de importação), registrados em `.gitleaksignore`; histórico limpo.
+
+> terminada esta tarefa verifique as possibilidades de incrementar microserviços para o usuário
+

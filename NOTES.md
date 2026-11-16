@@ -3336,3 +3336,9 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Imutabilidade do evento:** não há trava no banco; a aplicação nunca muda estado, ator ou horário de um evento. A anonimização (SPEC de auditoria e LGPD) troca só a nota escrita pela pessoa anonimizada; isso está dito no critério.
 - Nenhum código foi alterado; só a SPEC e os registros.
 
+## Verificação das integrações e conserto do CI (2026-11-15)
+
+- **Pedido:** "verifique todas as integrações" (escolhido: os serviços externos, só leitura). Relatório entregue na conversa: Vercel no ar com a versão mais recente, região `gru1`; Neon 18.7 com 62 de 62 migrations; API pública e MCP recusam sem token, mas nenhum token existe na produção; job diário protegido, com rastros às 06:46 UTC em 3, 4 e 6/11 e nada a processar desde então (o job não grava registro próprio de execução); 12 anexos no armazenamento; **nenhum e-mail e nenhum webhook na história da produção**, então Resend e webhooks não têm prova de uso real.
+- **CI quebrado desde 2026-11-14:** 7 pushes seguidos com falha no passo do gitleaks (o build e os testes não chegaram a rodar no GitHub). Sem o log do Actions (pede login), reproduzi a regra `generic-api-key` em Python para achar candidatos; depois, com autorização da responsável, rodei o gitleaks 8.30.1 oficial (baixado com checksum conferido, `--redact`): 2 achados, a senha sintética `senha-forte-123` do teste de importação (linhas 106 e 110 do commit `20295ca`). Registrados em `.gitleaksignore` com o motivo; varredura do histórico sem achados.
+- **Lição:** um valor de teste parecido com senha, ao lado de `password:`, dispara a regra; nos próximos testes, usar valores obviamente fictícios montados em tempo de execução ou registrar o achado no mesmo commit.
+

@@ -2,3 +2,7 @@
 # Synthetic CRON_SECRET fixture of the unit tests ("a-cron-secret-with-24-chars"), checked on 2026-11-06.
 3260a2b5a1a646d2eecba8f915885be57f884440:tests/unit/cron-route.test.ts:generic-api-key:10
 3260a2b5a1a646d2eecba8f915885be57f884440:tests/unit/server/jobs/cron-and-cleanup.test.ts:generic-api-key:8
+# Synthetic password of the user import test ("senha-forte-123": a reactivated imported person gets a working
+# password; SPEC 2026-11-09-comunicacao-e-calendarios, SF-243), checked on 2026-11-15. CI failed on it since 2026-11-14.
+20295ca505ac440e550daeae86149de6ae981304:tests/integration/user-import-apply.test.ts:generic-api-key:106
+20295ca505ac440e550daeae86149de6ae981304:tests/integration/user-import-apply.test.ts:generic-api-key:110
