@@ -518,3 +518,5 @@
 > faça todas as etapas e depois termine com o push
 
 147. SF-285 a SF-294: tipos Professor e Técnico-administrativo e lista "Oferecido a" (configuração v5), espaços, reservas simples e semanais com restrição de exclusão no banco, página "Reservas" da equipe, alocação de provas com sugestão, guia de professores e técnicos, dados de demonstração, testes unitários, de integração e E2E. Memória do typecheck ajustada (build só da aplicação; typecheck com 4 GB). E2E completo 85/85 (com o novo professors-technicians.spec.ts e as páginas novas na verificação de largura e na varredura axe).
+
+148. Commit `dc5f219`; backup cifrado e conferido; 3 migrations no Neon (66/66); produção conferida; push.

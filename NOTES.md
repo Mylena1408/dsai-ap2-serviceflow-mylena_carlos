@@ -3413,3 +3413,5 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Memória do typecheck:** o projeto passou de 2 GB no `tsc`; o build verifica só a aplicação (`tsconfig.build.json`) e o `npm run typecheck` usa 4 GB (seção 11 item 6 da SPEC). Falha minha registrada: filtros de saída do `tsc` podiam esconder o estouro.
 - **Heredoc com barra invertida:** escorreguei de novo num teste do CSV (o `\n` virou quebra de linha); pego pelo `cat -A`, corrigido com Edit; memória atualizada.
 - **Resultados:** unitários 2.116; integração 841; lint, typecheck e build OK; E2E completo 85/85 (com o novo professors-technicians.spec.ts e as páginas novas na verificação de largura e na varredura axe).
+
+- **Envio (2026-11-16):** `btree_gist` disponível no Neon (conferido só com leitura); backup cifrado `serviceflow-2026-11-16-pre-deploy-2.dump` conferido por restauração (72 tabelas iguais); 3 migrations aplicadas (66/66); produção conferida (9 serviços com os quatro tipos, 5 alunos, tabelas novas vazias). O gitleaks pegou a senha sintética do teste novo (`Senha-segura-123`) antes do commit; trocada pela que outro teste já usa.
