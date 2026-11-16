@@ -4,13 +4,14 @@ Plataforma configurável para gerenciamento de solicitações de serviços inter
 
 ## Estado do projeto
 
-- SF-001 a SF-025 estão concluídas.
-- SF-026 continua incompleta: a medição oficial de 2026-10-06 é de 8.903 linhas contabilizáveis, abaixo da meta acadêmica de 100.000. Não se deve inflar a contagem com código artificial nem implementar funcionalidades fora da SPEC para tentar atingir a meta.
-- SF-027 está concluída: os procedimentos documentados foram verificados com instalação limpa das dependências e execução das suites e verificações de qualidade.
-- SF-028 foi revisada, mas permanece não concluída porque SF-026 continua incompleta e a política operacional de backup/recuperação ainda depende de definição e teste de restauração.
-- SF-029: implementação da alteração da própria senha; testes manuais concluídos com sucesso. A validação automatizada de integração permanece pendente devido à indisponibilidade do setup PostgreSQL/Prisma Client.
-- Os fluxos E2E completos da primeira entrega já foram implementados e executados com sucesso.
-- Documentos exigidos por serviço (SPEC principal, seção 21): configuração (SF-032), validação de arquivos (SF-033), abertura com documentos (SF-034), consulta e download autorizados (SF-035) e testes E2E (SF-036) concluídos em 2026-10-31. O armazenamento real no Supabase (SF-030) ainda não foi provisionado: sem ele, envios com arquivo são recusados.
+Atualizado em 2026-11-16 (commit `570715c`).
+
+- **Funcionalidades:** 283 tarefas registradas em `TASKS.md` (SF-001 a SF-283), cada uma ligada a uma SPEC em `SPEC/`. A seção "Fluxos disponíveis" resume o que cada SPEC entregou.
+- **Últimas entregas:** acessibilidade (menu recolhível, alto contraste, leitura em voz alta e painel "Acessibilidade"), Ajuda e perguntas frequentes, mapa de serviços do solicitante, **tipos de solicitante (estudante e público geral)** e o **Guia rápido do estudante**.
+- **Produção:** `https://serviceflow-sand.vercel.app` (Vercel, região `gru1`), banco Neon PostgreSQL com 63 migrations aplicadas e armazenamento privado de documentos no Supabase (SF-030, bucket exclusivo de produção). Cada migration em produção é precedida de backup cifrado e conferido por restauração (`SPEC/2026-11-02-backup-recuperacao.md`).
+- **Testes:** 2.081 testes unitários, 187 arquivos de testes de integração e 66 arquivos de testes E2E (Playwright), além da varredura de acessibilidade com axe-core e da verificação de largura em 360, 768 e 1280 px.
+- **Itens em aberto, registrados nas SPECs:** a primeira execução totalmente verde do CI depois das correções de 2026-11-15 (CA-CI-06, `SPEC/2026-11-04-integracao-continua.md`), a medição de desempenho em produção (CA-DVO-01, `SPEC/2026-11-06-desempenho-volume.md`) e os itens não marcados da visão geral (`SPEC/2026-09-30-visao-geral.md`).
+- **Meta acadêmica:** 100.000 linhas `added` sobre a tag `baseline-ap2`; medição atual na seção "Métricas do projeto".
 
 ## Requisitos e stack
 
@@ -38,11 +39,13 @@ Não há tela de login: a página inicial mostra a escolha de perfil (Administra
 | Botão | Pessoa |
 |---|---|
 | Administrador | Marina Alves |
-| Solicitante | Ana Souza |
+| Solicitante | Ana Souza, estudante (tipo "Aluno") |
 | Atendente | Diego Rocha, da Central de Serviços |
 | Gestor | Paulo Ribeiro, gestor da Central de Serviços |
 
 No primeiro clique, se o banco ainda não tiver os dados fictícios, eles são carregados: catálogo, as pessoas acima e os solicitantes Bruno Lima e Carla Mendes, e 14 solicitações em todos os status, com responsável, prazos (dentro, próximo e vencido), aprovação pendente, aprovada e rejeitada, comentários, nota interna e notificações. Os cliques seguintes não carregam de novo nem desfazem mudanças da administração. `npm run seed:demo` carrega os mesmos dados. As pessoas fictícias não têm senha utilizável; a página "Alterar senha" fica como representação didática. O endereço antigo `/login` leva à página inicial.
+
+Os solicitantes da demonstração são estudantes (tipo "Aluno"). Para ver o atendimento ao público geral, o administrador muda o "Tipo de solicitante" de uma pessoa na seção "Usuários" (veja "Área do solicitante" abaixo).
 
 Para execução local, use `http://localhost:3000`. Para usar as telas protegidas, configure o banco e crie o primeiro administrador conforme as instruções abaixo.
 
@@ -231,11 +234,34 @@ function isFromServiceFlow(signatureHeader, rawBody, secret, maxAgeSeconds = 300
 - A seção mostra as 50 entregas mais recentes, sem o corpo. Desativar um webhook cancela as entregas pendentes dele.
 - **Reenviar:** uma entrega que falhou ou foi cancelada, de webhook ativo, pode ser reenviada pelo botão "Reenviar": volta para a fila com as tentativas zeradas e sai logo em seguida, com o mesmo `ServiceFlow-Delivery` e o mesmo corpo.
 
+## Área do solicitante
+
+Quem pede serviços entra como **Solicitante**. O menu traz "Catálogo", "Mapa de serviços", "Minhas solicitações", "Notificações", "Avisos" (quando há algum), "Ajuda", "Meus dados", "Acesso à API" e "Alterar senha".
+
+Cada solicitante tem um **tipo** (`SPEC/2026-11-16-tipos-de-solicitante.md`), escolhido pelo administrador no cadastro ou na importação CSV (coluna `tipo`). Login, senha e permissões são os mesmos para os dois tipos; muda só o que o catálogo oferece.
+
+### Estudante (tipo "Aluno")
+
+- O estudante é um solicitante **interno**, não um usuário externo. É o tipo padrão: quem é cadastrado sem tipo é aluno, e todos os solicitantes existentes viraram alunos na migração.
+- O catálogo e o mapa mostram a subseção **"Serviços para alunos"**: os serviços oferecidos aos alunos e os que valem para todos.
+- O **Guia rápido do estudante** (`/help/aluno`, `SPEC/2026-11-16-guia-do-estudante.md`) explica, em sete passos, como entrar, encontrar o serviço, abrir a solicitação, acompanhar, responder ao atendimento, cancelar ou reabrir e avaliar; traz também "Antes de enviar", o que cada situação quer dizer e o que o estudante resolve sozinho. O link fica na subseção do catálogo e no topo da página "Ajuda", e a página funciona sem login.
+
+### Público geral
+
+- Solicitante **externo**. O catálogo e o mapa mostram a subseção "Serviços para o público geral": os serviços oferecidos a esse público e os que valem para todos.
+- Um serviço só para alunos não aparece nem abre para o público geral (nem pelo endereço, pela API ou por pacote): responde como "não encontrado".
+
+### O que o tipo muda para a equipe
+
+- Cada serviço tem um **Público do serviço**: alunos, público geral ou ambos (o padrão); ele também viaja na configuração portátil.
+- A solicitação guarda o tipo de quem a abriu. A fila do atendente mostra "Solicitante: Aluno" ou "Solicitante: Público geral" e filtra por "Tipo de solicitante"; o filtro entra nas visões salvas.
+- O painel, as análises e a exportação CSV separam os números por tipo de solicitante.
+
 ## Fluxos disponíveis
 
 - Administradores autenticados configuram usuários, setores, categorias e serviços em `/admin`.
 - Administradores, solicitantes e atendentes autenticados podem alterar somente a própria senha em `/account/password`.
-- Solicitantes autenticados consultam o catálogo publicado em `/catalog`, abrem solicitações a partir do detalhe do serviço e acompanham somente suas próprias solicitações em `/requests`.
+- Solicitantes autenticados consultam o catálogo publicado em `/catalog` (só os serviços do seu público: estudante ou público geral), abrem solicitações a partir do detalhe do serviço e acompanham somente suas próprias solicitações em `/requests`.
 - Atendentes autenticados consultam a fila do setor em `/queue` e iniciam/concluem solicitações permitidas. O setor da fila é o snapshot registrado na abertura.
 - Atribuição (`SPEC/2026-10-31-atribuicao-cancelamento-reabertura.md`): um atendente **assume** uma solicitação do seu setor e pode **liberá-la** ou **transferi-la** a um colega ativo do mesmo setor. Com responsável, só ele inicia e conclui; sem responsável, qualquer atendente do setor.
 - Cancelamento e reabertura: o solicitante cancela a própria solicitação enquanto está aberta (motivo opcional); o atendente do setor cancela aberta ou em atendimento, com justificativa obrigatória. Cancelada é definitiva. O solicitante reabre uma solicitação concluída em até 7 dias, com justificativa, e ela volta para o mesmo responsável.
@@ -263,6 +289,14 @@ function isFromServiceFlow(signatureHeader, rawBody, secret, maxAgeSeconds = 300
 - Encaminhamento entre setores (`SPEC/2026-11-03-transferencia-entre-setores.md`): na página da solicitação na fila, o atendente do setor (o responsável, se houver, ou quem supervisiona a fila) encaminha uma solicitação **aberta** e sem aprovação pendente para outro setor ativo que tenha atendente ativo, com justificativa obrigatória. O responsável sai; status, prioridade, prazo, respostas, documentos e comentários continuam. O novo setor passa a vê-la na fila com todo o histórico, inclusive as notas internas, e o setor anterior deixa de vê-la. O histórico mostra "Encaminhada do setor X para o setor Y" com a justificativa; os atendentes do novo setor e o solicitante são notificados; o evento "Mudança de setor" chega aos webhooks sem filtro e aos filtrados pela origem ou pelo destino. Como a demonstração tem um setor só, para mostrar o encaminhamento o administrador cria antes um segundo setor com um atendente.
 - Ações pela API e webhooks por setor (`SPEC/2026-11-03-api-acoes-webhooks-setor.md`): assumir, liberar, transferir, iniciar, concluir, cancelar e reabrir pela API; filtro de setores e reenvio de entregas nos webhooks.
 - Ferramentas MCP de documentos (`SPEC/2026-11-05-mcp-documentos.md`): servidor MCP em `/api/mcp`, com o token da API, para assistentes de IA procurarem solicitações e lerem documentos e arquivos de comentário com as mesmas regras da tela. Detalhes na seção "Assistentes de IA (MCP)" acima.
+- Aprofundamento da configurabilidade (`SPEC/2026-11-06-aprofundamento-configurabilidade.md`): mais opções em campos, aprovações, fluxos, permissões e escalonamento.
+- Operação e automação (`SPEC/2026-11-07-operacao-e-automacao.md`): vínculos entre solicitações e pacotes de serviços, distribuição automática na fila, solicitações recorrentes, configuração portátil (exportar e importar a configuração em JSON, hoje na versão 4) e a fila em escala (visões salvas e ações em lote).
+- Atendimento do dia a dia (`SPEC/2026-11-08-atendimento-dia-a-dia.md`): etiquetas, checklist de atendimento, apontamento de horas, seguidores ("Que eu acompanho"), menções em notas internas e encerramento como duplicada.
+- Comunicação e calendários (`SPEC/2026-11-09-comunicacao-e-calendarios.md`): avisos e manutenção programada na faixa do topo e na página "Avisos", importação de usuários por CSV (inativos e sem senha), relatórios periódicos semanais ou mensais e calendário por setor.
+- Acessibilidade (`SPEC/2026-11-15-acessibilidade.md`): telas sem rolagem lateral do celular ao computador, menu recolhível, tabelas roláveis com teclado, tema de alto contraste, leitura em voz alta da página ou do trecho selecionado e o painel "Acessibilidade" (Alt+Shift+A), com varredura automática pelo axe-core.
+- Ajuda e perguntas frequentes (`SPEC/2026-11-15-ajuda-faq.md`): página "Ajuda" (`/help`) com os temas gerais e o do perfil de quem entrou, e busca sem diferenciar maiúsculas nem acentos.
+- Mapa de serviços (`SPEC/2026-11-15-mapa-de-servicos.md`): na área do solicitante, `/catalog/map` mostra como os setores se ligam e separa o que se resolve sozinho, o que precisa de atendimento e o que é especializado (passa por mais de um setor ou etapa).
+- Tipos de solicitante e guia do estudante: veja "Área do solicitante" acima.
 - A rota inicial encaminha a sessão autenticada à interface do perfil obtido do servidor; o cliente não escolhe papel.
 - A abertura valida no servidor a disponibilidade atual do serviço, categoria e setor e grava snapshots e evento inicial junto da solicitação. Transições persistem status e evento de histórico atomicamente.
 - Administradores configuram, por serviço, até 5 documentos exigidos (PDF, DOCX ou TXT; obrigatórios ou opcionais). O solicitante anexa um arquivo por documento ao abrir a solicitação (até 2 MiB cada, 4 MiB no total); o servidor confere o conteúdo real de cada arquivo.
@@ -310,7 +344,23 @@ Para servir a versão compilada, execute `npm run start` após o build.
 
 ## Métricas do projeto
 
-> Medição atual: a partir de 2026-10-29, a meta é medida em linhas `added` contra a tag `baseline-ap2` com `sh scripts/cloc-diff.sh` (`SPEC/2026-10-29-plano-escala-100k.md`). O valor de cada tarefa fica registrado em `NOTES.md`. A tabela abaixo é o registro histórico da medição anterior.
+A partir de 2026-10-29, a meta é medida em linhas `added` contra a tag `baseline-ap2` com `sh scripts/cloc-diff.sh` (`SPEC/2026-10-29-plano-escala-100k.md`), nas pastas `src`, `tests` e `scripts`. O valor de cada tarefa fica registrado em `NOTES.md`.
+
+Medição de 2026-11-16, no commit `570715c`:
+
+| Pasta | Linhas adicionadas |
+| --- | ---: |
+| `src` | 48.825 |
+| `tests` | 49.509 |
+| `scripts` | 249 |
+| **Total adicionado** | **98.583** |
+| Removidas | 2.486 |
+| Saldo (adicionadas − removidas) | 96.097 |
+| Linhas da baseline mantidas iguais (não contam) | 7.722 |
+
+Faltam 1.417 linhas para a meta de 100.000.
+
+> A tabela abaixo é o registro histórico da medição anterior.
 
 Medição oficial executada em 2026-10-06 com `cloc`, usando `--vcs=git` e as exclusões documentadas:
 
@@ -328,6 +378,6 @@ Medição oficial executada em 2026-10-06 com `cloc`, usando `--vcs=git` e as ex
 | SPECs principais | 2 |
 | Tarefas registradas no `TASKS.md` | 29 |
 
-A meta acadêmica é 100.000 linhas. A contagem atual está 91.097 linhas abaixo da meta, portanto SF-026 permanece incompleta. A medição usa somente arquivos rastreados pelo Git devido a `--vcs=git`; documentação e prompts estão excluídos. Não se deve criar código artificial nem implementar itens fora da SPEC para alterar a contagem.
+Na época (2026-10-06), a contagem estava 91.097 linhas abaixo da meta de 100.000. A medição usa somente arquivos rastreados pelo Git devido a `--vcs=git`; documentação e prompts estão excluídos. Não se deve criar código artificial nem implementar itens fora da SPEC para alterar a contagem.
 
 O progresso e as validações por tarefa são registrados em `TASKS.md`, `NOTES.md` e `diario/`. Qualquer ampliação funcional exige aprovação explícita e uma nova SPEC.

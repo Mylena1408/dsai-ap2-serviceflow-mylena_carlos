@@ -3382,3 +3382,9 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Conteúdo no código,** como a Ajuda: sete passos, "Antes de enviar", as situações (com os rótulos compartilhados das telas) e "Sozinho ou com atendimento". Um teste procura no código cada nome de tela citado, para o guia não envelhecer calado quando uma tela mudar de nome.
 - **Leitura mínima:** só o perfil e, para o solicitante, o tipo; os nomes de tela viram links só para o solicitante.
 - **Resultados:** unitários 2.081/2.081; lint, typecheck e build OK; E2E do guia, da Ajuda, dos tipos, do mapa, responsivo e axe verdes (10 de 10). Integração não rodada (nada de banco mudou).
+
+## README atualizado para a versão atual (2026-11-16)
+
+- **Pedido:** "atualize a página do github para a versão atual do projeto, na área de solicitante deve ser colocada a opção estudante".
+- **Feito:** o "Estado do projeto" (que ainda falava da medição de 2026-10-06 e da SF-030 sem produção) virou um resumo de hoje, com os itens em aberto; nova seção "Área do solicitante" com "Estudante (tipo Aluno)", "Público geral" e o que o tipo muda para a equipe; o botão da demonstração indica que Ana Souza é estudante; "Fluxos disponíveis" ganhou as SPECs que faltavam (configurabilidade, operação, atendimento do dia a dia, comunicação, acessibilidade, ajuda, mapa); a medição atual (98.583 linhas `added`) entrou em "Métricas", com a tabela antiga marcada como histórica.
+- **Conferido no código:** os nomes do menu do solicitante, que a configuração portátil leva o público do serviço mas não o tipo das pessoas, e os números de testes e migrations.

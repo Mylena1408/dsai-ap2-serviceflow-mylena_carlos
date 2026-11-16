@@ -464,3 +464,13 @@
 > prossiga com o guia do estudante do nivel superior
 
 134. SPEC `2026-11-16-guia-do-estudante.md` (formato: página na Ajuda) e SF-282 e SF-283: guia em `/help/aluno`, links na Ajuda e no catálogo do aluno, testes unitários e E2E.
+
+> faça o commit
+
+135. Commit `570715c` do guia do estudante.
+
+> atualize a página do github para a versão atual do projeto, na área de solicitante deve ser colocada a opção estudante
+
+> depois disso faça o push
+
+136. README: estado atual, seção "Área do solicitante" com a opção estudante, SPECs recentes em "Fluxos disponíveis" e a medição de 98.583 linhas. Commit e push.
