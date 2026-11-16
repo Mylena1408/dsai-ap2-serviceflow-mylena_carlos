@@ -474,3 +474,9 @@
 > depois disso faça o push
 
 136. README: estado atual, seção "Área do solicitante" com a opção estudante, SPECs recentes em "Fluxos disponíveis" e a medição de 98.583 linhas. Commit e push.
+
+137. CI de `a67300c`: E2E 82/83; o menu do solicitante quebra em duas linhas no Linux. Teste ajustado para qualquer fonte (seção 12 da SPEC de acessibilidade).
+
+> autorizado
+
+138. Commit e push da correção do teste; acompanhamento do CI.

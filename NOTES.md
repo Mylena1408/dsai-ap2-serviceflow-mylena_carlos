@@ -3388,3 +3388,8 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Pedido:** "atualize a página do github para a versão atual do projeto, na área de solicitante deve ser colocada a opção estudante".
 - **Feito:** o "Estado do projeto" (que ainda falava da medição de 2026-10-06 e da SF-030 sem produção) virou um resumo de hoje, com os itens em aberto; nova seção "Área do solicitante" com "Estudante (tipo Aluno)", "Público geral" e o que o tipo muda para a equipe; o botão da demonstração indica que Ana Souza é estudante; "Fluxos disponíveis" ganhou as SPECs que faltavam (configurabilidade, operação, atendimento do dia a dia, comunicação, acessibilidade, ajuda, mapa); a medição atual (98.583 linhas `added`) entrou em "Métricas", com a tabela antiga marcada como histórica.
 - **Conferido no código:** os nomes do menu do solicitante, que a configuração portátil leva o público do serviço mas não o tipo das pessoas, e os números de testes e migrations.
+
+## CI: o menu do solicitante quebra no Linux (2026-11-16)
+
+- O CI de `a67300c` chegou ao fim do E2E pela primeira vez desde 14/11: 82 de 83. A falha: `responsive.spec.ts` esperava o menu do solicitante numa linha a 1280 px; no runner Linux a fonte substituta é mais larga e ele quebra em duas (no Windows, com a Segoe UI, cabe). As execuções anteriores paravam antes, no gitleaks e no teste do lote, por isso o caso não tinha aparecido.
+- Correção no teste, não na tela: a quebra de links inteiros é aceita pelo item 4.3.4 da SPEC de acessibilidade; o teste agora vale em qualquer fonte e força a Verdana para reproduzir o caso do CI. Esclarecimento na seção 12 da SPEC.

@@ -72,19 +72,33 @@ test("above 760 px the screens keep their layout (CA-RSP-04)", async ({ page }) 
       .getByRole("link")
       .evaluateAll((links) => links.map((link) => Math.round(link.getBoundingClientRect().height)));
 
-  // The requester's menu, which fits at 1280 px, stays in one line beside the brand and "Sair", as before.
+  // The requester's menu at 1280 px: with the fonts of Windows (Segoe UI) it fits in one line beside the brand and
+  // "Sair", as before; with wider fonts (the Linux runner of the CI) it wraps whole links, like the attendant's (SPEC
+  // 4.3 item 4 and the clarification of 2026-11-16). Either way, no "Menu" button and every link visible and whole.
   await page.setViewportSize({ width: WIDTHS.desktop, height: 800 });
   await enterAs(page, "Solicitante");
   await page.goto("/catalog");
-  await expect(menuButton).toBeHidden();
-  const tops = await linkTops("Navegação principal");
-  expect(tops).toHaveLength(1);
-  const [brand, signOutButton] = await Promise.all([
-    page.locator(".app-topbar .brand-link").boundingBox(),
-    page.getByRole("button", { name: "Sair" }).boundingBox(),
-  ]);
-  expect(Math.abs(tops[0]! - brand!.y)).toBeLessThan(brand!.height);
-  expect(Math.abs(signOutButton!.y - brand!.y)).toBeLessThan(brand!.height);
+  const checkRequesterMenu = async () => {
+    await expect(menuButton).toBeHidden();
+    const links = page.getByRole("navigation", { name: "Navegação principal" }).getByRole("link");
+    for (const link of await links.all()) await expect(link).toBeVisible();
+    expect(Math.max(...(await linkHeights()))).toBeLessThan(30);
+    const tops = await linkTops("Navegação principal");
+    const brand = await page.locator(".app-topbar .brand-link").boundingBox();
+    // The first line of links stays beside the brand.
+    expect(Math.abs(tops[0]! - brand!.y)).toBeLessThan(brand!.height);
+    return tops.length;
+  };
+  if ((await checkRequesterMenu()) === 1) {
+    const [brand, signOutButton] = await Promise.all([
+      page.locator(".app-topbar .brand-link").boundingBox(),
+      page.getByRole("button", { name: "Sair" }).boundingBox(),
+    ]);
+    expect(Math.abs(signOutButton!.y - brand!.y)).toBeLessThan(brand!.height);
+  }
+  // A wide font, as on the CI's runner, wraps the menu without breaking it (the case the CI found on 2026-11-16).
+  await page.addStyleTag({ content: "body, body * { font-family: Verdana, 'DejaVu Sans', sans-serif !important; }" });
+  expect(await checkRequesterMenu()).toBeGreaterThan(1);
   await signOut(page);
 
   // The attendant's and the manager's menus did not fit in one line (the attendant's links broke their text in two
