@@ -34,7 +34,9 @@ Situação em 16/11/2026:
   - Projeto recebido (tag baseline-ap2, 29/10/2026) com 11.641 linhas de código em
     src, tests e scripts (10.743 pela medida do cloc --diff); hoje são 113.127.
   - Meta acadêmica atingida: 102.594 linhas executáveis adicionadas sobre a linha de
-    base (meta: 100.000).
+    base (meta: 100.000), medidas com o cloc --diff em src, tests e scripts.
+      Saldo líquido (adicionadas menos as 2.486 removidas): 100.108 linhas.
+      Herdadas da linha de base e ainda iguais: 7.722 linhas, fora da contagem.
 
 
 -------------------------------------------------------------------------------
@@ -117,7 +119,9 @@ Situação em 16/11/2026:
     tests    50.632
     scripts     252
     total   102.594 adicionadas; 2.486 removidas; saldo 100.108
-    Linhas da linha de base que ficaram iguais (não contam): 7.722
+    Saldo líquido (adicionadas - removidas): 100.108 linhas
+    Herdadas da linha de base e ainda iguais: 7.722 linhas, fora da contagem
+    (são código recebido, não construído nesta fase)
 
 
 -------------------------------------------------------------------------------
