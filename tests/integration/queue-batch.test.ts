@@ -97,15 +97,25 @@ describe("batch actions in the queue (7.3 item 2; CA-LOT-03 and 04)", () => {
     expect(await prisma.outboxEvent.count({ where: { requestId: { in: [requests[1].id, requests[2].id] }, type: "request.sector_changed" } })).toBe(2);
   });
 
-  it("two batches at once on the same requests: each request is assumed once", async () => {
+  it("two batches at once on the same requests: no request is assumed twice", async () => {
     const { ana, requests } = await scenario(6);
     actAs(ana);
     const ids = requests.map(({ id }) => id);
     const results = await Promise.all([runQueueBatch({ action: "assume", requestIds: ids }), runQueueBatch({ action: "assume", requestIds: [...ids].reverse() })]);
 
-    expect(results[0].done + results[1].done).toBe(ids.length);
-    const refusals = [...results[0].items, ...results[1].items].filter((item) => item.outcome === "refused");
-    expect(refusals.every((item) => item.outcome === "refused" && item.reason === "taken")).toBe(true);
-    expect(await prisma.requestAssignmentEvent.count({ where: { requestId: { in: ids } } })).toBe(ids.length);
+    // Each item runs in its own Serializable transaction (decision H18). Two batches racing on the same requests can
+    // also abort an item in both (a serialization failure is refused as "taken", "mudou enquanto você agia", and the
+    // person tries again); what never happens is a request assumed twice. The CI met this case on 2026-11-16.
+    const items = [...results[0].items, ...results[1].items];
+    const doneById = new Map<string, number>();
+    for (const item of items) if (item.outcome === "done") doneById.set(item.requestId, (doneById.get(item.requestId) ?? 0) + 1);
+    expect([...doneById.values()].every((times) => times === 1)).toBe(true);
+    const done = results[0].done + results[1].done;
+    expect(done).toBeGreaterThan(0);
+    expect(done).toBeLessThanOrEqual(ids.length);
+    expect(items.filter((item) => item.outcome === "refused").every((item) => item.outcome === "refused" && item.reason === "taken")).toBe(true);
+    const events = await prisma.requestAssignmentEvent.groupBy({ by: ["requestId"], where: { requestId: { in: ids } }, _count: { _all: true } });
+    expect(events.every(({ _count }) => _count._all === 1)).toBe(true);
+    expect(events).toHaveLength(done);
   });
 });

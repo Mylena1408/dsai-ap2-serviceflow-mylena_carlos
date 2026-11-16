@@ -413,3 +413,22 @@
 122. Perguntas: área do solicitante, serviços da organização, classificação pela configuração (escolhidas). SPEC `2026-11-15-mapa-de-servicos.md`; SF-273 a SF-275: módulo `service-map`, página `/catalog/map`, E2E e varreduras.
 
 > reporte os resultados em português do Brasil
+
+> faça commit
+
+123. Três commits: `8589c6d` (evidências do catálogo), `327aee1` (gitleaks) e `9a9be7e` (mapa de serviços); gitleaks sem achados no histórico.
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+124. Contagem em `9a9be7e`: 97.168 `added`, líquido 94.685; faltam 2.832. O mapa somou 1.028.
+
+> faça o push dos 2 commits
+
+125. Pergunta: os 3 (escolhido). Push `31b3d64..9a9be7e`.
+
+> terminada esta tarefa verifique as possibilidades de incrementar microserviços para o usuário
+
+> terminou?
+
+126. CI do `9a9be7e`: gitleaks, typecheck, lint, build e unitários verdes; falha no teste de concorrência do lote (5 em vez de 6). Teste ajustado à garantia real (nenhuma solicitação assumida duas vezes); 5 rodadas verdes.
+

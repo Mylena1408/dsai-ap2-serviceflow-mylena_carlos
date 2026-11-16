@@ -3351,3 +3351,11 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Desenho:** SVG com `role="img"`, título e descrição gerados das ligações, e a mesma informação numa lista de texto; setores em elipse (ou numa faixa, com um ou dois); só variáveis de cor do tema, então o alto contraste vale sem regra nova.
 - **Defeitos achados pelos testes e capturas, corrigidos:** setor só aprovador sem caixa; ponta da seta sob a caixa; duas ligações sobrepostas (e, na primeira correção, do mesmo lado, porque as direções eram opostas); espaço vazio com um setor; uma captura tirada antes de a navegação terminar (o teste passou a esperar o endereço).
 - **Resultados:** typecheck e lint OK; unitários 2037/2037 (21 novos); integração 805/805 (2 novos); `next build` OK com `/catalog/map`; E2E do mapa 1/1; **E2E completo 82/82** (com o mapa nas varreduras de larguras e do `axe-core`).
+
+## CI depois do push de 2026-11-16: teste de concorrência do lote (2026-11-16)
+
+- **Resultado do CI do `9a9be7e`:** o gitleaks passou (o conserto funcionou), assim como typecheck, lint, build e unitários; falhou um teste de integração, `queue-batch.test.ts` ("two batches at once on the same requests"): 5 itens assumidos em vez de 6. O E2E não rodou.
+- **Causa:** dois lotes assumindo as mesmas solicitações em ordens opostas podem abortar o mesmo item nos dois (falha de serialização do PostgreSQL, `P2034`), e o lote não tenta de novo: recusa como "taken" ("mudou enquanto você agia"). A SPEC promete que cada item segue a ação individual na própria transação e que um recusado não afeta os outros, não que todos fiquem com dono. O teste passou em todas as rodadas até hoje porque a colisão dupla é rara; o CI, mais lento, a encontrou.
+- **Correção no teste:** confere a garantia real: nenhuma solicitação assumida duas vezes, todas as recusas com "taken", um evento de atribuição por solicitação assumida e o total igual ao número de itens feitos. Cinco rodadas seguidas verdes.
+- **Possível melhoria, não feita (decisão da responsável):** tentar de novo, uma vez, o item que falhar por serialização, para o lote ficar mais previsível sob disputa.
+
