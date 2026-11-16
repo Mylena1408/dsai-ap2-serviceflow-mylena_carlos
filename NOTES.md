@@ -3327,3 +3327,12 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Tropeço repetido:** mais um script de edição por heredoc com barras invertidas (`\s` numa expressão regular do teste); desta vez o arquivo saiu certo (conferido), mas o Python avisou. As edições seguintes com barra invertida foram feitas com Edit, como manda a regra da memória.
 - **Resultados:** E2E `reading-aloud.spec.ts` 4/4 e a varredura do painel aberto 1/1; a rodada completa anterior (76/76) já tinha o mesmo código da aplicação, porque a SF-270 só acrescenta testes. Lint OK.
 - **Revisão final:** seção 11 da SPEC; 10 de 10 critérios (a SPEC tem 10 critérios; uma nota minha, ao escrevê-la, falava em 13 por engano); 2.455 linhas `added` de TypeScript até a SF-269 (mais cerca de 200 da SF-270) contra a estimativa de 870 a 1.490.
+
+## Evidências da SPEC `2026-09-30-catalogo-e-solicitacoes` (2026-11-15)
+
+- **Pedido:** "confira as evidências" da primeira SPEC, que tinha 24 critérios sem marca (16 da seção 15 e CA-DEMO-01 a 08), embora as funções existissem.
+- **Como:** cada critério foi ligado a testes que existem hoje, pelo nome do teste (listei os títulos dos arquivos de integração de usuários, setores, categorias, serviços, catálogo, abertura, transições, consultas, autorização, autenticação, integridade e demonstração, e conferi as referências citadas). Os 22 CA-DOC já estavam marcados, o que fecha o critério agregado.
+- **O que mudou desde a SPEC, registrado nos critérios:** o solicitante agora cancela a própria solicitação aberta e reabre a concluída (SPEC de atribuição, cancelamento e reabertura); as transições ganharam cancelar, reabrir, liberar, transferir, aguardar aprovação e encerrar como duplicada, cada uma com sua SPEC; o administrador continua sem acesso operacional (as permissões configuráveis valem só para atendentes e gestores). CA-DEMO-01 (botões em `/login`) foi substituído pela entrada `/` da seção 24 e marcado como tal.
+- **Imutabilidade do evento:** não há trava no banco; a aplicação nunca muda estado, ator ou horário de um evento. A anonimização (SPEC de auditoria e LGPD) troca só a nota escrita pela pessoa anonimizada; isso está dito no critério.
+- Nenhum código foi alterado; só a SPEC e os registros.
+

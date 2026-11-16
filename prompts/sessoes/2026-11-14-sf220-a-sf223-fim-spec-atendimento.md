@@ -375,3 +375,22 @@
 
 113. E2E completo 76/76; commit da SF-269. E2E da SF-270 escrito enquanto a rodada terminava.
 114. SF-270: E2E `reading-aloud.spec.ts` (fala simulada) 4/4, varredura do painel aberto, revisão final da SPEC (seção 11; 10 de 10 critérios; linhas e tempo medidos).
+
+> envie os commits para o github
+
+115. Push `6225fd0..31b3d64`.
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+116. Contagem em `31b3d64`: 96.140 `added`, líquido 93.657; faltam 3.860. SF-268 a SF-270 somaram 991; a SPEC de acessibilidade, 2.416.
+
+> terminamos todas as specs?
+
+> me de a lista das specs que faltam
+
+117. Quatro SPECs com critérios abertos (catálogo, visão geral, integração contínua, desempenho) e quatro concluídas com o status desatualizado.
+
+> confira as evidências de SPEC: 2026-09-30-catalogo-e-solicitacoes
+
+118. Os 24 critérios sem marca conferidos contra os testes e marcados com a evidência; CA-DEMO-01 substituído pela seção 24; ampliações posteriores anotadas; status "Concluída".
+
