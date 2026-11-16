@@ -15,7 +15,7 @@ import {
   getRequesterRequest,
   listRequestLinks,
   getRequestGroupBlock,
-  listManagerApprovals,
+  pageManagerApprovals,
   listSectorDestinations,
   listTransferCandidates,
   pauseRequestSla,
@@ -80,7 +80,6 @@ export interface ApiResult {
 
 export type RawQuery = Record<string, string | string[] | undefined>;
 
-const MANAGER_PAGE_SIZE = 20;
 const MANAGER_FILTERS = ["pending", "all", "sector"] as const;
 
 function requireRole(caller: ApiCaller, ...roles: ApiUser["role"][]): void {
@@ -157,19 +156,13 @@ export async function services(caller: ApiCaller): Promise<ApiResult> {
   return { status: 200, body: { items } };
 }
 
-function managerPage(requests: RequestWithHistory[], rawPage: string | undefined): { items: RequestWithHistory[]; page: number; pageCount: number; total: number } {
+/** The page asked for in the manager's list; anything but a whole number from 1 is refused, as before. */
+function managerPageNumber(rawPage: string | undefined): number {
   const page = rawPage === undefined ? 1 : Number(rawPage);
   if (!Number.isInteger(page) || page < 1) {
     throw new ValidationError([{ path: ["search"], code: "invalid_value" }]);
   }
-  const pageCount = Math.max(1, Math.ceil(requests.length / MANAGER_PAGE_SIZE));
-  const current = Math.min(page, pageCount);
-  return {
-    items: requests.slice((current - 1) * MANAGER_PAGE_SIZE, current * MANAGER_PAGE_SIZE),
-    page: current,
-    pageCount,
-    total: requests.length,
-  };
+  return page;
 }
 
 /** "Minhas solicitações", the sector queue or "Aprovações", with the filters of each screen. */
@@ -182,7 +175,8 @@ export async function listRequests(caller: ApiCaller, query: RawQuery, now: Date
     if (!MANAGER_FILTERS.includes(filter as (typeof MANAGER_FILTERS)[number])) {
       throw new ValidationError([{ path: ["search"], code: "invalid_value" }]);
     }
-    page = managerPage(await listManagerApprovals(filter), single(query.page));
+    // SPEC 2026-11-16-paginacao-aprovacoes, 2 item 3: the same page as the screen, read from the database.
+    page = await pageManagerApprovals(filter, managerPageNumber(single(query.page)));
   } else {
     page = caller.user.role === "REQUESTER" ? await searchRequesterRequests(query) : await searchAttendantQueue(query);
   }

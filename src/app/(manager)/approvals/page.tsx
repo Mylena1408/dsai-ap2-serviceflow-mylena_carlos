@@ -1,24 +1,28 @@
 import Link from "next/link";
-import { listManagerApprovals, pendingApprovalLevel, requestApprovalSectors } from "@/modules/requests";
+import { pageManagerApprovals, pendingApprovalLevel, requestApprovalSectors } from "@/modules/requests";
 import { RequestApprovalLabel } from "@/app/_components/request-approval";
+import { RequestPagination } from "@/app/_components/request-pagination";
 import { REQUEST_STATUS_LABELS } from "@/app/_components/request-status";
 import { actorHasPermission } from "@/server/authorization";
 import { requireManagerPageAccess } from "../page-access";
 
 type ApprovalsPageProps = {
-  searchParams: Promise<{ filter?: string }>;
+  searchParams: Promise<{ filter?: string; page?: string }>;
 };
 
 // Manager home (SPEC 2026-11-01-aprovacoes, 5.7, decision A4): requests of the sector that
 // require approval, pending ones by default; "Todas" also lists the decided ones.
 export default async function ApprovalsPage({ searchParams }: ApprovalsPageProps) {
   const actor = await requireManagerPageAccess();
-  const { filter } = await searchParams;
+  const { filter, page } = await searchParams;
   // SPEC 2026-11-01-permissoes-configuraveis, 5.3.2: "Todas do setor" only with the permission.
   const sectorReader = await actorHasPermission(actor, "SECTOR_REQUESTS_READ");
   const view = filter === "sector" && sectorReader ? "sector" : filter === "all" ? "all" : "pending";
   const showAll = view !== "pending";
-  const requests = await listManagerApprovals(view);
+  // SPEC 2026-11-16-paginacao-aprovacoes (SF-284): 20 per page, read from the database; an invalid number is the
+  // first page and one past the last is the last (Q2).
+  const result = await pageManagerApprovals(view, Number(page ?? "1"));
+  const requests = result.items;
 
   return (
     <main className="page-shell" id="conteudo" tabIndex={-1}>
@@ -73,6 +77,15 @@ export default async function ApprovalsPage({ searchParams }: ApprovalsPageProps
           ))}
         </ul>
       )}
+      {result.total > 0 ? (
+        <RequestPagination
+          basePath="/approvals"
+          params={view === "pending" ? {} : { filter: view }}
+          page={result.page}
+          pageCount={result.pageCount}
+          total={result.total}
+        />
+      ) : null}
     </main>
   );
 }

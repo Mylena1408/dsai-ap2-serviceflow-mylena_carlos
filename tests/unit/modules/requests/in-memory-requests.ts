@@ -196,6 +196,11 @@ function withHistory(store: InMemoryRequestStore, request: RequestRecord): Reque
 export function createInMemoryQueryRepository(store: InMemoryRequestStore): RequestQueryRepository {
   const forApproval = (request: RequestRecord, sectorId: string) =>
     request.sectorId === sectorId && request.approvalState !== null;
+  const pageOf = (items: RequestWithHistory[], { page, pageSize }: { page: number; pageSize: number }) => {
+    const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
+    const current = Math.min(Math.max(1, page), pageCount);
+    return { items: items.slice((current - 1) * pageSize, current * pageSize), page: current, pageCount, total: items.length };
+  };
   const find = (predicate: (request: RequestRecord) => boolean) =>
     store.requests.filter(predicate).map((request) => withHistory(store, request));
 
@@ -214,6 +219,13 @@ export function createInMemoryQueryRepository(store: InMemoryRequestStore): Requ
     },
     async listForApproval(sectorId, onlyPending) {
       return find((request) => forApproval(request, sectorId) && (!onlyPending || request.approvalState === "PENDING"));
+    },
+    // SPEC 2026-11-16-paginacao-aprovacoes: the pages of the same lists, clamped to the last one.
+    async pageForApproval(sectorId, onlyPending, _covered, window) {
+      return pageOf(find((request) => forApproval(request, sectorId) && (!onlyPending || request.approvalState === "PENDING")), window);
+    },
+    async pageBySector(sectorId, window) {
+      return pageOf(find((request) => request.sectorId === sectorId), window);
     },
     async findForApproval(requestId, sectorId) {
       return find((request) => request.id === requestId && forApproval(request, sectorId))[0] ?? null;

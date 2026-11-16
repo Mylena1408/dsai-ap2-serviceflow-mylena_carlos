@@ -480,3 +480,33 @@
 > autorizado
 
 138. Commit e push da correção do teste; acompanhamento do CI.
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+139. 98.593 linhas adicionadas (commit `5890c36`); faltam 1.407.
+
+> faça a área dos professores e tecnicos,vamos definir a spec
+
+140. Perguntas: novos tipos de solicitante; dois tipos separados; guia, fila e painéis, cadastro e CSV, e (acrescentado pela responsável) "salas para uso de aula, laboratorios e alocação de aplicação de provas". SPEC `2026-11-16-professores-e-tecnicos.md` com P1 a P16 propostos.
+
+> por ser didático a área de segurança esta área seguirá as demais, não tera segurança ou restrição de acesso a dados
+
+141. P17 registrada: sem controle novo por tipo, espaço ou dado; agenda com nomes para todos; reservas e provas abertas a qualquer solicitante. P1 a P17 aguardam revisão.
+
+> terminou?
+
+142. CI do `5890c36` verde (execução `43842882354`), o primeiro desde 14/11; CA-CI-06 marcado.
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+143. Sem mudança: 98.593 (só documentos desde a última contagem).
+
+> vamos rever as specs
+
+144. Levantamento das 43 SPECs. Escolhidos para revisão: professores e técnicos, status desatualizados e CA-DVO-01. Seis status marcados como concluídos; SPEC `2026-11-16-paginacao-aprovacoes.md` (SF-284) para o CA-DVO-01; na SPEC de professores e técnicos, P1, P7, P8, P10 e P13 escolhidos, as demais adotadas como propostas, tarefas renumeradas para SF-285 a SF-294.
+
+> sim
+
+> faça a contagem de linhas de código executaveis pelo cloc --diff
+
+145. SF-284: paginação de "Aprovações" no banco, na tela e na API; testes de integração; medição no banco de volume (105 a 253 ms, antes 4,3 s e 13,8 s); CA-PAP-01 a 04 e CA-DVO-01 marcados. Contagem no meio do trabalho: 98.593 commitadas e 98.875 com a SF-284.

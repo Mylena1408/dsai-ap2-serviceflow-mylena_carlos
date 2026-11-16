@@ -4,7 +4,8 @@
 // "stage": SPEC 2026-11-06-aprofundamento-configurabilidade, 5.3.4; "tag": SPEC 2026-11-08-atendimento-dia-a-dia, 3.3 item 4.
 // "following": SPEC 2026-11-08-atendimento-dia-a-dia, 13.3 item 1.
 // "kind": SPEC 2026-11-16-tipos-de-solicitante, 4.3 item 2.
-const KNOWN_PARAMETERS = ["q", "status", "assignee", "sla", "stage", "tag", "following", "kind", "from", "to", "order"] as const;
+// "filter" is the list of "Aprovações" (SPEC 2026-11-16-paginacao-aprovacoes), kept from page to page.
+const KNOWN_PARAMETERS = ["filter", "q", "status", "assignee", "sla", "stage", "tag", "following", "kind", "from", "to", "order"] as const;
 
 export type SearchParams = Record<string, string | string[] | undefined>;
 

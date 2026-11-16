@@ -20,6 +20,8 @@ import {
   type SlaFilter,
 } from "../domain/search-criteria";
 import type {
+  RequestPage,
+  RequestPageWindow,
   RequestSearchScope,
   RequestQueryRepository,
   RequestTransaction,
@@ -246,6 +248,45 @@ function searchWhere(
   return { AND: and };
 }
 
+/**
+ * SPEC 2026-11-16-paginacao-aprovacoes (SF-284): one page over segments shown one after the other (pending, then
+ * decided), each oldest first. Only the identifiers of the page are read with an offset; the full requests, with
+ * their history, are loaded for those 20 only (the cost the measurement found was loading every one).
+ */
+async function segmentedPage(
+  database: PrismaClient,
+  segments: Prisma.RequestWhereInput[],
+  { page, pageSize }: RequestPageWindow,
+): Promise<RequestPage> {
+  const counts = await Promise.all(segments.map((where) => database.request.count({ where })));
+  const total = counts.reduce((sum, count) => sum + count, 0);
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
+  const current = Math.min(Math.max(1, page), pageCount);
+  let offset = (current - 1) * pageSize;
+  let remaining = pageSize;
+  const ids: string[] = [];
+  for (const [index, where] of segments.entries()) {
+    if (remaining === 0) break;
+    if (offset >= counts[index]!) {
+      offset -= counts[index]!;
+      continue;
+    }
+    const rows = await database.request.findMany({
+      where,
+      select: { id: true },
+      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      skip: offset,
+      take: remaining,
+    });
+    ids.push(...rows.map(({ id }) => id));
+    remaining -= rows.length;
+    offset = 0;
+  }
+  const rows = ids.length === 0 ? [] : await database.request.findMany({ where: { id: { in: ids } }, include: requestWithHistory });
+  const byId = new Map(rows.map((row) => [row.id, toDomain(row)]));
+  return { items: ids.flatMap((id) => byId.get(id) ?? []), page: current, pageCount, total };
+}
+
 export function createPrismaRequestQueryRepository(
   database: PrismaClient,
 ): RequestQueryRepository {
@@ -314,6 +355,23 @@ export function createPrismaRequestQueryRepository(
       return rows
         .sort((left, right) => Number(right.approvalState === "PENDING") - Number(left.approvalState === "PENDING"))
         .map(toDomain);
+    },
+    // SPEC 2026-11-16-paginacao-aprovacoes (SF-284): pending first, oldest first, as `listForApproval` (Q1).
+    async pageForApproval(sectorId, onlyPending, coveredSectorIds, window) {
+      const visible: Prisma.RequestWhereInput = {
+        OR: [sectorId, ...coveredSectorIds].map((item) => (onlyPending ? pendingForSector(item) : approvalVisibleTo(item))),
+      };
+      return segmentedPage(
+        database,
+        [
+          { AND: [visible, { approvalState: "PENDING" }] },
+          { AND: [visible, { approvalState: { not: "PENDING" } }] },
+        ],
+        window,
+      );
+    },
+    async pageBySector(sectorId, window) {
+      return segmentedPage(database, [{ sectorId }], window);
     },
     approvalCoverage(managerId) {
       return approvalCoverage(database, managerId);

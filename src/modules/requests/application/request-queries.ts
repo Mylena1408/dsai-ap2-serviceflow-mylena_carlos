@@ -6,7 +6,7 @@ import { validateInput } from "@/server/validation";
 import { entityIdSchema } from "@/shared/validation";
 import type { RequestWithHistory } from "../domain/request";
 import { parseSearchCriteria, type RawSearchParams, type SearchCriteria } from "../domain/search-criteria";
-import type { DuplicateOriginalView, RequestQueryRepository, RequestSearchPage } from "./ports";
+import type { DuplicateOriginalView, RequestPage, RequestQueryRepository, RequestSearchPage } from "./ports";
 
 export async function listRequesterRequests(
   repository: RequestQueryRepository,
@@ -105,14 +105,12 @@ export async function getAttendantRequest(
   return request;
 }
 
-/**
- * SPEC 2026-11-01-aprovacoes, 5.7 (decision A4): a manager reads only the requests of the sector
- * that require approval, pending first; "all" also lists the decided ones.
- */
-export async function listManagerApprovals(
-  filter: unknown,
-  repository: RequestQueryRepository,
-): Promise<RequestWithHistory[]> {
+type ManagerApprovalScope =
+  | { kind: "sector"; sectorId: string }
+  | { kind: "approval"; sectorId: string; onlyPending: boolean; coveredSectorIds: string[] };
+
+/** Who the manager is and which list the filter asks for, with the same checks for the list and its pages. */
+async function managerApprovalScope(filter: unknown, repository: RequestQueryRepository): Promise<ManagerApprovalScope> {
   const actor = assertRole(await requireCurrentActor(), "MANAGER");
 
   if (!actor.sectorId) {
@@ -124,10 +122,48 @@ export async function listManagerApprovals(
     if (!(await actorHasPermission(actor, "SECTOR_REQUESTS_READ"))) {
       throw new AuthorizationError();
     }
-    return repository.listBySector(actor.sectorId);
+    return { kind: "sector", sectorId: actor.sectorId };
   }
 
-  return repository.listForApproval(actor.sectorId, filter !== "all", await coveredSectors(repository, actor.id));
+  return {
+    kind: "approval",
+    sectorId: actor.sectorId,
+    onlyPending: filter !== "all",
+    coveredSectorIds: await coveredSectors(repository, actor.id),
+  };
+}
+
+/**
+ * SPEC 2026-11-01-aprovacoes, 5.7 (decision A4): a manager reads only the requests of the sector
+ * that require approval, pending first; "all" also lists the decided ones.
+ */
+export async function listManagerApprovals(
+  filter: unknown,
+  repository: RequestQueryRepository,
+): Promise<RequestWithHistory[]> {
+  const scope = await managerApprovalScope(filter, repository);
+  return scope.kind === "sector"
+    ? repository.listBySector(scope.sectorId)
+    : repository.listForApproval(scope.sectorId, scope.onlyPending, scope.coveredSectorIds);
+}
+
+/** SPEC 2026-11-16-paginacao-aprovacoes, Q3: the size of a page of "Aprovações", as the queue's. */
+export const MANAGER_APPROVALS_PAGE_SIZE = 20;
+
+/**
+ * SPEC 2026-11-16-paginacao-aprovacoes (SF-284): one page of the same list, read from the database; the same
+ * checks of who sees what (rule 1). A page past the last one is the last one (Q2).
+ */
+export async function pageManagerApprovals(
+  filter: unknown,
+  page: number,
+  repository: RequestQueryRepository,
+): Promise<RequestPage> {
+  const scope = await managerApprovalScope(filter, repository);
+  const window = { page: Number.isInteger(page) && page >= 1 ? page : 1, pageSize: MANAGER_APPROVALS_PAGE_SIZE };
+  return scope.kind === "sector"
+    ? repository.pageBySector(scope.sectorId, window)
+    : repository.pageForApproval(scope.sectorId, scope.onlyPending, scope.coveredSectorIds, window);
 }
 
 /** Sectors a manager replaces today (SPEC 2026-11-06-aprofundamento-configurabilidade, 4.3.5). */

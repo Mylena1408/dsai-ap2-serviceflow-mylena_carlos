@@ -22,6 +22,7 @@ import * as transitionUseCase from "./application/transition-request-status";
 import type { AttachmentDownload, RequestAttachmentSummary } from "./domain/attachment";
 import type { RequestFieldAnswer } from "./domain/field-answer";
 import type { RequestWithHistory } from "./domain/request";
+import type { RequestPage } from "./application/ports";
 import { createPrismaFieldAnswerQueryRepository } from "./infrastructure/prisma-field-answer-repository";
 import {
   createPrismaAttachmentQueryRepository,
@@ -70,6 +71,7 @@ export type { AssigneeFilter, SearchCriteria, SearchOrder, SlaFilter } from "./d
 export { completedLateAt, dueAtFrom, slaSituation } from "./domain/sla";
 export type { SlaSituation } from "./domain/sla";
 export type { RequestSearchResult } from "./application/request-queries";
+export type { RequestPage } from "./application/ports";
 export { buildRequestSnapshot } from "./domain/snapshot";
 export { assertRequestStatusTransition } from "./domain/status-transition";
 export type {
@@ -141,6 +143,17 @@ export async function listManagerApprovals(
 ): Promise<RequestWithHistory[]> {
   return queries.listManagerApprovals(filter, createPrismaRequestQueryRepository(database));
 }
+
+/** SPEC 2026-11-16-paginacao-aprovacoes (SF-284): one page of "Aprovações". */
+export async function pageManagerApprovals(
+  filter: unknown,
+  page: number,
+  database: PrismaClient = prisma,
+): Promise<RequestPage> {
+  return queries.pageManagerApprovals(filter, page, createPrismaRequestQueryRepository(database));
+}
+
+export const MANAGER_APPROVALS_PAGE_SIZE = queries.MANAGER_APPROVALS_PAGE_SIZE;
 
 /** SPEC 2026-11-06-aprofundamento-configurabilidade, 5.3.4. */
 export async function listQueueStageChoices(database: PrismaClient = prisma): Promise<string[]> {

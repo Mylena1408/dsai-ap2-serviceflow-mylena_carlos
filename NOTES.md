@@ -3393,3 +3393,13 @@ Padrão a replicar nas SF-039 e SF-040:
 
 - O CI de `a67300c` chegou ao fim do E2E pela primeira vez desde 14/11: 82 de 83. A falha: `responsive.spec.ts` esperava o menu do solicitante numa linha a 1280 px; no runner Linux a fonte substituta é mais larga e ele quebra em duas (no Windows, com a Segoe UI, cabe). As execuções anteriores paravam antes, no gitleaks e no teste do lote, por isso o caso não tinha aparecido.
 - Correção no teste, não na tela: a quebra de links inteiros é aceita pelo item 4.3.4 da SPEC de acessibilidade; o teste agora vale em qualquer fonte e força a Verdana para reproduzir o caso do CI. Esclarecimento na seção 12 da SPEC.
+
+- **CI verde (2026-11-16):** a execução `43842882354` do commit `5890c36` passou inteira; CA-CI-06 marcado na SPEC de integração contínua.
+
+## SF-284 — Paginação de "Aprovações" (2026-11-16)
+
+- **Por quê:** fechar o CA-DVO-01, aberto desde a SF-160 (4,3 s nas pendentes e 13,8 s em "Todas" com 98 mil solicitações). Escolha da responsável na revisão das SPECs.
+- **Como:** os dois trechos da lista (pendentes, depois decididas) são contados e paginados no banco; só os 20 da página são carregados com o histórico. A ordem e quem vê o quê não mudaram (teste que junta todas as páginas e compara com a lista antiga, inclusive com cobertura de ausência).
+- **Teste da API em arquivo próprio:** no arquivo que simula a sessão, a API respondia 500, porque a simulação do módulo de autenticação tira dele o que a API usa para ler o token. O teste da API ficou sem simulação de sessão, como os outros da API.
+- **Medição:** `next start` contra o `serviceflow_perf` (migrations locais de 47 para 63; permissão concedida ao gestor só nesse banco). O primeiro login falhou por `UntrustedHost` do Auth.js em `next start` local; resolvido com `AUTH_TRUST_HOST=true` só no processo da medição. Resultado: 105 a 253 ms em todas as páginas, inclusive as últimas.
+- **Resultados:** unitários 2.081/2.081; lint e typecheck OK; integração nova 4/4 e as 6 suítes do gestor (35); E2E do gestor e das aprovações 4/4.

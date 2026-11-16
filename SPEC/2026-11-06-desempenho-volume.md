@@ -1,7 +1,7 @@
 # SPEC — Desempenho das análises com volume alto
 
 **Data:** 2026-11-06
-**Status:** Aprovada em 2026-11-06, dentro da "manutenção curta" (verificar o desempenho com volume alto) aprovada pela responsável. **Concluída em 2026-11-06 para as análises** (SF-160; CA-DVO-02 e 03 verificados). O CA-DVO-01 **não foi atingido** em "Aprovações": a causa é outra (seção 7) e depende de decisão da responsável.
+**Status:** Aprovada em 2026-11-06, dentro da "manutenção curta" (verificar o desempenho com volume alto) aprovada pela responsável. **Concluída em 2026-11-06 para as análises** (SF-160; CA-DVO-02 e 03 verificados). O CA-DVO-01 **não foi atingido** em "Aprovações": a causa é outra (seção 7) e depende de decisão da responsável. **Concluída em 2026-11-16:** "Aprovações" paginada (SF-284), CA-DVO-01 atingido.
 **Projeto:** ServiceFlow
 **Referências:**
 - `SPEC/2026-11-06-analises-operacionais.md`: seção 5.4 ("pendentes" no fim de cada ponto da tendência) e seção 5.8 (tudo é agregado pelo banco a cada visita).
@@ -43,7 +43,7 @@ Resultados:
 
 ## 5. Critérios de aceitação
 
-- [ ] **CA-DVO-01** — Com as 98.014 solicitações, todas as páginas medidas, incluindo as análises de 30 e 90 dias, respondem em menos de 2 s no ambiente local. *Medido em 2026-11-06: **atingido para as análises** (gestor 1,15 s e 0,95 s; administrador 1,00 s e 0,91 s, para 30 e 90 dias; antes, sem resposta em 120 s) e para as demais telas (110 a 450 ms). **Não atingido em "Aprovações"**: 4,3 s (pendentes) e 13,8 s (todas). Ver seção 7.*
+- [x] **CA-DVO-01** — Com as 98.014 solicitações, todas as páginas medidas, incluindo as análises de 30 e 90 dias, respondem em menos de 2 s no ambiente local. *Medido em 2026-11-06: **atingido para as análises** (gestor 1,15 s e 0,95 s; administrador 1,00 s e 0,91 s, para 30 e 90 dias; antes, sem resposta em 120 s) e para as demais telas (110 a 450 ms). **Não atingido em "Aprovações"**: 4,3 s (pendentes) e 13,8 s (todas). Ver seção 7.* *Fechado em 2026-11-16 pela paginação de "Aprovações" (`SPEC/2026-11-16-paginacao-aprovacoes.md`, SF-284; CA-PAP-03): no mesmo banco, "Pendentes" 253 ms, "Todas" 198 ms e "Todas do setor" 147 ms.*
 - [x] **CA-DVO-02** — `pendingAt` devolve os mesmos números da consulta antiga: no teste de integração existente e, no banco de medição, em pelo menos 3 conjuntos de pontos, para um setor e para todos. *Verificado em 2026-11-06: integração `analytics-reader.test.ts` (dois setores, reabertura e cancelamento) passa; no banco de medição, 8 comparações iguais (30 pontos diários, 13 semanais, 6 aleatórios no ano e 1 ponto, para um setor e para todos). A nova consulta leva de 0,5 a 0,85 s, contra até 12,7 s da antiga. Limite: os dados clonados ficam todos num setor, então ali "um setor" e "todos" coincidem.*
 - [x] **CA-DVO-03** — A migration é aditiva e só cria o índice; nenhuma dependência nova; todas as suítes passam. *Verificado em 2026-11-06: migration `20261106500000_status_event_request_index` só com `CREATE INDEX`, gerada por diff de schemas; `package.json` sem mudança; lint, typecheck e build OK; unitários 1193/1193; integração 445/445; E2E 31/31.*
 
@@ -59,3 +59,5 @@ A página do gestor (`/approvals`) não tem paginação. Ela carrega **todas** a
 - "Todas do setor": pode chegar a todas as solicitações do setor. Não foi medida, porque o gestor de demonstração não tem a permissão.
 
 Nenhuma consulta isolada passou de 150 ms: o custo é o volume de linhas e a montagem da página. Resolver exige paginação, ou seja, mudar a tela. Isso fica para uma SPEC própria, depois da decisão da responsável.
+
+**Atualização 2026-11-16 (revisão das SPECs):** a responsável escolheu paginar "Aprovações" (`SPEC/2026-11-16-paginacao-aprovacoes.md`, SF-284); o CA-DVO-01 será fechado pela medição do CA-PAP-03.

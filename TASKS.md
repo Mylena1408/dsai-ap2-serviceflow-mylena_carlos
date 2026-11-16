@@ -2919,3 +2919,12 @@ Guia passo a passo para o estudante de nível superior pedir serviços (`SPEC/20
 - **Estado:** Concluída em 2026-11-16: unitário `student-guide.test.ts`, E2E `student-guide.spec.ts`, guia na verificação responsiva e na varredura axe; revisão na seção 9 da SPEC (5 de 5 critérios).
 - **SPEC:** `SPEC/2026-11-16-guia-do-estudante.md`.
 
+## Paginação de "Aprovações" — SPEC de 2026-11-16
+
+Escolhida na revisão das SPECs de 2026-11-16 para fechar o CA-DVO-01 (`SPEC/2026-11-16-paginacao-aprovacoes.md`). Concluída em 2026-11-16.
+
+### SF-284 — "Aprovações" paginada no banco, na tela e na API
+
+- **Estado:** Concluída em 2026-11-16: `pageForApproval` e `pageBySector` no repositório, `pageManagerApprovals` no caso de uso, página com 20 por página e a navegação da fila, API do gestor com a mesma leitura; integração `approvals-pagination.test.ts` e `approvals-pagination-api.test.ts`; medição no `serviceflow_perf` de 105 a 253 ms (antes 4,3 s e 13,8 s).
+- **SPEC:** `SPEC/2026-11-16-paginacao-aprovacoes.md`.
+

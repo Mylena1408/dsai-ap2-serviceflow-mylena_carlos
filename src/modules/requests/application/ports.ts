@@ -20,6 +20,20 @@ import type { RequestSnapshot } from "../domain/snapshot";
 
 export type ActorRole = "ADMIN" | "REQUESTER" | "ATTENDANT" | "MANAGER";
 
+/** The page asked for and its size (SPEC 2026-11-16-paginacao-aprovacoes). */
+export interface RequestPageWindow {
+  page: number;
+  pageSize: number;
+}
+
+/** One page of a list: its items, the page shown (clamped to the last) and the totals. */
+export interface RequestPage {
+  items: RequestWithHistory[];
+  page: number;
+  pageCount: number;
+  total: number;
+}
+
 export interface RequestQueryRepository {
   listByRequester(requesterId: string): Promise<RequestWithHistory[]>;
   findForRequester(requestId: string, requesterId: string): Promise<RequestWithHistory | null>;
@@ -39,6 +53,18 @@ export interface RequestQueryRepository {
    * 2026-11-06-aprofundamento-configurabilidade, 4.3.5). Older doubles may read only the first one.
    */
   listForApproval(sectorId: string, onlyPending: boolean, coveredSectorIds?: readonly string[]): Promise<RequestWithHistory[]>;
+  /**
+   * SPEC 2026-11-16-paginacao-aprovacoes (SF-284): one page of `listForApproval`, in the same order, read from the
+   * database; a page past the last one is the last one (Q2).
+   */
+  pageForApproval(
+    sectorId: string,
+    onlyPending: boolean,
+    coveredSectorIds: readonly string[],
+    page: RequestPageWindow,
+  ): Promise<RequestPage>;
+  /** The same for `listBySector` ("Todas do setor"). */
+  pageBySector(sectorId: string, page: RequestPageWindow): Promise<RequestPage>;
   /** A request that requires approval of one of these sectors, or null. */
   findForApproval(requestId: string, sectorId: string, coveredSectorIds?: readonly string[]): Promise<RequestWithHistory | null>;
   /** 4.3.5: sectors this manager replaces today. Optional for older doubles: absent = none. */
