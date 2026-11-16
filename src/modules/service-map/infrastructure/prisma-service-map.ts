@@ -1,14 +1,23 @@
 import type { PrismaClient } from "@prisma/client";
+import type { RequesterKind, ServiceAudience } from "@/shared/requester-kinds";
 import type { MapService } from "../domain/service-map";
 
 // SPEC 2026-11-15-mapa-de-servicos, rule 1 (SF-273): only what the requester can ask for. Services active with an
 // active category and sector (the catalog's rule), their active stages and documents, the published articles and the
 // names of the approval sectors. Read only.
 
-export async function readPublishedMapServices(database: PrismaClient): Promise<MapService[]> {
+/** The kind of the requester reading the map; null for an identifier that is not a person's. */
+export async function readRequesterKind(database: PrismaClient, userId: string): Promise<RequesterKind | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(userId)) return null;
+  const user = await database.user.findUnique({ where: { id: userId }, select: { requesterKind: true } });
+  return user?.requesterKind ?? null;
+}
+
+export async function readPublishedMapServices(database: PrismaClient, audiences?: readonly ServiceAudience[]): Promise<MapService[]> {
   const [services, sectors] = await Promise.all([
     database.service.findMany({
-      where: { isActive: true, category: { isActive: true }, sector: { isActive: true } },
+      // SPEC 2026-11-16-tipos-de-solicitante, rule 2: only the services offered to the reader's kind.
+      where: { isActive: true, category: { isActive: true }, sector: { isActive: true }, ...(audiences ? { audience: { in: [...audiences] } } : {}) },
       select: {
         id: true,
         name: true,

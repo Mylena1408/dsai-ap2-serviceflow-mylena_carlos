@@ -74,6 +74,8 @@ describe("CSV of the dashboard requests (CA-DASH-08)", () => {
       "Vencimento",
       "Situação do prazo",
       "Concluída no prazo",
+      // SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 3.
+      "Tipo de solicitante",
     ]);
   });
 
@@ -82,9 +84,9 @@ describe("CSV of the dashboard requests (CA-DASH-08)", () => {
 
     expect(first).toBe(
       "3F2A9C1E;Reparo elétrico;Manutenção;Infraestrutura;Concluída;Alta;Aprovada;Execução;Diego Rocha;" +
-        "2026-10-30 09:05;2026-10-31 23:59;;2026-11-01 09:05;Concluída no prazo;Sim",
+        "2026-10-30 09:05;2026-10-31 23:59;;2026-11-01 09:05;Concluída no prazo;Sim;Aluno",
     );
-    expect(second).toBe("A1B2C3D4;Declaração de vínculo;Documentos;Recursos humanos;Aberta;Normal;;;;2026-11-02 10:00;;;;Sem prazo;");
+    expect(second).toBe("A1B2C3D4;Declaração de vínculo;Documentos;Recursos humanos;Aberta;Normal;;;;2026-11-02 10:00;;;;Sem prazo;;Aluno");
     expect(end).toBe("");
   });
 
@@ -94,10 +96,12 @@ describe("CSV of the dashboard requests (CA-DASH-08)", () => {
     const cancelled = { ...open, status: "CANCELLED" as const, cancelledAt: new Date("2026-11-02T14:00:00.000Z") };
 
     const [, lateLine, overdueLine, cancelledLine] = lines(buildRequestsCsv([late, overdue, cancelled]));
-    expect(lateLine.endsWith(";Concluída com atraso;Não")).toBe(true);
-    expect(overdueLine.endsWith(";Vencido;")).toBe(true);
+    expect(lateLine.endsWith(";Concluída com atraso;Não;Aluno")).toBe(true);
+    expect(overdueLine.endsWith(";Vencido;;Aluno")).toBe(true);
     expect(cancelledLine).toContain(";Cancelada;");
-    expect(cancelledLine.endsWith(";2026-11-02 11:00;;Sem prazo;")).toBe(true);
+    expect(cancelledLine.endsWith(";2026-11-02 11:00;;Sem prazo;;Aluno")).toBe(true);
+    // A request opened by the general public says so.
+    expect(lines(buildRequestsCsv([{ ...open, requesterKind: "PUBLIC" }]))[1]!.endsWith(";Sem prazo;;Público geral")).toBe(true);
   });
 
   it("neutralizes values a spreadsheet would run as formulas", () => {

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { entityIdSchema, nameSchema, nonEmptyTextSchema } from "@/shared/validation";
+import { SERVICE_AUDIENCES } from "@/shared/requester-kinds";
 
 export const serviceInputSchema = z
   .object({
@@ -16,6 +17,8 @@ export const serviceInputSchema = z
     slaBusinessHours: z.boolean().optional(),
     // SPEC 2026-11-08-atendimento-dia-a-dia, 13.2 item 1; optional for the same reason.
     estimatedHours: z.union([z.string(), z.number(), z.null()]).optional(),
+    // SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 3; optional for the same reason (create: both, decision T5).
+    audience: z.enum(SERVICE_AUDIENCES).optional(),
   })
   .strict();
 

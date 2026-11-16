@@ -275,7 +275,8 @@ describe("CSV export (CA-DASH-08)", () => {
     );
     expect(csv.fileName).toBe("serviceflow-solicitacoes-2026-10-01-a-2026-10-31.csv");
     expect(csv.content.split("\r\n")[1]).toBe(
-      "3F2A9C1E;Reparo elétrico;Manutenção;Infraestrutura;Em atendimento;Normal;;;Diego Rocha;2026-10-30 09:00;;;2026-11-01 09:00;Vencido;",
+      // The last column, the requester's kind, since SPEC 2026-11-16-tipos-de-solicitante (4.4 item 3).
+      "3F2A9C1E;Reparo elétrico;Manutenção;Infraestrutura;Em atendimento;Normal;;;Diego Rocha;2026-10-30 09:00;;;2026-11-01 09:00;Vencido;;Aluno",
     );
   });
 

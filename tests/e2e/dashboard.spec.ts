@@ -97,7 +97,8 @@ test("the dashboard shows consolidated numbers to the administrator and the mana
   expect(csv.name).toMatch(/^serviceflow-solicitacoes-\d{4}-\d{2}-\d{2}-a-\d{4}-\d{2}-\d{2}\.csv$/);
   expect(csv.lines).toHaveLength(2);
   expect(csv.lines[0]).toBe(
-    "Código;Serviço;Categoria;Setor;Status;Prioridade;Aprovação;Etapa atual;Responsável;Aberta em;Concluída em;Cancelada em;Vencimento;Situação do prazo;Concluída no prazo",
+    // "Tipo de solicitante" at the end since SPEC 2026-11-16-tipos-de-solicitante (4.4 item 3).
+    "Código;Serviço;Categoria;Setor;Status;Prioridade;Aprovação;Etapa atual;Responsável;Aberta em;Concluída em;Cancelada em;Vencimento;Situação do prazo;Concluída no prazo;Tipo de solicitante",
   );
   expect(csv.lines[1]).toContain(`;${otherService};Categoria ${unique};${otherSector};Aberta;Normal;`);
   expect(csv.lines.join("\n")).not.toContain("nunca vai para o painel");

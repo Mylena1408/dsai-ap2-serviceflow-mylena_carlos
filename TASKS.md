@@ -2870,3 +2870,38 @@ Página "Mapa de serviços" na área do solicitante, com o desenho dos setores e
 - **Critérios de conclusão:** CA-MAP-05 e revisão de todos os critérios.
 - **Testes relacionados:** E2E.
 - **SPEC:** `SPEC/2026-11-15-mapa-de-servicos.md`.
+
+## Tipos de solicitante: aluno e público geral — SPEC de 2026-11-16
+
+O solicitante passa a ter um tipo (aluno, interno; público geral, externo), cada serviço um público, e o atendimento uma subseção por tipo (`SPEC/2026-11-16-tipos-de-solicitante.md`). Decisões T1 a T3 escolhidas e T4 a T9 aprovadas pela responsável em 2026-11-16. Concluída em 2026-11-16.
+
+### SF-276 — Migration, domínio e auditoria do tipo e do público
+
+- **Estado:** Concluída em 2026-11-16: migration `20261116100000_requester_kinds` (enums, colunas, CHECK, gatilhos, índice), regras compartilhadas em `src/shared/requester-kinds`, cadastro de pessoas e serviços, abertura recusando outro público, catálogo filtrado, auditoria.
+- **SPEC:** `SPEC/2026-11-16-tipos-de-solicitante.md`.
+
+### SF-277 — Administração: cadastro, importação CSV e configuração portátil v4
+
+- **Estado:** Concluída em 2026-11-16: campos "Tipo de solicitante" e "Público do serviço", coluna `tipo` opcional no CSV, configuração portátil versão 4 (`offeredTo`).
+- **SPEC:** `SPEC/2026-11-16-tipos-de-solicitante.md`.
+
+### SF-278 — Solicitante: subseção no catálogo e no mapa, pacotes e API
+
+- **Estado:** Concluída em 2026-11-16: subseção do tipo no catálogo e no mapa, pacotes só com serviços do público (T9), API pelo mesmo caminho do catálogo e da abertura.
+- **SPEC:** `SPEC/2026-11-16-tipos-de-solicitante.md`.
+
+### SF-279 — Atendimento: tipo na fila e no detalhe, filtro, visões salvas e lote
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-tipos-de-solicitante.md`.
+
+### SF-280 — Painel, análises e exportação por tipo
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-tipos-de-solicitante.md`.
+
+### SF-281 — E2E e revisão final
+
+- **Estado:** Concluída em 2026-11-16: E2E `requester-kinds.spec.ts`; revisão na seção 10 da SPEC (5 de 5 critérios).
+- **SPEC:** `SPEC/2026-11-16-tipos-de-solicitante.md`.
+

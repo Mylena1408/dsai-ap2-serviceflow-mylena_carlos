@@ -59,7 +59,7 @@ export function createPrismaDashboardReader(database: PrismaClient): DashboardRe
     async periodTotals(scope, range) {
       const where = scopeWhere(scope);
       const opened = { ...where, createdAt: inRange(range) };
-      const [openedCount, completed, cancelled, [completion], byCategory, bySector, byStatus] = await Promise.all([
+      const [openedCount, completed, cancelled, [completion], byCategory, bySector, byStatus, byRequesterKind] = await Promise.all([
         database.request.count({ where: opened }),
         database.request.count({ where: { ...where, status: "COMPLETED", completedAt: inRange(range) } }),
         database.request.count({ where: { ...where, status: "CANCELLED", cancelledAt: inRange(range) } }),
@@ -79,6 +79,8 @@ export function createPrismaDashboardReader(database: PrismaClient): DashboardRe
         database.request.groupBy({ by: ["categoryNameSnapshot"], where: opened, _count: { _all: true } }),
         database.request.groupBy({ by: ["sectorNameSnapshot"], where: opened, _count: { _all: true } }),
         database.request.groupBy({ by: ["status"], where: opened, _count: { _all: true } }),
+        // SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 1.
+        database.request.groupBy({ by: ["requesterKindSnapshot"], where: opened, _count: { _all: true } }),
       ]);
 
       return {
@@ -94,6 +96,7 @@ export function createPrismaDashboardReader(database: PrismaClient): DashboardRe
         byCategory: byCategory.map((group) => ({ label: group.categoryNameSnapshot, count: group._count._all })),
         bySector: bySector.map((group) => ({ label: group.sectorNameSnapshot, count: group._count._all })),
         byStatus: byStatus.map((group) => ({ status: group.status, count: group._count._all })),
+        byRequesterKind: byRequesterKind.map((group) => ({ kind: group.requesterKindSnapshot, count: group._count._all })),
       };
     },
 
@@ -123,6 +126,8 @@ export function createPrismaDashboardReader(database: PrismaClient): DashboardRe
           slaBusinessHours: true,
           dueSoonAt: true,
           slaPausedAt: true,
+          // SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 3: the kind, not the person.
+          requesterKindSnapshot: true,
         },
       });
 
@@ -146,6 +151,7 @@ export function createPrismaDashboardReader(database: PrismaClient): DashboardRe
           // SPEC 2026-11-03-pausa-sla-calendario: only when they change the situation.
           ...(row.slaBusinessHours ? { slaBusinessHours: true as const, dueSoonAt: row.dueSoonAt } : {}),
           ...(row.slaPausedAt ? { slaPausedAt: row.slaPausedAt } : {}),
+          requesterKind: row.requesterKindSnapshot,
         }),
       );
     },

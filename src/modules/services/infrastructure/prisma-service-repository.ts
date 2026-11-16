@@ -1,3 +1,4 @@
+import { entityIdSchema } from "@/shared/validation";
 import type { Prisma, PrismaClient, Service } from "@prisma/client";
 import { runSerializableTransaction } from "@/server/db/serializable-transaction";
 import { createPrismaAuditScope } from "@/modules/audit";
@@ -46,17 +47,23 @@ export function createPrismaPublishedCatalogRepository(
   database: PrismaClient,
 ): PublishedCatalogRepository {
   return {
-    async listPublished() {
+    async listPublished(audiences) {
       const rows = await database.service.findMany({
-        where: publishedWhere,
+        where: { ...publishedWhere, ...(audiences ? { audience: { in: [...audiences] } } : {}) },
         include: publishedServiceInclude,
         orderBy: [{ category: { name: "asc" } }, { name: "asc" }, { id: "asc" }],
       });
       return rows.map(toPublished);
     },
-    async findPublished(serviceId) {
+    async requesterKindOf(userId) {
+      // An identifier that is not a person's id reads no one (the default kind applies).
+      if (!entityIdSchema.safeParse(userId).success) return null;
+      const user = await database.user.findUnique({ where: { id: userId }, select: { requesterKind: true } });
+      return user?.requesterKind ?? null;
+    },
+    async findPublished(serviceId, audiences) {
       const row = await database.service.findFirst({
-        where: { id: serviceId, ...publishedWhere },
+        where: { id: serviceId, ...publishedWhere, ...(audiences ? { audience: { in: [...audiences] } } : {}) },
         include: publishedServiceInclude,
       });
       return row && toPublished(row);

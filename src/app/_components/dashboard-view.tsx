@@ -212,6 +212,8 @@ export function DashboardView({ dashboard, action, hidden = {} }: DashboardViewP
           <GroupTable title="Por categoria" groups={totals.byCategory} />
           {totals.bySector ? <GroupTable title="Por setor" groups={totals.bySector} /> : null}
           <GroupTable title="Por status atual" groups={totals.byStatus} />
+          {/* SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 1. */}
+          {totals.byRequesterKind ? <GroupTable title="Por tipo de solicitante" groups={totals.byRequesterKind} /> : null}
         </div>
       </section>
     </div>

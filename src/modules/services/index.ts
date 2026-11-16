@@ -61,6 +61,11 @@ export async function listPublishedServices(
   return catalog.listPublishedServices(createPrismaPublishedCatalogRepository(database));
 }
 
+/** SPEC 2026-11-16-tipos-de-solicitante, 4.2 item 1: the reader's kind, for the catalog's subsection. */
+export async function getCatalogReaderKind(database: PrismaClient = prisma) {
+  return catalog.catalogReaderKind(createPrismaPublishedCatalogRepository(database));
+}
+
 export async function getPublishedService(
   id: unknown,
   database: PrismaClient = prisma,

@@ -16,7 +16,8 @@ export const MAX_CRITERIA_LENGTH = 1_000;
 export const LIST_PARAMETERS: Record<SavedViewList, readonly string[]> = {
   // "tag": SPEC 2026-11-08-atendimento-dia-a-dia, 3.3 item 4.
   // "following": SPEC 2026-11-08-atendimento-dia-a-dia, 13.3 item 1.
-  QUEUE: ["q", "status", "assignee", "sla", "stage", "tag", "following", "from", "to", "order"],
+  // "kind": SPEC 2026-11-16-tipos-de-solicitante, 4.3 item 2.
+  QUEUE: ["q", "status", "assignee", "sla", "stage", "tag", "following", "kind", "from", "to", "order"],
   MY_REQUESTS: ["q", "status", "from", "to", "order"],
 };
 

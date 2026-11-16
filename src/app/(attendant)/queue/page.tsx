@@ -1,3 +1,4 @@
+import { REQUESTER_KIND_LABELS } from "@/shared/requester-kinds";
 import Link from "next/link";
 import { RequestStageLabel } from "@/app/_components/request-stage";
 import { RequestApprovalLabel } from "@/app/_components/request-approval";
@@ -143,6 +144,8 @@ export default async function AttendantQueuePage({ searchParams }: AttendantQueu
                   ))}
                 </p>
               ) : null}
+              {/* SPEC 2026-11-16-tipos-de-solicitante, 4.3 item 1: who asked, by the kind kept in the request. */}
+              <p className="metadata">Solicitante: {REQUESTER_KIND_LABELS[request.requesterKindSnapshot ?? "STUDENT"]}</p>
               <p className="metadata">
                 Responsável:{" "}
                 {effectiveAssigneeId(request) === null

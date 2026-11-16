@@ -1,3 +1,4 @@
+import { SERVICE_AUDIENCES } from "@/shared/requester-kinds";
 import { z } from "zod";
 
 // The portable configuration file (SPEC 2026-11-07-operacao-e-automacao, 6.3 items 2 and 3; decisions H13
@@ -16,10 +17,12 @@ import { z } from "zod";
 // leaves the destination's as they are; a version 3 file has them in every sector and the announcements' list.
 
 export const CONFIGURATION_FORMAT = "serviceflow-config";
+// Version 4 (SPEC 2026-11-16-tipos-de-solicitante, decision T8) adds each service's audience. A version 1 to 3 file
+// has none: the destination's services keep theirs and a new one is for both (as the services before the change).
 /** The version the export writes. */
-export const CONFIGURATION_VERSION = 3;
+export const CONFIGURATION_VERSION = 4;
 /** The versions the import accepts. */
-export const CONFIGURATION_VERSIONS = [1, 2, 3] as const;
+export const CONFIGURATION_VERSIONS = [1, 2, 3, 4] as const;
 export const MAX_CONFIGURATION_BYTES = 2 * 1024 * 1024;
 
 // Generous bounds that only stop abuse; the screens' limits are checked by the preview. Lists also hold the
@@ -151,6 +154,8 @@ const serviceSchema = z
     articles: list(articleSchema, 500),
     /** Version 2 and later. */
     checklist: list(checklistItemSchema, 500).optional(),
+    /** Version 4 and later: who the service is offered to ("audience" already names who fills a field). */
+    offeredTo: z.enum(SERVICE_AUDIENCES).optional(),
   })
   .strict();
 
@@ -221,7 +226,7 @@ export const configurationFileSchema = z
   .superRefine((file, context) => {
     // Version 1 never has the tags and the checklists; versions 2 and 3 always have them. Only version 3 has the
     // sectors' calendars and holidays and the announcements.
-    const expect = (present: boolean, since: 2 | 3, path: Array<string | number>) => {
+    const expect = (present: boolean, since: 2 | 3 | 4, path: Array<string | number>) => {
       const wanted = file.version >= since;
       if (present === wanted) return;
       context.addIssue({
@@ -235,7 +240,10 @@ export const configurationFileSchema = z
       expect(sector.calendar !== undefined, 3, ["sectors", index, "calendar"]);
       expect(sector.holidays !== undefined, 3, ["sectors", index, "holidays"]);
     });
-    file.data.services.forEach((service, index) => expect(service.checklist !== undefined, 2, ["services", index, "checklist"]));
+    file.data.services.forEach((service, index) => {
+      expect(service.checklist !== undefined, 2, ["services", index, "checklist"]);
+      expect(service.offeredTo !== undefined, 4, ["services", index, "offeredTo"]);
+    });
     expect(file.data.announcements !== undefined, 3, ["announcements"]);
   });
 

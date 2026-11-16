@@ -1,3 +1,4 @@
+import { REQUESTER_KIND_LABELS } from "@/shared/requester-kinds";
 import { slaSituation } from "@/modules/requests";
 import { requireCurrentActor } from "@/server/authorization";
 import { AuthorizationError, ValidationError } from "@/server/errors";
@@ -33,6 +34,8 @@ export interface DashboardTotals {
   /** Only for the administrator without a sector filter. */
   bySector: ReportGroup[] | null;
   byStatus: ReportGroup[];
+  /** SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 1: absent when the reader does not say it. */
+  byRequesterKind?: ReportGroup[];
 }
 
 export interface Dashboard {
@@ -138,6 +141,13 @@ function dashboardTotals(totals: PeriodTotals, showSectors: boolean): DashboardT
     byStatus: sortReportGroups(
       totals.byStatus.map((group) => ({ label: REQUEST_STATUS_LABELS[group.status], count: group.count })),
     ),
+    ...(totals.byRequesterKind
+      ? {
+          byRequesterKind: sortReportGroups(
+            totals.byRequesterKind.map((group) => ({ label: REQUESTER_KIND_LABELS[group.kind], count: group.count })),
+          ),
+        }
+      : {}),
   };
 }
 

@@ -57,6 +57,8 @@ export interface ConfigurationSnapshot {
     approvalConditionFieldId: string | null;
     approvalConditionValue: string | null;
     approvalDeadlineDays: number | null;
+    /** SPEC 2026-11-16-tipos-de-solicitante (version 4); optional for older doubles (both). */
+    audience?: "STUDENTS" | "PUBLIC" | "BOTH";
   }>;
   fields: Array<
     Omit<FieldItem, "condition"> & { id: string; serviceId: string; conditionFieldId: string | null; conditionValue: string | null }
@@ -165,6 +167,7 @@ export function buildConfigurationData(snapshot: ConfigurationSnapshot): Configu
       approvalSectors: service.approvalSectorIds.map((id) => sectorName.get(id)).filter(present),
       approvalCondition: condition(service.approvalConditionFieldId, service.approvalConditionValue),
       approvalDeadlineDays: service.approvalDeadlineDays,
+      offeredTo: service.audience ?? "BOTH",
       fields: ofService(snapshot.fields, service.id)
         .sort(byPosition((field) => field.label))
         .map((field) => ({

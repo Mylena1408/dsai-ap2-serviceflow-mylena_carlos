@@ -1,5 +1,6 @@
 "use client";
 
+import { REQUESTER_KIND_LABELS } from "@/shared/requester-kinds";
 import { TableScroll } from "@/app/_components/table-scroll";
 import { useActionState } from "react";
 import type { ImportLineOutcome, ImportSummary, UserImportPreview } from "@/modules/user-import";
@@ -64,7 +65,11 @@ export function LinesTable({ lines, caption, lineErrors }: { lines: readonly Imp
               <td>{line.line}</td>
               <td>{line.values.nome || "—"}</td>
               <td>{line.values.email || "—"}</td>
-              <td>{line.values.perfil || "—"}</td>
+              <td>
+                {line.values.perfil || "—"}
+                {/* SPEC 2026-11-16-tipos-de-solicitante, decision T7: the kind the line gives. */}
+                {line.outcome === "create" && line.person.requesterKind ? ` (${REQUESTER_KIND_LABELS[line.person.requesterKind]})` : ""}
+              </td>
               <td>{line.values.setor || "—"}</td>
               <td>{outcomeText(line, lineErrors)}</td>
             </tr>

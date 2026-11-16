@@ -1,3 +1,4 @@
+import type { RequesterKind, ServiceAudience } from "@/shared/requester-kinds";
 import type { AuditScope } from "@/modules/audit";
 import type { ConditionController } from "@/modules/service-fields";
 import type { ServiceRelationships } from "../domain/relationships";
@@ -9,9 +10,14 @@ export interface ServiceRepository {
 }
 
 export interface PublishedCatalogRepository {
-  /** Active services whose category and sector are active, ordered by category and name. */
-  listPublished(): Promise<PublishedService[]>;
-  findPublished(serviceId: string): Promise<PublishedService | null>;
+  /**
+   * Active services whose category and sector are active, ordered by category and name; with `audiences`, only the
+   * services offered to them (SPEC 2026-11-16-tipos-de-solicitante, rule 2).
+   */
+  listPublished(audiences?: readonly ServiceAudience[]): Promise<PublishedService[]>;
+  findPublished(serviceId: string, audiences?: readonly ServiceAudience[]): Promise<PublishedService | null>;
+  /** The kind of the requester reading the catalog; null for anyone who is not a requester. */
+  requesterKindOf(userId: string): Promise<RequesterKind | null>;
 }
 
 export interface ServiceState {

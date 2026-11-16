@@ -116,6 +116,15 @@ export function ServicesSection({
             </select>
           </label>
           <ServiceSlaFields defaultPriority="NORMAL" requiresApproval={false} slaHours={null} />
+          {/* SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 3. */}
+          <label>
+            Público do serviço
+            <select name="audience" defaultValue="BOTH">
+              <option value="BOTH">Alunos e público geral</option>
+              <option value="STUDENTS">Só alunos</option>
+              <option value="PUBLIC">Só público geral</option>
+            </select>
+          </label>
         </AdminCreateForm>
         <ul className="entity-list">
           {services.map((service) => (
@@ -134,6 +143,7 @@ export function ServicesSection({
                 requiresApproval: service.requiresApproval,
                 slaBusinessHours: service.slaBusinessHours,
                 estimatedHours: service.estimatedHours ?? null,
+                audience: service.audience ?? "BOTH",
               }}
               categories={categories}
               sectors={sectors}

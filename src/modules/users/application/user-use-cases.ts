@@ -42,6 +42,7 @@ export async function createUser(
         passwordHash,
         role: parsed.role,
         sectorId: parsed.sectorId,
+        requesterKind: parsed.requesterKind,
       }),
     );
   });
@@ -89,6 +90,7 @@ export async function updateUser(
         email: parsed.email,
         role: parsed.role,
         sectorId: parsed.sectorId,
+        requesterKind: parsed.requesterKind,
         ...(passwordHash ? { passwordHash } : {}),
       }),
     );

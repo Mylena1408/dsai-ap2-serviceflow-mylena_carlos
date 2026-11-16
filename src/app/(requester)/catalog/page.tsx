@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { groupPublishedServices, listPublishedServices } from "@/modules/services";
+import { getCatalogReaderKind, groupPublishedServices, listPublishedServices } from "@/modules/services";
+import { CATALOG_SECTION_TITLES } from "@/shared/requester-kinds";
 import { listCatalogBundles } from "@/modules/service-bundles";
 import { requireRequesterPageAccess } from "../page-access";
 
@@ -9,6 +10,8 @@ export default async function CatalogPage() {
   const categories = groupPublishedServices(services);
   // SPEC 2026-11-07-operacao-e-automacao, 3.3 item 2 (decision H20): only bundles that can be opened.
   const bundles = await listCatalogBundles();
+  // SPEC 2026-11-16-tipos-de-solicitante, 4.2 item 1: the subsection of the person's kind.
+  const kind = await getCatalogReaderKind();
 
   return (
     <main className="page-shell" id="conteudo" tabIndex={-1}>
@@ -24,6 +27,14 @@ export default async function CatalogPage() {
           <Link href="/catalog/map">Mapa de serviços</Link>
         </nav>
       </header>
+      <section aria-labelledby="catalog-audience" className="audience-note">
+        <h2 id="catalog-audience">{CATALOG_SECTION_TITLES[kind]}</h2>
+        <p>
+          {kind === "PUBLIC"
+            ? "Você vê os serviços oferecidos ao público geral e os que valem para todos."
+            : "Você vê os serviços oferecidos aos alunos e os que valem para todos."}
+        </p>
+      </section>
       {bundles.length > 0 ? (
         <section className="content-section" aria-labelledby="catalog-bundles">
           <div className="section-heading">

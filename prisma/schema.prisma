@@ -14,6 +14,20 @@ enum Role {
   MANAGER
 }
 
+/// SPEC 2026-11-16-tipos-de-solicitante, 1 and 5: a requester is a student (internal, as the requesters before) or
+/// the general public (external, only as to the services offered).
+enum RequesterKind {
+  STUDENT
+  PUBLIC
+}
+
+/// SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 3: who a service is offered to.
+enum ServiceAudience {
+  STUDENTS
+  PUBLIC
+  BOTH
+}
+
 enum ApprovalState {
   PENDING
   APPROVED
@@ -219,17 +233,20 @@ model Category {
 }
 
 model User {
-  id           String    @id @default(uuid()) @db.Uuid
-  name         String
-  email        String    @unique @db.Citext
-  role         Role
-  sectorId     String?   @db.Uuid
-  passwordHash String
-  isActive     Boolean   @default(true)
-  createdAt    DateTime  @default(now()) @db.Timestamptz
-  updatedAt    DateTime  @updatedAt @db.Timestamptz
+  id            String         @id @default(uuid()) @db.Uuid
+  name          String
+  email         String         @unique @db.Citext
+  role          Role
+  sectorId      String?        @db.Uuid
+  passwordHash  String
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now()) @db.Timestamptz
+  updatedAt     DateTime       @updatedAt @db.Timestamptz
   /// SPEC 2026-11-02-auditoria-lgpd, 5.5: set once, when the person is anonymized.
-  anonymizedAt DateTime? @db.Timestamptz
+  anonymizedAt  DateTime?      @db.Timestamptz
+  /// SPEC 2026-11-16-tipos-de-solicitante, rule 3 (decision T4): set only for requesters (CHECK); a database trigger
+  /// gives STUDENT to a requester saved without one and clears it when the role changes.
+  requesterKind RequesterKind?
 
   sector                   Sector?                    @relation(fields: [sectorId], references: [id], onDelete: Restrict)
   requests                 Request[]                  @relation("UserRequests")
@@ -347,6 +364,8 @@ model Service {
   approvalConditionValue   String?
   /// 4.3.6: days to decide each level (1 to 30), or null without a deadline.
   approvalDeadlineDays     Int?
+  /// SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 3 (decision T5): BOTH for the services before the change.
+  audience                 ServiceAudience @default(BOTH)
 
   category               Category                     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   sector                 Sector                       @relation(fields: [sectorId], references: [id], onDelete: Restrict)
@@ -381,6 +400,9 @@ model Request {
   cancelledAt                  DateTime?       @db.Timestamptz
   priority                     RequestPriority @default(NORMAL)
   slaHoursSnapshot             Int?
+  /// SPEC 2026-11-16-tipos-de-solicitante, rule 4 (decision T6): the requester's kind when the request was opened.
+  /// The repository writes it; the default is the value of the requests before the change.
+  requesterKindSnapshot        RequesterKind   @default(STUDENT)
   dueAt                        DateTime?       @db.Timestamptz
   /// Start of "próximo do vencimento". A database trigger fills it in calendar hours; in business
   /// hours the application writes it (SPEC 2026-11-03-pausa-sla-calendario, 6).
@@ -485,6 +507,8 @@ model Request {
   @@index([approvalDueAt])
   @@index([stageDueAt])
   @@index([sectorId, currentStageName])
+  /// SPEC 2026-11-16-tipos-de-solicitante, 4.3 item 2: the queue's filter by the requester's kind.
+  @@index([sectorId, requesterKindSnapshot])
 }
 
 model RequestStatusEvent {

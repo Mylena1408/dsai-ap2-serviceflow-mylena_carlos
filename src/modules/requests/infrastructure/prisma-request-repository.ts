@@ -238,6 +238,11 @@ function searchWhere(
     and.push({ followers: { some: { userId: viewerId } } });
   }
 
+  // SPEC 2026-11-16-tipos-de-solicitante, 4.3 item 2: the kind kept in the request (rule 4).
+  if ("sectorId" in scope && criteria.requesterKind) {
+    and.push({ requesterKindSnapshot: criteria.requesterKind });
+  }
+
   return { AND: and };
 }
 
@@ -391,7 +396,7 @@ export function createPrismaRequestTransaction(
     findActor(actorId) {
       return transaction.user.findUnique({
         where: { id: actorId },
-        select: { id: true, role: true, sectorId: true, isActive: true },
+        select: { id: true, role: true, sectorId: true, isActive: true, requesterKind: true },
       });
     },
     findServiceForRequest(serviceId) {

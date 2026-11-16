@@ -130,6 +130,10 @@ function repository(store: Store): ServiceRepository & PublishedCatalogRepositor
       const found = store.services.find((item) => item.id === id && isPublished(item));
       return found ? published(found) : null;
     },
+    // SPEC 2026-11-16-tipos-de-solicitante: the readers of these tests are students.
+    async requesterKindOf() {
+      return "STUDENT";
+    },
   };
 }
 

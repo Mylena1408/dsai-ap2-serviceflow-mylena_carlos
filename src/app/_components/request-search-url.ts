@@ -3,7 +3,8 @@
 
 // "stage": SPEC 2026-11-06-aprofundamento-configurabilidade, 5.3.4; "tag": SPEC 2026-11-08-atendimento-dia-a-dia, 3.3 item 4.
 // "following": SPEC 2026-11-08-atendimento-dia-a-dia, 13.3 item 1.
-const KNOWN_PARAMETERS = ["q", "status", "assignee", "sla", "stage", "tag", "following", "from", "to", "order"] as const;
+// "kind": SPEC 2026-11-16-tipos-de-solicitante, 4.3 item 2.
+const KNOWN_PARAMETERS = ["q", "status", "assignee", "sla", "stage", "tag", "following", "kind", "from", "to", "order"] as const;
 
 export type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -27,7 +28,7 @@ export function searchPageHref(basePath: string, params: SearchParams, page: num
 
 /** True when the URL carries any search criterion (not counting the page or the order). */
 export function hasSearchCriteria(params: SearchParams): boolean {
-  return ["q", "status", "assignee", "sla", "stage", "tag", "following", "from", "to"].some((name) => {
+  return ["q", "status", "assignee", "sla", "stage", "tag", "following", "kind", "from", "to"].some((name) => {
     const value = params[name];
     return Array.isArray(value) ? value.some((item) => item !== "" && item !== "all") : Boolean(value) && value !== "all";
   });

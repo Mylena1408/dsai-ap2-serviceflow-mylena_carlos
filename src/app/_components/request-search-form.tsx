@@ -116,6 +116,17 @@ export function RequestSearchForm({ basePath, params, showAssignee, showSla = fa
           ))}
         </fieldset>
       ) : null}
+      {/* SPEC 2026-11-16-tipos-de-solicitante, 4.3 item 2: only the queue has it. */}
+      {showAssignee ? (
+        <div className="search-field">
+          <label htmlFor="search-kind">Tipo de solicitante</label>
+          <select id="search-kind" name="kind" defaultValue={first(params.kind)}>
+            <option value="">Todos</option>
+            <option value="STUDENT">Alunos</option>
+            <option value="PUBLIC">Público geral</option>
+          </select>
+        </div>
+      ) : null}
       {/* SPEC 2026-11-08-atendimento-dia-a-dia, 13.3 item 1 (decision J6): only the queue has it. */}
       {showAssignee ? (
         <label className="checkbox-label">

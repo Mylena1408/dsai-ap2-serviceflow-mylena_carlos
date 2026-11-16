@@ -1,3 +1,4 @@
+import type { RequesterKind } from "@/shared/requester-kinds";
 import type { StatusValue } from "@/shared/requests";
 import type { ReportCsvRow } from "../domain/csv";
 import type { ReportGroup } from "../domain/metrics";
@@ -53,6 +54,8 @@ export interface PeriodTotals {
   byCategory: ReportGroup[];
   bySector: ReportGroup[];
   byStatus: StatusGroup[];
+  /** SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 1: by the kind kept in each request. Optional for older doubles. */
+  byRequesterKind?: Array<{ kind: RequesterKind; count: number }>;
 }
 
 /** A request of the export, with what the SLA situation needs (computed at export time). */

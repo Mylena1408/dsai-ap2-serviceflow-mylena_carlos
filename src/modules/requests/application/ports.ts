@@ -1,3 +1,4 @@
+import type { RequesterKind, ServiceAudience } from "@/shared/requester-kinds";
 import type { SectorCalendarParts } from "@/modules/calendar";
 import type { DistributionCandidate, DistributionSettings } from "../domain/distribution";
 import type { SlaResumeCause } from "../domain/sla-pause";
@@ -77,6 +78,8 @@ export interface TransactionActor {
   role: ActorRole;
   sectorId: string | null;
   isActive: boolean;
+  /** SPEC 2026-11-16-tipos-de-solicitante: a requester's kind. Optional for older doubles (a student). */
+  requesterKind?: RequesterKind | null;
 }
 
 export interface ServiceForRequest {
@@ -98,6 +101,8 @@ export interface ServiceForRequest {
   approvalConditionValue?: string | null;
   /** 4.3.6: days to decide each level, copied at the opening. */
   approvalDeadlineDays?: number | null;
+  /** SPEC 2026-11-16-tipos-de-solicitante, rule 2. Optional for older doubles (both). */
+  audience?: ServiceAudience;
   /** SPEC 2026-11-03-pausa-sla-calendario, 5.2: copied to the request on opening. */
   slaBusinessHours?: boolean;
   category: { id: string; name: string; isActive: boolean };

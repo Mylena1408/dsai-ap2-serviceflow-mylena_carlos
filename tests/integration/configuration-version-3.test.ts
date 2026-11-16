@@ -69,7 +69,8 @@ async function previewAndApply(content: string) {
 describe("the portable configuration's version 3 (CA-COM-01)", () => {
   it("exports each sector's own hours and holidays and only the announcements not started yet, without ids", async () => {
     const { content, file, sector, plain, future } = await scenario();
-    expect(file.version).toBe(3);
+    // Version 4 since SF-277; the calendars, holidays and announcements are the same.
+    expect(file.version).toBe(4);
     expect(content).not.toContain(sector.id);
     expect(content).not.toContain(future.id);
     expect(file.data.sectors.find(({ name }) => name === sector.name)).toMatchObject({

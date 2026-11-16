@@ -19,6 +19,7 @@ async function serviceStates(client: Client, serviceIds?: readonly string[]): Pr
       id: true,
       name: true,
       isActive: true,
+      audience: true,
       category: { select: { isActive: true } },
       sector: { select: { name: true, isActive: true } },
       _count: { select: { documentRequirements: { where: { isActive: true } } } },
@@ -33,6 +34,7 @@ async function serviceStates(client: Client, serviceIds?: readonly string[]): Pr
     categoryActive: row.category.isActive,
     sectorActive: row.sector.isActive,
     activeRequirements: row._count.documentRequirements,
+    audience: row.audience,
   }));
 }
 
@@ -83,5 +85,11 @@ export function createPrismaCatalogBundleReader(database: PrismaClient): Catalog
       return database.serviceBundle.findUnique({ where: { id: bundleId }, select: bundleColumns });
     },
     serviceStates: (serviceIds) => serviceStates(database, serviceIds),
+    // SPEC 2026-11-16-tipos-de-solicitante, decision T9; an identifier that is not a person's id reads no one.
+    async requesterKindOf(userId) {
+      if (!/^[0-9a-f-]{36}$/i.test(userId)) return null;
+      const user = await database.user.findUnique({ where: { id: userId }, select: { requesterKind: true } });
+      return user?.requesterKind ?? null;
+    },
   };
 }

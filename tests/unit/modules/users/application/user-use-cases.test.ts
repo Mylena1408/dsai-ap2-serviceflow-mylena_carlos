@@ -39,6 +39,7 @@ function user(overrides: Partial<StoredUser> = {}): StoredUser {
     createdAt: testNow,
     updatedAt: testNow,
     anonymizedAt: null,
+    requesterKind: "STUDENT",
     passwordHash: "hash:initial",
     ...overrides,
   };
@@ -54,6 +55,7 @@ const publicView = (stored: StoredUser): ManagedUser => ({
   createdAt: stored.createdAt,
   updatedAt: stored.updatedAt,
   anonymizedAt: stored.anonymizedAt,
+  requesterKind: stored.requesterKind,
 });
 
 function transaction(store: Store): UserTransaction {

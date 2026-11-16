@@ -1,3 +1,4 @@
+import type { RequesterKind } from "@/shared/requester-kinds";
 import type { PriorityValue } from "@/shared/requests";
 import type {
   ChecklistCompletionRows,
@@ -70,6 +71,17 @@ export interface FirstResponseTotals {
   unanswered: number;
 }
 
+/** SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 2. */
+export interface RequesterKindRow {
+  kind: RequesterKind;
+  opened: number;
+  completed: number;
+  /** Null without any request completed in the range. */
+  averageMs: number | null;
+  /** Null without any rating in the range. */
+  averageRating: number | null;
+}
+
 export interface AnalyticsReader {
   findSector(sectorId: string): Promise<ReportSector | null>;
   listSectors(): Promise<ReportSector[]>;
@@ -107,6 +119,12 @@ export interface AnalyticsReader {
    * with the tag's sector. Optional for older doubles.
    */
   requestsByTag?(scope: DashboardScope, range: DashboardRange): Promise<Array<{ name: string; sectorName: string; count: number }>>;
+  /**
+   * SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 2: per requester kind (kept in each request), the requests opened
+   * and completed in the range, the average time to complete and the average rating given in the range. Optional for
+   * older doubles.
+   */
+  byRequesterKind?(scope: DashboardScope, range: DashboardRange): Promise<RequesterKindRow[]>;
   /**
    * SPEC 2026-11-08-atendimento-dia-a-dia, 9.1 item 3: minutes and entries not removed whose day is in the period, per
    * current sector and service of the request. Optional for older doubles: absent = no hours.

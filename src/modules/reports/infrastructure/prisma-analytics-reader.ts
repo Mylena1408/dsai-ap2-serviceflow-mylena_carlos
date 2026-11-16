@@ -427,6 +427,40 @@ export function createPrismaAnalyticsReader(database: PrismaClient): AnalyticsRe
       return { distribution, completed: rate?.completed ?? 0, ratedCompletions: rate?.ratedCompletions ?? 0, byService };
     },
 
+    async byRequesterKind(scope, range) {
+      // SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 2: by the kind kept in each request.
+      const [counts, ratings] = await Promise.all([
+        database.$queryRaw<Array<{ kind: "STUDENT" | "PUBLIC"; opened: number; completed: number; averageMs: number | null }>>`
+          SELECT
+            r."requesterKindSnapshot"::text AS "kind",
+            (count(*) FILTER (WHERE r."createdAt" >= ${range.from} AND r."createdAt" < ${range.before}))::int AS "opened",
+            (count(*) FILTER (WHERE r."status" = 'COMPLETED' AND r."completedAt" >= ${range.from} AND r."completedAt" < ${range.before}))::int AS "completed",
+            (avg(extract(epoch FROM (r."completedAt" - r."createdAt")) * 1000)
+              FILTER (WHERE r."status" = 'COMPLETED' AND r."completedAt" >= ${range.from} AND r."completedAt" < ${range.before}))::float8 AS "averageMs"
+          FROM "Request" r
+          WHERE ((r."createdAt" >= ${range.from} AND r."createdAt" < ${range.before})
+            OR (r."completedAt" >= ${range.from} AND r."completedAt" < ${range.before})) ${scopeSql(scope)}
+          GROUP BY 1`,
+        database.$queryRaw<Array<{ kind: "STUDENT" | "PUBLIC"; averageRating: number | null }>>`
+          SELECT r."requesterKindSnapshot"::text AS "kind", avg(s."rating")::float8 AS "averageRating"
+          FROM "RequestSatisfaction" s
+          JOIN "Request" r ON r."id" = s."requestId"
+          WHERE s."ratedAt" >= ${range.from} AND s."ratedAt" < ${range.before} ${scopeSql(scope)}
+          GROUP BY 1`,
+      ]);
+      const kinds = new Set([...counts.map(({ kind }) => kind), ...ratings.map(({ kind }) => kind)]);
+      return [...kinds].map((kind) => {
+        const count = counts.find((row) => row.kind === kind);
+        return {
+          kind,
+          opened: count?.opened ?? 0,
+          completed: count?.completed ?? 0,
+          averageMs: count?.averageMs ?? null,
+          averageRating: ratings.find((row) => row.kind === kind)?.averageRating ?? null,
+        };
+      });
+    },
+
     async team(scope, range): Promise<TeamMemberRow[]> {
       // People are the attendants responsible for requests of the scope: completed in the
       // period or still pending now (5.6). Durations exist only for the completed ones.

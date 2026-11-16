@@ -151,12 +151,16 @@ describe("audit of users (SF-103; CA-AUD-03)", () => {
       { field: "email", personal: true },
       { field: "role", before: null, after: "REQUESTER" },
       { field: "isActive", before: null, after: true },
+      // SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 1 (CA-TIP-01): the requester's kind is audited too.
+      { field: "requesterKind", before: null, after: "STUDENT" },
     ]);
     expect(recorded[1].changes).toEqual([
       { field: "name", personal: true },
       { field: "email", personal: true },
       { field: "role", before: "REQUESTER", after: "ATTENDANT" },
       { field: "sectorId", before: null, after: sectorA.id },
+      // Leaving the requester's role clears the kind (4.1 item 1).
+      { field: "requesterKind", before: "STUDENT", after: null },
     ]);
     expect(recorded[2].changes).toEqual([{ field: "sectorId", before: sectorA.id, after: sectorB.id }]);
 

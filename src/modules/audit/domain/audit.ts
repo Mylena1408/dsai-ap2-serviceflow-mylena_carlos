@@ -198,6 +198,9 @@ export const AUDIT_FIELD_LABELS: Readonly<Record<string, string>> = {
   // SPEC 2026-11-06-aprofundamento-configurabilidade, 7.3.
   trigger: "Gatilho",
   overdueDays: "Dias de atraso",
+  // SPEC 2026-11-16-tipos-de-solicitante.
+  requesterKind: "Tipo de solicitante",
+  serviceAudience: "Público do serviço",
   raisePriority: "Subir a prioridade",
   assignToId: "Atribuir a",
   notifyManagers: "Avisar os gestores do setor",
@@ -312,7 +315,8 @@ export function describeAuditChange(change: AuditChange, format?: AuditValueForm
 
 /** Fields kept in a record for each entity (section 5.1); anything else, like hashes, is left out. */
 export const AUDITED_FIELDS: Readonly<Record<AuditEntityType, readonly string[]>> = {
-  USER: ["name", "email", "role", "sectorId", "isActive"],
+  // "requesterKind": SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 1.
+  USER: ["name", "email", "role", "sectorId", "isActive", "requesterKind"],
   // "escalateOverdue": SPEC 2026-11-06-escalonamento, 4.6.
   // The distribution: SPEC 2026-11-07-operacao-e-automacao, 4.3 item 1.
   SECTOR: ["name", "isActive", "escalateOverdue", "distributionMode", "maxActivePerAttendant", "redistributeOnAbsence"],
@@ -334,6 +338,9 @@ export const AUDITED_FIELDS: Readonly<Record<AuditEntityType, readonly string[]>
     "approvalDeadlineDays",
     // SPEC 2026-11-08-atendimento-dia-a-dia, 13.2 item 1.
     "estimatedHours",
+    // SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 3: recorded as "serviceAudience", as "audience" already names
+    // who fills a field.
+    "serviceAudience",
   ],
   DOCUMENT_REQUIREMENT: ["name", "isRequired", "acceptedFormats", "position", "isActive"],
   // "audience" and the condition: SPEC 2026-11-03-campos-condicionais-atendimento, 5.7.4.

@@ -12,6 +12,8 @@ export interface ManagedUser {
   updatedAt: Date;
   /** When the person was anonymized (SPEC 2026-11-02-auditoria-lgpd, 5.5); null otherwise. */
   anonymizedAt: Date | null;
+  /** SPEC 2026-11-16-tipos-de-solicitante: STUDENT or PUBLIC for a requester; null for the other roles. */
+  requesterKind: "STUDENT" | "PUBLIC" | null;
 }
 
 export interface UserState {

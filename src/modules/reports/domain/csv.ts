@@ -1,3 +1,4 @@
+import { REQUESTER_KIND_LABELS, type RequesterKind } from "@/shared/requester-kinds";
 import { ValidationError } from "@/server/errors";
 import {
   APPROVAL_LABELS,
@@ -35,6 +36,8 @@ export const REPORT_CSV_COLUMNS = [
   "Vencimento",
   "Situação do prazo",
   "Concluída no prazo",
+  // SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 3.
+  "Tipo de solicitante",
 ] as const;
 
 export interface ReportCsvRow {
@@ -55,6 +58,8 @@ export interface ReportCsvRow {
   /** Computed at export time, like on the screens. */
   slaSituation: SlaSituationValue;
   completedLate: boolean | null;
+  /** SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 3. Optional for older rows (a student). */
+  requesterKind?: RequesterKind;
 }
 
 const SEPARATOR = ";";
@@ -99,6 +104,7 @@ function csvLine(row: ReportCsvRow): string {
     dateTime(row.dueAt),
     SLA_SITUATION_LABELS[row.slaSituation],
     completedOnTime(row),
+    REQUESTER_KIND_LABELS[row.requesterKind ?? "STUDENT"],
   ]
     .map(csvField)
     .join(SEPARATOR);

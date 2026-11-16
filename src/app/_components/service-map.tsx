@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { MapBundleEntry, MapServiceEntry, SectorLink, ServiceMap } from "@/modules/service-map";
+import { CATALOG_SECTION_TITLES } from "@/shared/requester-kinds";
 
 // SPEC 2026-11-15-mapa-de-servicos, section 3 (SF-274): the requester's map. A drawing of the sectors and the links
 // between them, with the same information in text; then the three groups, in the order the person should think:
@@ -206,6 +207,13 @@ export function ServiceMapView({ map }: { map: ServiceMap }) {
   const articles = map.selfService.articles;
   return (
     <>
+      {map.requesterKind ? (
+        // SPEC 2026-11-16-tipos-de-solicitante, 4.2 item 2: whose services the map shows.
+        <p className="audience-note">
+          <strong>{CATALOG_SECTION_TITLES[map.requesterKind]}.</strong> O mapa mostra os serviços oferecidos a você e os
+          que valem para todos.
+        </p>
+      ) : null}
       <section aria-labelledby="map-overview" className="surface-card">
         <h2 id="map-overview">Como os setores se ligam</h2>
         <p className="section-description">

@@ -96,6 +96,8 @@ async function writePlan(client: Tx, plan: ImportPlan, actor: AuditActor): Promi
       requiresApproval: service.requiresApproval,
       approvalSectorIds: service.approvalSectors.map((name) => sectorIds.get(keyOf(name))!),
       approvalDeadlineDays: service.approvalDeadlineDays,
+      // SPEC 2026-11-16-tipos-de-solicitante, decision T8: only a version 4 file says it.
+      ...(service.offeredTo ? { audience: service.offeredTo } : {}),
     };
     const id = await save(
       "SERVICE",

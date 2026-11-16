@@ -59,6 +59,8 @@ const FIELD_LABELS: Record<string, string> = {
   slaBusinessHours: "horário de expediente",
   defaultPriority: "prioridade padrão",
   requiresApproval: "exige aprovação",
+  // SPEC 2026-11-16-tipos-de-solicitante (version 4).
+  offeredTo: "público do serviço",
   approvalSectors: "setores de aprovação",
   approvalCondition: "condição da aprovação",
   approvalDeadlineDays: "prazo da aprovação",

@@ -74,6 +74,7 @@ function persistedRequest(requesterId: string, sectorId: string) {
     groupId: null,
     groupPosition: null,
     recurringRequestId: null,
+    requesterKindSnapshot: "STUDENT" as const,
   };
 }
 

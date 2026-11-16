@@ -1,4 +1,5 @@
 import { emailSchema } from "@/shared/validation";
+import { requesterKindFromText, type RequesterKind } from "@/shared/requester-kinds";
 import { parseCsv } from "./csv";
 
 // Importing people from a CSV file (SPEC 2026-11-09-comunicacao-e-calendarios, part B, 4.3 items 1 and 2; decision K1;
@@ -12,6 +13,8 @@ export const MAX_IMPORT_NAME_LENGTH = 120;
 /** The columns of the file, in the order of the model (4.1 item 1). */
 export const IMPORT_COLUMNS = ["nome", "email", "perfil", "setor"] as const;
 export type ImportColumn = (typeof IMPORT_COLUMNS)[number];
+/** SPEC 2026-11-16-tipos-de-solicitante, decision T7: the optional column of the requester's kind. */
+export const KIND_COLUMN = "tipo";
 
 export type ImportRole = "ADMIN" | "MANAGER" | "ATTENDANT" | "REQUESTER";
 
@@ -37,7 +40,10 @@ export type ImportLineError =
   | "role_invalid"
   | "sector_required"
   | "sector_not_allowed"
-  | "sector_unknown";
+  | "sector_unknown"
+  // SPEC 2026-11-16-tipos-de-solicitante, decision T7.
+  | "kind_invalid"
+  | "kind_not_allowed";
 
 export interface ImportRow {
   /** The file's line (1 is the header). */
@@ -45,6 +51,8 @@ export interface ImportRow {
   values: Record<ImportColumn, string>;
   /** Set when the line does not have as many fields as the header. */
   fieldCountMismatch: boolean;
+  /** The "tipo" cell (decision T7), only when the file has that column. */
+  kindText?: string;
 }
 
 export type ImportFileResult = { ok: true; rows: ImportRow[] } | { ok: false; error: ImportFileError; line?: number };
@@ -58,7 +66,15 @@ export function importKey(value: string): string {
     .toLocaleLowerCase("pt-BR");
 }
 
-const COLUMN_ALIASES: Record<string, ImportColumn> = { nome: "nome", email: "email", "e-mail": "email", perfil: "perfil", setor: "setor" };
+const COLUMN_ALIASES: Record<string, ImportColumn | typeof KIND_COLUMN> = {
+  nome: "nome",
+  email: "email",
+  "e-mail": "email",
+  perfil: "perfil",
+  setor: "setor",
+  tipo: KIND_COLUMN,
+  "tipo de solicitante": KIND_COLUMN,
+};
 
 const ROLE_ALIASES: Record<string, ImportRole> = {
   administrador: "ADMIN",
@@ -109,7 +125,7 @@ export function readImportText(text: string): ImportFileResult {
   const [header, ...records] = parsed.records;
   if (!header) return { ok: false, error: "no_header" };
 
-  const positions = new Map<ImportColumn, number>();
+  const positions = new Map<ImportColumn | typeof KIND_COLUMN, number>();
   for (const [index, name] of header.fields.entries()) {
     const column = COLUMN_ALIASES[importKey(name)];
     if (!column) return { ok: false, error: "unknown_column", line: header.line };
@@ -126,6 +142,7 @@ export function readImportText(text: string): ImportFileResult {
       line: record.line,
       fieldCountMismatch: record.fields.length !== header.fields.length,
       values: Object.fromEntries(IMPORT_COLUMNS.map((column) => [column, (record.fields[positions.get(column)!] ?? "").trim()])) as Record<ImportColumn, string>,
+      ...(positions.has(KIND_COLUMN) ? { kindText: (record.fields[positions.get(KIND_COLUMN)!] ?? "").trim() } : {}),
     })),
   };
 }
@@ -143,6 +160,8 @@ export interface ImportPerson {
   email: string;
   role: ImportRole;
   sectorId: string | null;
+  /** Decision T7: only when the line says it; otherwise a requester is a student (decision T4). */
+  requesterKind?: RequesterKind;
 }
 
 export type ImportLineOutcome =
@@ -185,6 +204,11 @@ export function classifyImportRows(rows: readonly ImportRow[], facts: ImportFact
       else errors.push("sector_unknown");
     }
 
+    // Decision T7: "aluno" or "público geral" for a requester; empty is a student; for another role it stays empty.
+    const kind = requesterKindFromText(row.kindText);
+    if (kind === undefined) errors.push("kind_invalid");
+    else if (kind !== null && role !== null && role !== "REQUESTER") errors.push("kind_not_allowed");
+
     if (emailKey !== null) {
       if (seen.has(emailKey)) errors.push("email_repeated");
       seen.add(emailKey);
@@ -192,7 +216,9 @@ export function classifyImportRows(rows: readonly ImportRow[], facts: ImportFact
 
     if (errors.length > 0) return { line: row.line, values, outcome: "error", errors };
     if (facts.existingEmails.has(emailKey!)) return { line: row.line, values, outcome: "skip", reason: "email_exists" };
-    return { line: row.line, values, outcome: "create", person: { name: values.nome, email: emailKey!, role: role!, sectorId } };
+    const person: ImportPerson = { name: values.nome, email: emailKey!, role: role!, sectorId };
+    if (kind) person.requesterKind = kind;
+    return { line: row.line, values, outcome: "create", person };
   });
 }
 
@@ -218,7 +244,7 @@ export const IMPORT_FILE_ERROR_LABELS: Record<ImportFileError, string> = {
   no_header: "O arquivo está vazio: falta o cabeçalho.",
   missing_column: "O cabeçalho precisa das colunas nome, email, perfil e setor.",
   repeated_column: "O cabeçalho repete uma coluna.",
-  unknown_column: "O cabeçalho tem uma coluna que não é nome, email, perfil ou setor.",
+  unknown_column: "O cabeçalho tem uma coluna que não é nome, email, perfil, setor ou tipo.",
   no_rows: "O arquivo não tem nenhuma linha de pessoa.",
   too_many_rows: `O arquivo passa de ${MAX_IMPORT_ROWS} linhas de pessoas.`,
 };
@@ -233,6 +259,8 @@ export const IMPORT_LINE_ERROR_LABELS: Record<ImportLineError, string> = {
   sector_required: "setor obrigatório para atendente e gestor",
   sector_not_allowed: "solicitante e administrador não têm setor",
   sector_unknown: "setor não encontrado entre os ativos",
+  kind_invalid: "tipo desconhecido (use aluno ou público geral)",
+  kind_not_allowed: "só o solicitante tem tipo",
 };
 
 /**

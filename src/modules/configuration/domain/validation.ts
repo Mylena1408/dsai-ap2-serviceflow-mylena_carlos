@@ -271,6 +271,7 @@ export function validateConfiguration(file: ConfigurationData, destination: Conf
           slaHours: service.slaHours,
           requiresApproval: service.requiresApproval,
           slaBusinessHours: service.slaBusinessHours,
+          ...(service.offeredTo ? { audience: service.offeredTo } : {}),
         },
         path,
       );

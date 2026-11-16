@@ -1,3 +1,4 @@
+import { REQUESTER_KINDS, REQUESTER_KIND_LABELS } from "@/shared/requester-kinds";
 import { requireCurrentActor } from "@/server/authorization";
 import { AuthorizationError } from "@/server/errors";
 import { PRIORITY_LABELS, type PriorityValue } from "@/shared/requests";
@@ -26,7 +27,7 @@ import {
 import type { CompletionTimes } from "../domain/metrics";
 import { onTimePercentage } from "../domain/metrics";
 import { parseReportPeriod, type ReportPeriod, type ReportPeriodError } from "../domain/period";
-import type { AnalyticsReader, AttendantQueueCounts, RuleEscalationCounts, WorkTotals } from "./analytics-ports";
+import type { RequesterKindRow, AnalyticsReader, AttendantQueueCounts, RuleEscalationCounts, WorkTotals } from "./analytics-ports";
 import { resolveScope, type DashboardAudience, type SectorFilterError } from "./dashboard";
 import type { ReportSector } from "./ports";
 
@@ -63,6 +64,15 @@ export interface AttendantDashboard {
   };
   mine: WorkSummary;
   sector: WorkSummary;
+}
+
+/** SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 2: a line of "Por tipo de solicitante". */
+export interface RequesterKindLine {
+  label: string;
+  opened: number;
+  completed: number;
+  averageHours: number | null;
+  averageRating: number | null;
 }
 
 export interface Analytics {
@@ -104,6 +114,8 @@ export interface Analytics {
   checklist: ChecklistCompletionSummary;
   /** The administrator without a sector filter sees each person's sector (5.6). */
   teamShowsSector: boolean;
+  /** SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 2: absent when the reader does not say it. */
+  requesterKinds?: RequesterKindLine[];
 }
 
 const EMPTY_WORK: WorkTotals = { completed: 0, completion: { count: 0, averageMs: null, medianMs: null }, withDueDate: 0, onTime: 0, replies: 0 };
@@ -234,6 +246,8 @@ export async function getAnalytics(raw: RawParams, reader: AnalyticsReader, now:
     reader.ruleEscalations ? reader.ruleEscalations(scope, range) : Promise.resolve({ dueSoon: 0, overdueDays: 0 }),
     reader.automaticAssignments ? reader.automaticAssignments(scope, range) : Promise.resolve(0),
   ]);
+  // SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 2.
+  const kindRows = reader.byRequesterKind ? await reader.byRequesterKind(scope, range) : null;
   const [byTag, timeRows, checklistRows] = await Promise.all([
     reader.requestsByTag ? reader.requestsByTag(scope, range) : Promise.resolve([]),
     reader.timeLogged ? reader.timeLogged(scope, { firstDay: period.firstDay, lastDay: period.lastDay }) : Promise.resolve([]),
@@ -271,7 +285,25 @@ export async function getAnalytics(raw: RawParams, reader: AnalyticsReader, now:
     tags: tagCounts(byTag, base.teamShowsSector),
     time: timeLoggedSummary(timeRows, base.teamShowsSector),
     checklist: checklistCompletionSummary(checklistRows, base.teamShowsSector),
+    ...(kindRows ? { requesterKinds: requesterKindTable(kindRows) } : {}),
   };
+}
+
+/**
+ * SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 2: a line per kind, students first, with hours of one decimal and the
+ * rating of one decimal; a kind without any request in the period still has its line, with zeros.
+ */
+export function requesterKindTable(rows: readonly RequesterKindRow[]): RequesterKindLine[] {
+  return REQUESTER_KINDS.map((kind) => {
+    const row = rows.find((item) => item.kind === kind);
+    return {
+      label: REQUESTER_KIND_LABELS[kind],
+      opened: row?.opened ?? 0,
+      completed: row?.completed ?? 0,
+      averageHours: row?.averageMs == null ? null : Math.round(row.averageMs / 360_000) / 10,
+      averageRating: row?.averageRating == null ? null : Math.round(row.averageRating * 10) / 10,
+    };
+  });
 }
 
 /** Most used first, then by name; the sector named only when every sector is shown. */

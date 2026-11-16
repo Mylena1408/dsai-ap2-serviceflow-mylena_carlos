@@ -21,6 +21,11 @@ import {
   type AdminUpdateState,
 } from "../../_shared/action-helpers";
 
+/** SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 1: the kind goes only with the requester's role. */
+function requesterKindField(formData: FormData): string | undefined {
+  return field(formData, "role") === "REQUESTER" ? field(formData, "requesterKind") || undefined : undefined;
+}
+
 export async function createUserAction(
   _previousState: AdminUpdateState,
   formData: FormData,
@@ -32,6 +37,7 @@ export async function createUserAction(
       password: field(formData, "password"),
       role: field(formData, "role"),
       sectorId: field(formData, "sectorId") || null,
+      requesterKind: requesterKindField(formData),
     });
   } catch (error) {
     return createFailure(error);
@@ -50,6 +56,7 @@ export async function updateUserAction(
       password: field(formData, "password") || undefined,
       role: field(formData, "role"),
       sectorId: field(formData, "sectorId") || null,
+      requesterKind: requesterKindField(formData),
     });
   } catch (error) {
     return updateFailure(error);

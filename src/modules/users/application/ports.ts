@@ -1,4 +1,5 @@
 import type { AuditScope } from "@/modules/audit";
+import type { RequesterKind } from "@/shared/requester-kinds";
 import type { ManagedUser, UserRole, UserState } from "../domain/user";
 
 export interface UserRepository {
@@ -12,6 +13,8 @@ export interface NewUser {
   passwordHash: string;
   role: UserRole;
   sectorId: string | null;
+  /** SPEC 2026-11-16-tipos-de-solicitante: set for requesters only. */
+  requesterKind: RequesterKind | null;
 }
 
 export interface UserChanges {
@@ -19,6 +22,7 @@ export interface UserChanges {
   email?: string;
   role?: UserRole;
   sectorId?: string | null;
+  requesterKind?: RequesterKind | null;
   passwordHash?: string;
   isActive?: boolean;
 }

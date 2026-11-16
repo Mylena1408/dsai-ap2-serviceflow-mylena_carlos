@@ -18,6 +18,7 @@ const publicUserSelect = {
   createdAt: true,
   updatedAt: true,
   anonymizedAt: true,
+  requesterKind: true,
 } satisfies Prisma.UserSelect;
 
 // Compile-time check that the selected columns match the domain type.

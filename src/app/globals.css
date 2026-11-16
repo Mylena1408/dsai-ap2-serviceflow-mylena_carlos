@@ -2365,6 +2365,25 @@ main[tabindex="-1"]:focus {
   font-size: 13px;
 }
 
+/* SPEC 2026-11-16-tipos-de-solicitante, 4.2 items 1 and 2: the subsection of the requester's kind. */
+.audience-note {
+  margin: 0 0 18px;
+  padding: 12px 16px;
+  border: 1px solid var(--selected-line);
+  border-left-width: 6px;
+  border-radius: var(--radius-small);
+  background: var(--brand-soft);
+}
+
+.audience-note h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.audience-note p {
+  margin: 0;
+}
+
 /* SPEC 2026-11-15-acessibilidade, part B (SF-264; decision L4): the high contrast theme, on when the page carries
    data-contrast="high" (SF-265 sets it). Black background, white text, links and focus in yellow, every border
    visible, links always underlined, no gradient nor shadow. Text tokens reach at least 7:1 on black (AAA, 1.4.6) and

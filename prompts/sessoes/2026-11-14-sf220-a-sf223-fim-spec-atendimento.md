@@ -432,3 +432,21 @@
 
 126. CI do `9a9be7e`: gitleaks, typecheck, lint, build e unitários verdes; falha no teste de concorrência do lote (5 em vez de 6). Teste ajustado à garantia real (nenhuma solicitação assumida duas vezes); 5 rodadas verdes.
 
+> quais os serviços voltados ao aluno?
+
+127. Nenhum: o catálogo de demonstração é de funcionários (TI, RH, Manutenção); sugestões de serviços acadêmicos cadastráveis.
+
+> o aluno pode ser o solicitante ,mas não deve ser considerado um usuário externo, faça uma subseção para o atendimento de solicitante, caso seja aluno e outro caso seja publico geral
+
+128. Perguntas: campo no cadastro; catálogo e mapa, fila, painéis; restrição só nos serviços (escolhidos). SPEC `2026-11-16-tipos-de-solicitante.md` com T4 a T9 propostos.
+
+> pode prosseguir com t4 a t9
+
+> apos estas tarefaz crie o manual do aluno,um duia rápido para solicitar serviços
+
+129. SF-276 a SF-281: migration com gatilhos e CHECK, cadastro, CSV, configuração v4, catálogo e mapa por público, pacotes, fila com filtro, painel, análises e CSV por tipo, E2E. Manual do aluno anotado para depois.
+130. E2E completo encerrado por falta de memória (12 aprovados).
+
+> religue o banco de dados de testes,rode o E2E conpleto e faça o commit
+
+131. Banco religado; E2E completo 81/83 (versão 4 e coluna do CSV em dois E2E antigos; asserções atualizadas, 2/2). Commits da correção do teste do lote e da SPEC dos tipos de solicitante.

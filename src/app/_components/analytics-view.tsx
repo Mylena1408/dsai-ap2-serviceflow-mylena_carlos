@@ -461,6 +461,38 @@ export function AnalyticsView({
         </section>
       ) : null}
 
+      {/* SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 2. */}
+      {analytics.requesterKinds ? (
+        <section className="surface-card" aria-labelledby="analytics-kinds">
+          <h2 id="analytics-kinds">Por tipo de solicitante</h2>
+          <p className="metadata">Pelo tipo de quem abriu cada solicitação; a nota é a média das avaliações dadas no período.</p>
+          <TableScroll label="Tabela dos tipos de solicitante">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th scope="col">Tipo</th>
+                  <th scope="col">Abertas</th>
+                  <th scope="col">Concluídas</th>
+                  <th scope="col">Tempo médio de resolução</th>
+                  <th scope="col">Nota média</th>
+                </tr>
+              </thead>
+              <tbody>
+                {analytics.requesterKinds.map((row) => (
+                  <tr key={row.label}>
+                    <th scope="row">{row.label}</th>
+                    <td>{row.opened}</td>
+                    <td>{row.completed}</td>
+                    <td>{row.averageHours === null ? "—" : `${String(row.averageHours).replace(".", ",")} h`}</td>
+                    <td>{row.averageRating === null ? "—" : String(row.averageRating).replace(".", ",")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableScroll>
+        </section>
+      ) : null}
+
       <section className="surface-card" aria-labelledby="analytics-team">
         <h2 id="analytics-team">Desempenho da equipe</h2>
         <p className="analytics-notice">{TEAM_NOTICE}</p>

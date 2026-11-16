@@ -197,6 +197,8 @@ describe("Prisma dashboard reader (SF-098)", () => {
       sectorName: "Infraestrutura",
       status: "COMPLETED",
       priority: "HIGH",
+      // SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 3: the kind kept in the request.
+      requesterKind: "STUDENT",
       approvalState: null,
       stageName: "Execução",
       assigneeName: "Diego Rocha",
@@ -256,7 +258,8 @@ describe("dashboard through the module API (SF-098; CA-DASH-02)", () => {
     const lines = csv.content.split("\r\n");
     expect(lines).toHaveLength(1 + 5 + 1);
     expect(lines[1]).toContain(";Reparo elétrico;Manutenção;Infraestrutura;Concluída;Alta;;Execução;Diego Rocha;2026-10-10 09:00;");
-    expect(lines[1].endsWith(";Concluída no prazo;Sim")).toBe(true);
+    // The last column, the requester's kind, since SPEC 2026-11-16-tipos-de-solicitante (4.4 item 3).
+    expect(lines[1].endsWith(";Concluída no prazo;Sim;Aluno")).toBe(true);
     expect(csv.content).not.toContain("Pessoas");
     expect(csv.content).not.toContain("Texto confidencial");
     expect(csv.content).not.toContain("Descrição do serviço");

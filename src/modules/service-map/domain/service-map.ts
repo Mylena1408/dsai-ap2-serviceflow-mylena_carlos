@@ -70,6 +70,8 @@ export interface SectorLink {
 }
 
 export interface ServiceMap {
+  /** SPEC 2026-11-16-tipos-de-solicitante: the kind whose services the map shows (absent: all, as before). */
+  readonly requesterKind?: "STUDENT" | "PUBLIC";
   readonly sectors: ReadonlyArray<{ readonly name: string; readonly services: number }>;
   readonly links: readonly SectorLink[];
   readonly selfService: {

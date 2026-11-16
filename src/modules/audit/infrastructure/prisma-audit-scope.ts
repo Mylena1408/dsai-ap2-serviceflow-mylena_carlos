@@ -20,7 +20,7 @@ async function loadState(
     case "USER": {
       const row = await transaction.user.findUnique({
         where: { id },
-        select: { name: true, email: true, role: true, sectorId: true, isActive: true },
+        select: { name: true, email: true, role: true, sectorId: true, isActive: true, requesterKind: true },
       });
       return row && { label: row.name, state: row };
     }
@@ -54,6 +54,7 @@ async function loadState(
           defaultPriority: true,
           slaHours: true,
           requiresApproval: true,
+          audience: true,
           slaBusinessHours: true,
           isActive: true,
           // SPEC 2026-11-08-atendimento-dia-a-dia, 13.2 item 1.
@@ -65,7 +66,10 @@ async function loadState(
           approvalDeadlineDays: true,
         },
       });
-      return row && { label: row.name, state: row };
+      if (!row) return null;
+      // SPEC 2026-11-16-tipos-de-solicitante: the audience is recorded as "serviceAudience".
+      const { audience, ...rest } = row;
+      return { label: row.name, state: { ...rest, serviceAudience: audience } };
     }
     case "DOCUMENT_REQUIREMENT": {
       const row = await transaction.serviceDocumentRequirement.findUnique({

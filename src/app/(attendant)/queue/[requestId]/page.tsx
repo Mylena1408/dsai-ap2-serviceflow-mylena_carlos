@@ -1,3 +1,4 @@
+import { REQUESTER_KIND_LABELS } from "@/shared/requester-kinds";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -231,6 +232,8 @@ export default async function QueueRequestPage({
         <RequestSla request={request} now={new Date()} />
         <p>Categoria: {request.categoryNameSnapshot}</p>
         <p>Setor: {request.sectorNameSnapshot}</p>
+        {/* SPEC 2026-11-16-tipos-de-solicitante, 4.3 item 1. */}
+        <p>Tipo de solicitante: {REQUESTER_KIND_LABELS[request.requesterKindSnapshot ?? "STUDENT"]}</p>
         <p>{request.serviceDescriptionSnapshot}</p>
         <h2>Descrição da solicitação</h2>
         <p className="request-description">{request.description}</p>

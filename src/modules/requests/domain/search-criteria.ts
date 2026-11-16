@@ -1,3 +1,4 @@
+import { isRequesterKind, type RequesterKind } from "@/shared/requester-kinds";
 import { ValidationError } from "@/server/errors";
 import { SAO_PAULO_TIME_ZONE, addDays, calendarDayError, startOfZonedDay } from "@/shared/time";
 import type { RequestStatus } from "./request";
@@ -53,6 +54,8 @@ export interface SearchCriteria {
   tagIds?: string[];
   /** Queue only (SPEC 2026-11-08-atendimento-dia-a-dia, 13.3 item 1): the requests the viewer follows. */
   following?: true;
+  /** Queue only (SPEC 2026-11-16-tipos-de-solicitante, 4.3 item 2): requests opened by this kind of requester. */
+  requesterKind?: RequesterKind;
 }
 
 /** 3.3 item 4: up to 5 tags in the filter, as many as a request may have. */
@@ -166,6 +169,11 @@ export function parseSearchCriteria(raw: RawSearchParams, audience: SearchAudien
   if (followingRaw !== null && followingRaw !== "1") {
     invalid("invalid_value");
   }
+  // SPEC 2026-11-16-tipos-de-solicitante, 4.3 item 2: "Tipo de solicitante", only in the queue; empty is everyone.
+  const kindRaw = audience === "attendant" ? single(raw.kind) || null : null;
+  if (kindRaw !== null && !isRequesterKind(kindRaw)) {
+    invalid("invalid_value");
+  }
 
   return {
     term: parseTerm(single(raw.q)),
@@ -179,6 +187,7 @@ export function parseSearchCriteria(raw: RawSearchParams, audience: SearchAudien
     ...(stage !== null ? { stage } : {}),
     ...(tagIds.length > 0 ? { tagIds } : {}),
     ...(followingRaw === "1" ? { following: true as const } : {}),
+    ...(kindRaw !== null && isRequesterKind(kindRaw) ? { requesterKind: kindRaw } : {}),
   };
 }
 
