@@ -41,10 +41,13 @@ test("student and general public: registration, catalog, map, queue and numbers"
     await serviceForm.locator('[name="description"]').fill("Só para alunos.");
     await serviceForm.locator('[name="categoryId"]').selectOption({ label: "TI" });
     await serviceForm.locator('[name="sectorId"]').selectOption({ label: "Central de Serviços" });
-    await serviceForm.locator('select[name="audience"]').selectOption("STUDENTS");
+    // Since SPEC 2026-11-16-professores-e-tecnicos (P1), "Oferecido a" is one box per kind: only "Alunos" stays.
+    for (const kind of ["Professores", "Técnicos-administrativos", "Público geral"]) {
+      await serviceForm.getByRole("group", { name: "Oferecido a" }).getByLabel(kind, { exact: true }).uncheck();
+    }
     await serviceForm.getByRole("button", { name: "Criar serviço" }).click();
     await expect(serviceForm.getByRole("status")).toHaveText("Registro criado.");
-    await expect(recordOf(page, onlyStudents)).toContainText("Público: Alunos");
+    await expect(recordOf(page, onlyStudents)).toContainText("Oferecido a: Alunos");
 
     await goToSection(page, "Usuários");
     await recordOf(page, ANA).getByRole("button", { name: "Editar", exact: true }).first().click();

@@ -1,4 +1,4 @@
-import type { ServiceAudience } from "@/shared/requester-kinds";
+import type { RequesterKind } from "@/shared/requester-kinds";
 import { z } from "zod";
 import { ValidationError } from "@/server/errors";
 import { entityIdSchema } from "@/shared/validation";
@@ -53,8 +53,8 @@ export interface BundleServiceState {
   sectorActive: boolean;
   /** Active document requirements, required or optional (decision H5). */
   activeRequirements: number;
-  /** SPEC 2026-11-16-tipos-de-solicitante, decision T9. Optional for older doubles (both). */
-  audience?: ServiceAudience;
+  /** SPEC 2026-11-16-tipos-de-solicitante, decision T9 (a list since professores e técnicos, P1). Optional for older doubles (every kind). */
+  offeredTo?: RequesterKind[];
 }
 
 export type BundleServiceProblem = "inactive" | "category_inactive" | "sector_inactive" | "documents";

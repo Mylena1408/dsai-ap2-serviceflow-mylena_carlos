@@ -181,7 +181,8 @@ export interface GuideViewer {
 }
 
 export interface GuideNotice {
-  kind: "anonymous" | "student" | "public" | "other";
+  /** "staff": a professor or a technician (SPEC 2026-11-16-professores-e-tecnicos, part B). */
+  kind: "anonymous" | "student" | "public" | "staff" | "other";
   text: string;
 }
 
@@ -197,6 +198,13 @@ export function guideNoticeFor(viewer: GuideViewer): GuideNotice {
     return {
       kind: "other",
       text: "Este guia descreve a área do solicitante, que é a usada pelos estudantes. O seu perfil tem outras telas; veja a Ajuda.",
+    };
+  }
+  // SPEC 2026-11-16-professores-e-tecnicos, part B: a professor or a technician has a guide of their own.
+  if (viewer.requesterKind === "PROFESSOR" || viewer.requesterKind === "TECHNICIAN") {
+    return {
+      kind: "staff",
+      text: `Você está cadastrado como ${REQUESTER_KIND_LABELS[viewer.requesterKind].toLowerCase()}. Os passos valem para você; veja também o guia de professores e técnicos, com reservas de espaços e provas.`,
     };
   }
   if (viewer.requesterKind === "PUBLIC") {

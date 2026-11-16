@@ -30,6 +30,15 @@ const TYPE_LABELS: Record<NotificationType, string> = {
   "sla.paused": "Aguardando resposta",
   // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4 (SF-250).
   "report.ready": "Relatório disponível",
+  // SPEC 2026-11-16-professores-e-tecnicos, P14 (in the system only; listed for completeness).
+  "reservation.pending": "Reserva para confirmar",
+  "reservation.confirmed": "Reserva confirmada",
+  "reservation.refused": "Reserva recusada",
+  "reservation.cancelled": "Reserva cancelada pelo setor",
+  "exam.pending": "Pedido de prova",
+  "exam.allocated": "Prova alocada",
+  "exam.refused": "Pedido de prova recusado",
+  "exam.cancelled": "Pedido de prova cancelado",
 };
 
 const STATUS_LABELS: Record<EmailDeliveryRecord["status"], string> = {

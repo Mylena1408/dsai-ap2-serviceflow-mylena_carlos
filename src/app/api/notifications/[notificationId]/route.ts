@@ -33,6 +33,12 @@ export async function GET(request: Request, { params }: NotificationRouteContext
     if (target.kind === "report") {
       return redirectTo(request, actor.role === "MANAGER" ? `/approvals/reports/${target.id}` : listPath);
     }
+    // SPEC 2026-11-16-professores-e-tecnicos, P14: a reservation's or an exam's notice leads to the list where it is
+    // acted on: the requester's own lists, or the team's page "Reservas".
+    if (target.kind === "reservation" || target.kind === "exam") {
+      if (area) return redirectTo(request, `${area}/reservations${target.kind === "exam" ? "#provas" : ""}`);
+      return redirectTo(request, target.kind === "exam" ? "/spaces/exams" : "/spaces/reservations");
+    }
 
     return redirectTo(request, area ? `${area}/${target.id}` : `/requests/${target.id}`);
   } catch (error) {

@@ -1,3 +1,4 @@
+import type { RequesterKind } from "@/shared/requester-kinds";
 export type UserRole = "ADMIN" | "REQUESTER" | "ATTENDANT" | "MANAGER";
 
 /** User data exposed to administration; never includes the password hash. */
@@ -12,8 +13,8 @@ export interface ManagedUser {
   updatedAt: Date;
   /** When the person was anonymized (SPEC 2026-11-02-auditoria-lgpd, 5.5); null otherwise. */
   anonymizedAt: Date | null;
-  /** SPEC 2026-11-16-tipos-de-solicitante: STUDENT or PUBLIC for a requester; null for the other roles. */
-  requesterKind: "STUDENT" | "PUBLIC" | null;
+  /** SPEC 2026-11-16-tipos-de-solicitante (and professores e técnicos, P2): the kind of a requester; null for the other roles. */
+  requesterKind: RequesterKind | null;
 }
 
 export interface UserState {

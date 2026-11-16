@@ -174,7 +174,8 @@ describe("the exported data (6.3 item 2; CA-CFG-02)", () => {
     const text = JSON.stringify(file);
     expect(text).not.toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
     // Version 4 since SF-277 (SPEC 2026-11-16-tipos-de-solicitante, decision T8); it was 3 since SF-257.
-    expect(file).toMatchObject({ format: CONFIGURATION_FORMAT, version: 4, exportedAt: "2026-11-07T15:00:00.000Z" });
+    // Version 5 since SPEC 2026-11-16-professores-e-tecnicos (P4).
+    expect(file).toMatchObject({ format: CONFIGURATION_FORMAT, version: 5, exportedAt: "2026-11-07T15:00:00.000Z" });
     expect(configurationFileSchema.parse(file)).toEqual(file);
     expect(configurationFileName(new Date("2026-11-07T15:00:00.000Z"))).toBe("serviceflow-configuracao-2026-11-07.json");
   });
@@ -182,7 +183,7 @@ describe("the exported data (6.3 item 2; CA-CFG-02)", () => {
   it("the format refuses another format, version or shape", () => {
     const file = buildConfigurationFile(snapshot(), new Date("2026-11-07T15:00:00.000Z"));
     expect(configurationFileSchema.safeParse({ ...file, format: "outro" }).success).toBe(false);
-    expect(configurationFileSchema.safeParse({ ...file, version: 5 }).success).toBe(false);
+    expect(configurationFileSchema.safeParse({ ...file, version: 6 }).success).toBe(false);
     expect(configurationFileSchema.safeParse({ ...file, data: { ...file.data, users: [] } }).success).toBe(false);
     expect(configurationFileSchema.safeParse({ ...file, data: { ...file.data, sectors: [{ name: "TI" }] } }).success).toBe(false);
   });
@@ -217,7 +218,7 @@ describe("exporting (6.3 item 1; CA-CFG-01)", () => {
     const result = await exportConfiguration(allowed);
     expect(allowed.recordExport).toHaveBeenCalledWith(authorization.actor, new Date("2026-11-07T15:00:00.000Z"));
     expect(result).toMatchObject({ fileName: "serviceflow-configuracao-2026-11-07.json", repeated: [], tooLarge: false });
-    expect(JSON.parse(result.content)).toMatchObject({ format: "serviceflow-config", version: 4 });
+    expect(JSON.parse(result.content)).toMatchObject({ format: "serviceflow-config", version: 5 });
     expect(result.bytes).toBe(new TextEncoder().encode(result.content).length);
   });
 

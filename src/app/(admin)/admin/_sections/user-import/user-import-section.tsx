@@ -11,7 +11,7 @@ export function UserImportSection({ history }: { history: readonly UserImportHis
     <section aria-labelledby="user-import-heading" className="admin-section surface-card content-section">
       <h2 id="user-import-heading">Importar usuários</h2>
       <p className="section-description">
-        Envie um CSV com as colunas nome, email, perfil e setor e, se quiser, tipo (aluno ou público geral, só para
+        Envie um CSV com as colunas nome, email, perfil e setor e, se quiser, tipo (aluno, professor, técnico ou público geral, só para
         solicitante; vazia, a pessoa entra como aluno). O sistema mostra o resultado de cada linha antes de gravar. As pessoas entram inativas e
         sem senha: para cada uma, em &quot;Usuários&quot;, use &quot;Reativar&quot; e defina a senha. Nenhuma senha vai no arquivo.
       </p>

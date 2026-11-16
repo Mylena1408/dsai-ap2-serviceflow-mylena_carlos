@@ -4,7 +4,7 @@ import { parseCalendarInput, parseSectorHoursInput } from "@/modules/calendar";
 import { runSerializableTransaction } from "@/server/db/serializable-transaction";
 import { BUSINESS_CALENDAR_AUDIT_ID } from "@/shared/business-clock";
 import type { ConfigurationApplyStore, ConfigurationApplyTransaction, ImportPlan } from "../application/apply-import";
-import { announcementKey, keyOf, type ConfigurationData } from "../domain/format";
+import { announcementKey, keyOf, offeredToOf, type ConfigurationData } from "../domain/format";
 import { pathOf, type ItemKind, type ItemStatus } from "../domain/preview";
 import { CONFIGURATION_ENTITY_ID, CONFIGURATION_ENTITY_LABEL, readSnapshot } from "./prisma-configuration-export";
 import { readFacts, readPeople } from "./prisma-configuration-import";
@@ -96,8 +96,8 @@ async function writePlan(client: Tx, plan: ImportPlan, actor: AuditActor): Promi
       requiresApproval: service.requiresApproval,
       approvalSectorIds: service.approvalSectors.map((name) => sectorIds.get(keyOf(name))!),
       approvalDeadlineDays: service.approvalDeadlineDays,
-      // SPEC 2026-11-16-tipos-de-solicitante, decision T8: only a version 4 file says it.
-      ...(service.offeredTo ? { audience: service.offeredTo } : {}),
+      // SPEC 2026-11-16-tipos-de-solicitante, decision T8: only a version 4 or 5 file says it (P4: converted to the list).
+      ...(offeredToOf(service) ? { offeredTo: offeredToOf(service) } : {}),
     };
     const id = await save(
       "SERVICE",

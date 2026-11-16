@@ -67,6 +67,14 @@ function createPrismaAnonymizationTransaction(transaction: Prisma.TransactionCli
         where: { updatedById: userId, typeSnapshot: { in: ["SHORT_TEXT", "LONG_TEXT"] } },
         data: { value: replacement },
       });
+      // SPEC 2026-11-16-professores-e-tecnicos (clarification of the LGPD rule above): the texts of the person's
+      // reservations and exam requests, and the reasons they wrote; the reservations stay, as the requests do.
+      await transaction.spaceReservation.updateMany({ where: { requesterId: userId }, data: { description: replacement } });
+      await transaction.spaceReservation.updateMany({ where: { decidedById: userId, decisionNote: { not: null } }, data: { decisionNote: replacement } });
+      await transaction.spaceReservation.updateMany({ where: { cancelledById: userId, cancelNote: { not: null } }, data: { cancelNote: replacement } });
+      await transaction.examRequest.updateMany({ where: { professorId: userId }, data: { notes: replacement } });
+      await transaction.examRequest.updateMany({ where: { decidedById: userId, refusalNote: { not: null } }, data: { refusalNote: replacement } });
+      await transaction.examRequest.updateMany({ where: { cancelledById: userId, cancelNote: { not: null } }, data: { cancelNote: replacement } });
     },
     async deleteNotificationData(userId) {
       await transaction.emailDelivery.deleteMany({ where: { recipientId: userId } });

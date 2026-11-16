@@ -14,7 +14,7 @@
     "seed:demo": "tsx scripts/seed-demo-data.ts",
     "storage:provision": "tsx scripts/provision-document-storage.ts",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "node --max-old-space-size=4096 node_modules/typescript/bin/tsc --noEmit",
     "test:unit": "vitest run --config vitest.unit.config.ts",
     "test:integration": "prisma generate && vitest run --config vitest.integration.config.ts",
     "test:e2e": "playwright test --config=playwright.config.ts"

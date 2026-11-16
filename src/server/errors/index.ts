@@ -125,6 +125,8 @@ const PUBLIC_VALIDATION_PATHS = new Set([
   "startsAt",
   "endsAt",
   "leadHours",
+  // SPEC 2026-11-16-professores-e-tecnicos, P1.
+  "offeredTo",
 ]);
 
 const PUBLIC_VALIDATION_CODES = new Set([

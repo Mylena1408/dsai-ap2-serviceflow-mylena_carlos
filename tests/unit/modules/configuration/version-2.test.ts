@@ -108,9 +108,10 @@ const facts: DestinationFacts = { sectorsWithPendingRequests: [], sectorsWithAct
 const empty = (): ConfigurationData => ({ sectors: [], categories: [], services: [], accessRoles: [], calendar: null, holidays: [], bundles: [] });
 
 describe("the format's versions (decision I19)", () => {
-  it("accepts version 1 without the new lists and version 2 with them (the export writes version 4 since SF-277)", () => {
-    // SPEC 2026-11-16-tipos-de-solicitante, decision T8: the export moved to version 4; versions 1 to 3 are still accepted.
-    expect(CONFIGURATION_VERSION).toBe(4);
+  it("accepts version 1 without the new lists and version 2 with them (the export writes version 5 since SF-286)", () => {
+    // SPEC 2026-11-16-tipos-de-solicitante, decision T8: the export moved to version 4; SPEC
+    // 2026-11-16-professores-e-tecnicos, P4: to version 5; the earlier versions are still accepted.
+    expect(CONFIGURATION_VERSION).toBe(5);
     expect(configurationFileSchema.safeParse(fileOf(2, data())).success).toBe(true);
     expect(configurationFileSchema.safeParse(fileOf(1, withoutVersion2(data()))).success).toBe(true);
   });
@@ -122,8 +123,8 @@ describe("the format's versions (decision I19)", () => {
     };
     expect(paths(fileOf(1, data()))).toEqual(["data.sectors.0.tags", "data.services.0.checklist"]);
     expect(paths(fileOf(2, withoutVersion2(data())))).toEqual(["data.sectors.0.tags", "data.services.0.checklist"]);
-    // Version 4 exists since SF-277; a version the import does not know is refused by the version itself.
-    expect(paths(fileOf(5, data()))).toEqual(["version"]);
+    // Version 5 exists since SF-286; a version the import does not know is refused by the version itself.
+    expect(paths(fileOf(6, data()))).toEqual(["version"]);
   });
 });
 

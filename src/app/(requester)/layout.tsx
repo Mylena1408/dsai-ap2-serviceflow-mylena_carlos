@@ -24,6 +24,8 @@ export default function RequesterLayout({
           {/* SPEC 2026-11-15-mapa-de-servicos, decision M1. */}
           <Link href="/catalog/map">Mapa de serviços</Link>
           <Link href="/requests">Minhas solicitações</Link>
+          {/* SPEC 2026-11-16-professores-e-tecnicos, part C item 2 (P9). */}
+          <Link href="/spaces">Espaços</Link>
           <NotificationsLink href="/notifications" />
           {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 4: only with announcements. */}
           <AnnouncementsLink />

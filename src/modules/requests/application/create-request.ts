@@ -1,4 +1,4 @@
-import { DEFAULT_REQUESTER_KIND, DEFAULT_SERVICE_AUDIENCE, isOfferedTo } from "@/shared/requester-kinds";
+import { DEFAULT_REQUESTER_KIND, isOfferedTo } from "@/shared/requester-kinds";
 import { randomUUID } from "node:crypto";
 import {
   assertAttachmentBatchLimits,
@@ -137,9 +137,9 @@ export async function loadOpeningContext(
     sectorActive: service.sector.isActive,
   });
 
-  // SPEC 2026-11-16-tipos-de-solicitante, rules 2 and 5: a service of another audience is "not found", on the screen,
+  // SPEC 2026-11-16-tipos-de-solicitante, rules 2 and 5: a service not offered to the kind is "not found", on the screen,
   // in the API and in a bundle, without saying it exists.
-  if (!isOfferedTo(service.audience ?? DEFAULT_SERVICE_AUDIENCE, currentActor.requesterKind ?? DEFAULT_REQUESTER_KIND)) {
+  if (!isOfferedTo(service.offeredTo, currentActor.requesterKind ?? DEFAULT_REQUESTER_KIND)) {
     throw new NotFoundError();
   }
 

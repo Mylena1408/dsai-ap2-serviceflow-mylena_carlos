@@ -57,6 +57,8 @@ export const AUDIT_ENTITY_TYPES = [
   // 6.3 item 1.
   "SECTOR_CALENDAR",
   "SECTOR_HOLIDAY",
+  // SPEC 2026-11-16-professores-e-tecnicos, part C item 1.
+  "SPACE",
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -101,6 +103,7 @@ export const PERSONAL_FIELDS: Readonly<Record<AuditEntityType, readonly string[]
   PERIODIC_REPORT_SETTING: [],
   SECTOR_CALENDAR: [],
   SECTOR_HOLIDAY: [],
+  SPACE: [],
 };
 
 /** Passwords, hashes, secrets and tokens never enter a record, whatever the entity. */
@@ -146,6 +149,7 @@ export const AUDIT_ENTITY_LABELS: Record<AuditEntityType, string> = {
   PERIODIC_REPORT_SETTING: "Relatório periódico",
   SECTOR_CALENDAR: "Calendário do setor",
   SECTOR_HOLIDAY: "Feriado do setor",
+  SPACE: "Espaço",
 };
 
 /** Names of the recorded fields; an unknown field shows its own name. */
@@ -201,6 +205,8 @@ export const AUDIT_FIELD_LABELS: Readonly<Record<string, string>> = {
   // SPEC 2026-11-16-tipos-de-solicitante.
   requesterKind: "Tipo de solicitante",
   serviceAudience: "Público do serviço",
+  // SPEC 2026-11-16-professores-e-tecnicos, P1.
+  offeredTo: "Oferecido a",
   raisePriority: "Subir a prioridade",
   assignToId: "Atribuir a",
   notifyManagers: "Avisar os gestores do setor",
@@ -246,6 +252,12 @@ export const AUDIT_FIELD_LABELS: Readonly<Record<string, string>> = {
   // announcement's audience is recorded as "target".
   level: "Nível",
   kind: "Tipo",
+  // SPEC 2026-11-16-professores-e-tecnicos, part C ("kind" already names other things).
+  spaceKind: "Tipo de espaço",
+  capacity: "Capacidade",
+  location: "Localização",
+  resources: "Recursos",
+  confirmation: "Confirmação",
   target: "Público",
   targetRole: "Perfil do público",
   targetSectorId: "Setor do público",
@@ -339,8 +351,9 @@ export const AUDITED_FIELDS: Readonly<Record<AuditEntityType, readonly string[]>
     // SPEC 2026-11-08-atendimento-dia-a-dia, 13.2 item 1.
     "estimatedHours",
     // SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 3: recorded as "serviceAudience", as "audience" already names
-    // who fills a field.
+    // who fills a field; since professores e técnicos (P1), the list "offeredTo".
     "serviceAudience",
+    "offeredTo",
   ],
   DOCUMENT_REQUIREMENT: ["name", "isRequired", "acceptedFormats", "position", "isActive"],
   // "audience" and the condition: SPEC 2026-11-03-campos-condicionais-atendimento, 5.7.4.
@@ -416,6 +429,8 @@ export const AUDITED_FIELDS: Readonly<Record<AuditEntityType, readonly string[]>
   // 6.3 items 1 and 2: the same fields as the organization's calendar and holidays (the time zone is the organization's).
   SECTOR_CALENDAR: ["sectorId", "weekdays", "startTime", "endTime"],
   SECTOR_HOLIDAY: ["sectorId", "day", "name", "yearly"],
+  // SPEC 2026-11-16-professores-e-tecnicos, part C item 1 (CA-PRT-06).
+  SPACE: ["name", "spaceKind", "sectorId", "capacity", "location", "resources", "confirmation", "isActive"],
 };
 
 export type AuditActorRole = "ADMIN" | "REQUESTER" | "ATTENDANT" | "MANAGER";

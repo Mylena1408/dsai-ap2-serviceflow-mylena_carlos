@@ -1,3 +1,4 @@
+import type { RequesterKind } from "@/shared/requester-kinds";
 import { Prisma, type PrismaClient, type RequestPriority, type RequestStatus } from "@prisma/client";
 import type { DailyCounts, DurationAggregate, StageTimeRow, TeamMemberRow } from "../domain/analytics";
 import type { AnalyticsReader, AttendantScope, WorkTotals } from "../application/analytics-ports";
@@ -430,7 +431,7 @@ export function createPrismaAnalyticsReader(database: PrismaClient): AnalyticsRe
     async byRequesterKind(scope, range) {
       // SPEC 2026-11-16-tipos-de-solicitante, 4.4 item 2: by the kind kept in each request.
       const [counts, ratings] = await Promise.all([
-        database.$queryRaw<Array<{ kind: "STUDENT" | "PUBLIC"; opened: number; completed: number; averageMs: number | null }>>`
+        database.$queryRaw<Array<{ kind: RequesterKind; opened: number; completed: number; averageMs: number | null }>>`
           SELECT
             r."requesterKindSnapshot"::text AS "kind",
             (count(*) FILTER (WHERE r."createdAt" >= ${range.from} AND r."createdAt" < ${range.before}))::int AS "opened",
@@ -441,7 +442,7 @@ export function createPrismaAnalyticsReader(database: PrismaClient): AnalyticsRe
           WHERE ((r."createdAt" >= ${range.from} AND r."createdAt" < ${range.before})
             OR (r."completedAt" >= ${range.from} AND r."completedAt" < ${range.before})) ${scopeSql(scope)}
           GROUP BY 1`,
-        database.$queryRaw<Array<{ kind: "STUDENT" | "PUBLIC"; averageRating: number | null }>>`
+        database.$queryRaw<Array<{ kind: RequesterKind; averageRating: number | null }>>`
           SELECT r."requesterKindSnapshot"::text AS "kind", avg(s."rating")::float8 AS "averageRating"
           FROM "RequestSatisfaction" s
           JOIN "Request" r ON r."id" = s."requestId"

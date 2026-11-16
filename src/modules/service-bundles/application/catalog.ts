@@ -2,7 +2,7 @@ import { requirePublishedCatalogReader } from "@/server/authorization";
 import { NotFoundError } from "@/server/errors";
 import { validateInput } from "@/server/validation";
 import { entityIdSchema } from "@/shared/validation";
-import { DEFAULT_REQUESTER_KIND, DEFAULT_SERVICE_AUDIENCE, isOfferedTo, type RequesterKind } from "@/shared/requester-kinds";
+import { DEFAULT_REQUESTER_KIND, isOfferedTo, type RequesterKind } from "@/shared/requester-kinds";
 import { bundleAvailability, type BundleRecord, type BundleServiceState } from "../domain/bundle";
 
 // Bundles in the requester's catalog (SPEC 2026-11-07-operacao-e-automacao, 3.3 items 2 and 3,
@@ -28,7 +28,7 @@ export interface CatalogBundleReader {
 function asCatalogBundle(bundle: BundleRecord, states: readonly BundleServiceState[], kind: RequesterKind): CatalogBundle | null {
   if (!bundleAvailability(bundle, states).openable) return null;
   // Decision T9: a bundle is shown only when every one of its services is offered to the person's kind.
-  const offered = new Map(states.map((state) => [state.id, isOfferedTo(state.audience ?? DEFAULT_SERVICE_AUDIENCE, kind)]));
+  const offered = new Map(states.map((state) => [state.id, isOfferedTo(state.offeredTo, kind)]));
   if (bundle.serviceIds.some((id) => offered.get(id) !== true)) return null;
   const byId = new Map(states.map((state) => [state.id, state]));
   return {

@@ -2928,3 +2928,57 @@ Escolhida na revisão das SPECs de 2026-11-16 para fechar o CA-DVO-01 (`SPEC/202
 - **Estado:** Concluída em 2026-11-16: `pageForApproval` e `pageBySector` no repositório, `pageManagerApprovals` no caso de uso, página com 20 por página e a navegação da fila, API do gestor com a mesma leitura; integração `approvals-pagination.test.ts` e `approvals-pagination-api.test.ts`; medição no `serviceflow_perf` de 105 a 253 ms (antes 4,3 s e 13,8 s).
 - **SPEC:** `SPEC/2026-11-16-paginacao-aprovacoes.md`.
 
+## Área de professores e técnicos — SPEC de 2026-11-16
+
+Tipos Professor e Técnico-administrativo, espaços, reservas e alocação de provas (`SPEC/2026-11-16-professores-e-tecnicos.md`). Decisões P1 a P17 revisadas pela responsável em 2026-11-16. Concluída em 2026-11-16.
+
+### SF-285 — Migration dos tipos e da lista "Oferecido a", regras compartilhadas, cadastro, CSV e auditoria
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-professores-e-tecnicos.md`.
+
+### SF-286 — Catálogo, mapa, pacotes, fila, painel, análises e CSV com os quatro tipos; configuração v5
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-professores-e-tecnicos.md`.
+
+### SF-287 — Migration de espaços, reservas e provas, com a restrição de exclusão
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-professores-e-tecnicos.md`.
+
+### SF-288 — Cadastro de espaços (administração e "Serviços do setor") e auditoria
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-professores-e-tecnicos.md`.
+
+### SF-289 — Página "Espaços" e agenda da semana
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-professores-e-tecnicos.md`.
+
+### SF-290 — Reserva simples e semanal, "Minhas reservas" e cancelamento
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-professores-e-tecnicos.md`.
+
+### SF-291 — "Reservas" da equipe: confirmar, recusar, cancelar; notificações
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-professores-e-tecnicos.md`.
+
+### SF-292 — Pedido de prova, sugestão de espaços, alocação e cancelamento
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-professores-e-tecnicos.md`.
+
+### SF-293 — Guia rápido de professores e técnicos
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-professores-e-tecnicos.md`.
+
+### SF-294 — Dados de demonstração, E2E e revisão final
+
+- **Estado:** Concluída em 2026-11-16.
+- **SPEC:** `SPEC/2026-11-16-professores-e-tecnicos.md`.
+

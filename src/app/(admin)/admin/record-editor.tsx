@@ -1,6 +1,7 @@
 "use client";
 
-import { REQUESTER_KIND_LABELS, SERVICE_AUDIENCE_LABELS } from "@/shared/requester-kinds";
+import { REQUESTER_KIND_LABELS, offeredToLabel, type RequesterKind } from "@/shared/requester-kinds";
+import { OfferedToFieldset, RequesterKindSelect } from "./requester-kind-fields";
 import { useActionState, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -39,7 +40,7 @@ type EditableRecord =
       sectorId: string | null;
       isActive: boolean;
       /** SPEC 2026-11-16-tipos-de-solicitante: a requester's kind. */
-      requesterKind?: "STUDENT" | "PUBLIC" | null;
+      requesterKind?: RequesterKind | null;
     }
   | {
       kind: "service";
@@ -54,8 +55,8 @@ type EditableRecord =
       requiresApproval: boolean;
       slaBusinessHours?: boolean;
       estimatedHours?: number | null;
-      /** SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 3. */
-      audience?: "STUDENTS" | "PUBLIC" | "BOTH";
+      /** SPEC 2026-11-16-professores-e-tecnicos, P1. */
+      offeredTo?: RequesterKind[];
     };
 
 type RecordEditorProps = {
@@ -142,13 +143,7 @@ function EditorForm({
               </select>
             </label>
             {/* SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 1: only for requesters. */}
-            <label>
-              Tipo de solicitante
-              <select defaultValue={record.requesterKind ?? "STUDENT"} name="requesterKind">
-                <option value="STUDENT">Aluno (interno)</option>
-                <option value="PUBLIC">Público geral (externo)</option>
-              </select>
-            </label>
+            <RequesterKindSelect defaultValue={record.requesterKind} />
           </>
         ) : null}
         {record.kind === "service" ? (
@@ -184,14 +179,7 @@ function EditorForm({
               slaHours={record.slaHours}
               estimatedHours={record.estimatedHours ?? null}
             />
-            <label>
-              Público do serviço
-              <select defaultValue={record.audience ?? "BOTH"} name="audience">
-                <option value="BOTH">Alunos e público geral</option>
-                <option value="STUDENTS">Só alunos</option>
-                <option value="PUBLIC">Só público geral</option>
-              </select>
-            </label>
+            <OfferedToFieldset defaultValue={record.offeredTo} />
           </>
         ) : null}
       </div>
@@ -266,7 +254,7 @@ export function AdminRecordEditor({
           </span>
           <span>{record.requiresApproval ? "Exige aprovação do gestor" : "Sem aprovação"}</span>
           {record.estimatedHours ? <span>Estimativa de atendimento: {record.estimatedHours} h</span> : null}
-          <span>Público: {SERVICE_AUDIENCE_LABELS[record.audience ?? "BOTH"]}</span>
+          <span>Oferecido a: {offeredToLabel(record.offeredTo)}</span>
         </>
       );
     }

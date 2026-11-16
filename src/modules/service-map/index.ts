@@ -5,7 +5,7 @@ import { requirePublishedCatalogReader } from "@/server/authorization";
 import { listCatalogBundles } from "@/modules/service-bundles";
 import { buildServiceMap, type MapBundle, type ServiceMap } from "./domain/service-map";
 import { readPublishedMapServices, readRequesterKind } from "./infrastructure/prisma-service-map";
-import { DEFAULT_REQUESTER_KIND, audiencesFor } from "@/shared/requester-kinds";
+import { DEFAULT_REQUESTER_KIND } from "@/shared/requester-kinds";
 
 export {
   ACCOUNT_ACTIONS,
@@ -32,9 +32,9 @@ export {
  */
 export async function getServiceMap(database: PrismaClient = prisma): Promise<ServiceMap> {
   const actor = await requirePublishedCatalogReader();
-  // SPEC 2026-11-16-tipos-de-solicitante, 4.2 item 2: the map of the reader's audience (bundles: decision T9).
+  // SPEC 2026-11-16-tipos-de-solicitante, 4.2 item 2: the map of the reader's kind (bundles: decision T9).
   const requesterKind = (await readRequesterKind(database, actor.id)) ?? DEFAULT_REQUESTER_KIND;
-  const [services, bundles] = await Promise.all([readPublishedMapServices(database, audiencesFor(requesterKind)), listCatalogBundles(database)]);
+  const [services, bundles] = await Promise.all([readPublishedMapServices(database, requesterKind), listCatalogBundles(database)]);
   const mapBundles: MapBundle[] = bundles.map(({ id, name, description, services: bundleServices }) => ({
     id,
     name,

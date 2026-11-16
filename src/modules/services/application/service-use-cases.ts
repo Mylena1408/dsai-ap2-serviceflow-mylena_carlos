@@ -12,7 +12,7 @@ import { parseEstimatedHours, parseSlaHours } from "../domain/sla-config";
 import type { ServiceRepository, ServiceTransactionRunner } from "./ports";
 
 function serviceData(parsed: ServiceInput): ServiceData {
-  const { defaultPriority, slaHours, requiresApproval, slaBusinessHours, estimatedHours, audience, ...base } = parsed;
+  const { defaultPriority, slaHours, requiresApproval, slaBusinessHours, estimatedHours, offeredTo, ...base } = parsed;
   return {
     ...base,
     ...(defaultPriority !== undefined ? { defaultPriority } : {}),
@@ -20,7 +20,7 @@ function serviceData(parsed: ServiceInput): ServiceData {
     ...(requiresApproval !== undefined ? { requiresApproval } : {}),
     ...(slaBusinessHours !== undefined ? { slaBusinessHours } : {}),
     ...(estimatedHours !== undefined ? { estimatedHours: parseEstimatedHours(estimatedHours) } : {}),
-    ...(audience !== undefined ? { audience } : {}),
+    ...(offeredTo !== undefined ? { offeredTo } : {}),
   };
 }
 

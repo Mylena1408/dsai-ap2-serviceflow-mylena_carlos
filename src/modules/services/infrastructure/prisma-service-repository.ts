@@ -47,9 +47,9 @@ export function createPrismaPublishedCatalogRepository(
   database: PrismaClient,
 ): PublishedCatalogRepository {
   return {
-    async listPublished(audiences) {
+    async listPublished(kind) {
       const rows = await database.service.findMany({
-        where: { ...publishedWhere, ...(audiences ? { audience: { in: [...audiences] } } : {}) },
+        where: { ...publishedWhere, ...(kind ? { offeredTo: { has: kind } } : {}) },
         include: publishedServiceInclude,
         orderBy: [{ category: { name: "asc" } }, { name: "asc" }, { id: "asc" }],
       });
@@ -61,9 +61,9 @@ export function createPrismaPublishedCatalogRepository(
       const user = await database.user.findUnique({ where: { id: userId }, select: { requesterKind: true } });
       return user?.requesterKind ?? null;
     },
-    async findPublished(serviceId, audiences) {
+    async findPublished(serviceId, kind) {
       const row = await database.service.findFirst({
-        where: { id: serviceId, ...publishedWhere, ...(audiences ? { audience: { in: [...audiences] } } : {}) },
+        where: { id: serviceId, ...publishedWhere, ...(kind ? { offeredTo: { has: kind } } : {}) },
         include: publishedServiceInclude,
       });
       return row && toPublished(row);

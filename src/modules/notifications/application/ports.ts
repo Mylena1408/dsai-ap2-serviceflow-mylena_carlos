@@ -81,8 +81,15 @@ export interface NotificationStore {
   purgeRead(before: Date): Promise<number>;
 }
 
-/** What opening a notice leads to: its request or, since SF-250, a periodic report. */
-export type NotificationTarget = { kind: "request"; id: string } | { kind: "report"; id: string };
+/**
+ * What opening a notice leads to: its request or, since SF-250, a periodic report; since SPEC
+ * 2026-11-16-professores-e-tecnicos (P14), a space reservation or an exam request.
+ */
+export type NotificationTarget =
+  | { kind: "request"; id: string }
+  | { kind: "report"; id: string }
+  | { kind: "reservation"; id: string }
+  | { kind: "exam"; id: string };
 
 /** Email preferences (SPEC 2026-11-01-notificacoes-email-preferencias, 5.1). */
 export interface NotificationPreferenceStore {

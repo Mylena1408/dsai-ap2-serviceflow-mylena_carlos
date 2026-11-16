@@ -510,3 +510,11 @@
 > faça a contagem de linhas de código executaveis pelo cloc --diff
 
 145. SF-284: paginação de "Aprovações" no banco, na tela e na API; testes de integração; medição no banco de volume (105 a 253 ms, antes 4,3 s e 13,8 s); CA-PAP-01 a 04 e CA-DVO-01 marcados. Contagem no meio do trabalho: 98.593 commitadas e 98.875 com a SF-284.
+
+> faça o commit
+
+146. Dois commits: `f8d79b7` (revisão das SPECs e SPEC de professores e técnicos) e `3fb244b` (SF-284).
+
+> faça todas as etapas e depois termine com o push
+
+147. SF-285 a SF-294: tipos Professor e Técnico-administrativo e lista "Oferecido a" (configuração v5), espaços, reservas simples e semanais com restrição de exclusão no banco, página "Reservas" da equipe, alocação de provas com sugestão, guia de professores e técnicos, dados de demonstração, testes unitários, de integração e E2E. Memória do typecheck ajustada (build só da aplicação; typecheck com 4 GB). E2E completo 85/85 (com o novo professors-technicians.spec.ts e as páginas novas na verificação de largura e na varredura axe).

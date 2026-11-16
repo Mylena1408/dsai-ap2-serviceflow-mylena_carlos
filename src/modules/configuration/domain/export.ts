@@ -1,3 +1,4 @@
+import { DEFAULT_OFFERED_TO, normalizeOfferedTo, type RequesterKind } from "@/shared/requester-kinds";
 import { timeOfMinute } from "@/shared/business-clock";
 import {
   CONFIGURATION_FORMAT,
@@ -57,8 +58,8 @@ export interface ConfigurationSnapshot {
     approvalConditionFieldId: string | null;
     approvalConditionValue: string | null;
     approvalDeadlineDays: number | null;
-    /** SPEC 2026-11-16-tipos-de-solicitante (version 4); optional for older doubles (both). */
-    audience?: "STUDENTS" | "PUBLIC" | "BOTH";
+    /** SPEC 2026-11-16-professores-e-tecnicos (version 5); optional for older doubles (every kind). */
+    offeredTo?: RequesterKind[];
   }>;
   fields: Array<
     Omit<FieldItem, "condition"> & { id: string; serviceId: string; conditionFieldId: string | null; conditionValue: string | null }
@@ -167,7 +168,7 @@ export function buildConfigurationData(snapshot: ConfigurationSnapshot): Configu
       approvalSectors: service.approvalSectorIds.map((id) => sectorName.get(id)).filter(present),
       approvalCondition: condition(service.approvalConditionFieldId, service.approvalConditionValue),
       approvalDeadlineDays: service.approvalDeadlineDays,
-      offeredTo: service.audience ?? "BOTH",
+      offeredTo: normalizeOfferedTo(service.offeredTo ?? DEFAULT_OFFERED_TO),
       fields: ofService(snapshot.fields, service.id)
         .sort(byPosition((field) => field.label))
         .map((field) => ({

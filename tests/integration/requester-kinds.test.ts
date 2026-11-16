@@ -1,3 +1,4 @@
+import { offeredToFromLegacy } from "@/shared/requester-kinds";
 import { describe, expect, it, vi } from "vitest";
 import { prisma } from "./fixtures";
 import { createDomainCategory, createDomainSector, createDomainService, createDomainUser } from "./domain-fixtures";
@@ -36,11 +37,12 @@ async function asRequester(kind: "STUDENT" | "PUBLIC") {
   return requester;
 }
 
+// Since SPEC 2026-11-16-professores-e-tecnicos (P1), the old audiences are written as the list they became.
 async function service(audience: "STUDENTS" | "PUBLIC" | "BOTH") {
   const category = await createDomainCategory();
   const sector = await createDomainSector();
   const created = await createDomainService({ categoryId: category.id, sectorId: sector.id });
-  return prisma.service.update({ where: { id: created.id }, data: { audience } });
+  return prisma.service.update({ where: { id: created.id }, data: { offeredTo: offeredToFromLegacy(audience) } });
 }
 
 describe("the kind in the database (rule 3; decision T4)", () => {
@@ -62,9 +64,9 @@ describe("the kind in the database (rule 3; decision T4)", () => {
     expect(Number(check!.count)).toBe(1);
   });
 
-  it("a service created without an audience is for both (decision T5)", async () => {
+  it("a service created without an audience is for everyone (decision T5; since P1, every kind)", async () => {
     const created = await createDomainService({ categoryId: (await createDomainCategory()).id, sectorId: (await createDomainSector()).id });
-    expect(created.audience).toBe("BOTH");
+    expect(created.offeredTo).toEqual(["STUDENT", "PROFESSOR", "TECHNICIAN", "PUBLIC"]);
   });
 });
 
@@ -96,20 +98,20 @@ describe("the registration (section 4.1; CA-TIP-01)", () => {
     const category = await createDomainCategory();
     const sector = await createDomainSector();
     const created = await createService(
-      { name: `Declaração de matrícula ${Date.now()}`, description: "Para alunos.", categoryId: category.id, sectorId: sector.id, audience: "STUDENTS" },
+      { name: `Declaração de matrícula ${Date.now()}`, description: "Para alunos.", categoryId: category.id, sectorId: sector.id, offeredTo: ["STUDENT"] },
       prisma,
     );
-    expect(created.audience).toBe("STUDENTS");
+    expect(created.offeredTo).toEqual(["STUDENT"]);
     const kept = await updateService(created.id, { name: created.name, description: created.description, categoryId: category.id, sectorId: sector.id }, prisma);
-    expect(kept.audience).toBe("STUDENTS");
+    expect(kept.offeredTo).toEqual(["STUDENT"]);
     const changed = await updateService(
       created.id,
-      { name: created.name, description: created.description, categoryId: category.id, sectorId: sector.id, audience: "PUBLIC" },
+      { name: created.name, description: created.description, categoryId: category.id, sectorId: sector.id, offeredTo: ["PUBLIC"] },
       prisma,
     );
-    expect(changed.audience).toBe("PUBLIC");
+    expect(changed.offeredTo).toEqual(["PUBLIC"]);
     const audit = await prisma.auditEntry.findFirstOrThrow({ where: { entityId: created.id, action: "UPDATED" }, orderBy: { occurredAt: "desc" } });
-    expect(JSON.stringify(audit.changes)).toContain("serviceAudience");
+    expect(JSON.stringify(audit.changes)).toContain("offeredTo");
   });
 });
 

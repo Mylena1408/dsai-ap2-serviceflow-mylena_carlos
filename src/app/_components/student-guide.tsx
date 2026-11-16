@@ -21,7 +21,7 @@ function ScreenName({ screen, links }: { screen: GuideScreen; links: boolean }) 
 }
 
 /** "A, B e C", each one a screen name (G2: a link only for the requester). */
-function ScreenList({ screens, links }: { screens: readonly GuideScreen[]; links: boolean }) {
+export function ScreenList({ screens, links }: { screens: readonly GuideScreen[]; links: boolean }) {
   return (
     <>
       {screens.map((screen, index) => (

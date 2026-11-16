@@ -1,3 +1,5 @@
+import { listSpacesForEditor } from "@/modules/spaces";
+import { SpacesPanel } from "@/app/_components/spaces-panel";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { SignOutButton } from "@/modules/auth";
@@ -98,6 +100,9 @@ type AdminPageProps = {
     /** SPEC 2026-11-09-comunicacao-e-calendarios, 6.1 (SF-253): the sector whose calendar is open and the result. */
     calendarSector?: string;
     sectorCalendar?: string;
+    /** SPEC 2026-11-16-professores-e-tecnicos, part C item 1: the spaces' result. */
+    spaceError?: string;
+    spaceNotice?: string;
   }>;
 };
 
@@ -119,6 +124,8 @@ const adminSections = [
   { id: "bundles", label: "Pacotes" },
   { id: "knowledge", label: "Base de conhecimento" },
   { id: "calendar", label: "Calendário" },
+  // SPEC 2026-11-16-professores-e-tecnicos, part C item 1.
+  { id: "spaces", label: "Espaços" },
   // SPEC 2026-11-06-aprofundamento-configurabilidade, 4.3.5.
   { id: "absences", label: "Ausências" },
   // SPEC 2026-11-07-operacao-e-automacao, 4.3 item 7.
@@ -183,7 +190,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     throw error;
   }
 
-  const [{ entity, error, notice, section, period, from, to, sector, type, actor, page, knowledge, absence, schedule, service, edit, fields, tag, checklist, open, announcementResult, scope, report, reportSetting, calendarSector, sectorCalendar }, sectors, categories, users, services, documentRequirements, serviceFields, serviceStages, permissions] =
+  const [{ entity, error, notice, section, period, from, to, sector, type, actor, page, knowledge, absence, schedule, service, edit, fields, tag, checklist, open, announcementResult, scope, report, reportSetting, calendarSector, sectorCalendar, spaceError, spaceNotice }, sectors, categories, users, services, documentRequirements, serviceFields, serviceStages, permissions] =
     await Promise.all([
       searchParams,
       listSectors(),
@@ -219,6 +226,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   const calendarOverview = selectedSection === "calendar" ? await getCalendarOverview() : null;
   // SPEC 2026-11-09-comunicacao-e-calendarios, 6.1 (SF-253): the sectors' calendars, under the organization's.
   const sectorCalendarView = selectedSection === "calendar" ? await getSectorCalendarView(calendarSector) : null;
+  // SPEC 2026-11-16-professores-e-tecnicos, part C item 1: read only when the section is open.
+  const spaceEditor = selectedSection === "spaces" ? await listSpacesForEditor() : null;
   // SPEC 2026-11-07-operacao-e-automacao, 3.3 item 2: read only when the section is open.
   const bundleOverview = selectedSection === "bundles" ? await listBundleOverview() : null;
   // SPEC 2026-11-06-aprofundamento-configurabilidade, 7.3: read only when the section is open.
@@ -327,6 +336,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       {selectedSection === "roles" && roleOverview ? <RolesSection roles={roleOverview.roles} /> : null}
 
       {bundleOverview ? <BundlesSection overview={bundleOverview} /> : null}
+
+      {spaceEditor ? <SpacesPanel area="admin" error={spaceError} notice={spaceNotice} view={spaceEditor} /> : null}
 
       {selectedSection === "services" ? (
         <ServicesSection

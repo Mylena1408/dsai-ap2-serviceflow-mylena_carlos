@@ -167,6 +167,8 @@ describe("texts (section 5.2)", () => {
       // Added by SPEC 2026-11-09-comunicacao-e-calendarios, 6.3 item 1.
       SECTOR_CALENDAR: true,
       SECTOR_HOLIDAY: true,
+      // SPEC 2026-11-16-professores-e-tecnicos, part C item 1.
+      SPACE: true,
     };
 
     expect([...AUDIT_ACTIONS].sort()).toEqual(Object.keys(actions).sort());

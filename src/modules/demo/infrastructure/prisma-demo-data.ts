@@ -18,6 +18,7 @@ import {
   DEMO_REQUESTS,
   DEMO_SERVICE_FIELDS,
   DEMO_SERVICE_SETTINGS,
+  DEMO_SPACES,
   demoTimeline,
   hoursAfterOpening,
   type DemoRequestScenario,
@@ -339,6 +340,14 @@ async function saveRequests(
  * Creates or restores the fictitious data without duplicating records: catalog, people,
  * requirements and fields are restored on every run; requests only on the first one.
  */
+/** SPEC 2026-11-16-professores-e-tecnicos, P16: the demonstration's spaces, created only when missing. */
+async function saveSpaces(transaction: Transaction, sectorId: string): Promise<void> {
+  for (const space of DEMO_SPACES) {
+    const existing = await transaction.space.findUnique({ where: { sectorId_name: { sectorId, name: space.name } }, select: { id: true } });
+    if (!existing) await transaction.space.create({ data: { ...space, sectorId } });
+  }
+}
+
 export async function loadDemoData(database: PrismaClient = prisma, now: Date = new Date()): Promise<DemoDataSummary> {
   // Argon2 is slow on purpose, so hashes for missing people are computed outside the transaction.
   const existing = new Set(
@@ -361,6 +370,7 @@ export async function loadDemoData(database: PrismaClient = prisma, now: Date = 
       const people = await savePeople(transaction, sector.id, newHashes);
       const requirementsCreated = await saveRequirements(transaction, services);
       await saveFields(transaction, services);
+      await saveSpaces(transaction, sector.id);
 
       const loaded = await transaction.request.count({ where: loadedMarker([people.ana, people.bruno, people.carla]) });
       const requestsCreated = loaded === 0 ? await saveRequests(transaction, { now, people, services, sector }) : 0;

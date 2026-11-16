@@ -69,6 +69,15 @@ export const DEMO_SERVICE_SETTINGS: Partial<
 };
 
 /** The two fictitious requesters without a sign-in button (section 25.1). */
+/**
+ * SPEC 2026-11-16-professores-e-tecnicos, P16: a classroom and a laboratory of the demonstration's sector, for the
+ * reservations and the exams. Created when missing; a change made by the administrator is kept.
+ */
+export const DEMO_SPACES = [
+  { name: "Sala 101", kind: "CLASSROOM", capacity: 40, location: "Bloco A, 1º andar", resources: "Projetor e quadro branco", confirmation: "SECTOR" },
+  { name: "Laboratório de Informática 1", kind: "LABORATORY", capacity: 25, location: "Bloco B, térreo", resources: "25 computadores", confirmation: "SECTOR" },
+] as const;
+
 export const DEMO_EXTRA_REQUESTERS = {
   bruno: { name: "Bruno Lima", email: "bruno.lima@exemplo.test" },
   carla: { name: "Carla Mendes", email: "carla.mendes@exemplo.test" },

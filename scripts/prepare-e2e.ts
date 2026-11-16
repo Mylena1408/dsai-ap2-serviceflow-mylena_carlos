@@ -65,6 +65,10 @@ async function prepareDatabase(): Promise<void> {
       database.requestAttachment.deleteMany(),
       database.emailDelivery.deleteMany(),
       database.requestNotification.deleteMany(),
+      // SPEC 2026-11-16-professores-e-tecnicos: reservations and exams before people, sectors and spaces.
+      database.spaceReservation.deleteMany(),
+      database.examRequest.deleteMany(),
+      database.space.deleteMany(),
       database.outboxEvent.deleteMany(),
       database.requestPriorityEvent.deleteMany(),
       database.requestComment.deleteMany(),

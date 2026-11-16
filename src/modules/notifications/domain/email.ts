@@ -49,6 +49,16 @@ const TYPE_CATEGORY: Record<NotificationType, NotificationCategory> = {
   "sla.paused": "STATUS",
   // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4.
   "report.ready": "REPORTS",
+  // SPEC 2026-11-16-professores-e-tecnicos, P14: in the system only; the spaces' module never writes an e-mail for
+  // them, so the category only places them in the lists.
+  "reservation.pending": "STATUS",
+  "reservation.confirmed": "STATUS",
+  "reservation.refused": "STATUS",
+  "reservation.cancelled": "STATUS",
+  "exam.pending": "STATUS",
+  "exam.allocated": "STATUS",
+  "exam.refused": "STATUS",
+  "exam.cancelled": "STATUS",
 };
 
 export const NOTIFICATION_TYPES = Object.keys(TYPE_CATEGORY) as NotificationType[];

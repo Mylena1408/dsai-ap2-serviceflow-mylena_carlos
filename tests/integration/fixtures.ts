@@ -35,6 +35,10 @@ export async function resetTestFixtures(): Promise<void> {
     prisma.requestAttachment.deleteMany(),
     prisma.emailDelivery.deleteMany(),
     prisma.requestNotification.deleteMany(),
+    // SPEC 2026-11-16-professores-e-tecnicos: reservations and exams before people, sectors and spaces.
+    prisma.spaceReservation.deleteMany(),
+    prisma.examRequest.deleteMany(),
+    prisma.space.deleteMany(),
     prisma.outboxEvent.deleteMany(),
     prisma.requestPriorityEvent.deleteMany(),
     prisma.requestComment.deleteMany(),

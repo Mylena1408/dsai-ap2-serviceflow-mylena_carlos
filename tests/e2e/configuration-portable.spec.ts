@@ -42,7 +42,8 @@ test("portable configuration: export, preview, apply and a refused file", async 
     const exported = await readFile((await download.path())!, "utf8");
     const file = JSON.parse(exported);
     // Version 4 since SF-277 (SPEC 2026-11-16-tipos-de-solicitante, decision T8); it was 3 since SF-257.
-    expect(file).toMatchObject({ format: "serviceflow-config", version: 4 });
+    // Version 5 since SPEC 2026-11-16-professores-e-tecnicos (P4).
+    expect(file).toMatchObject({ format: "serviceflow-config", version: 5 });
     expect(file.data.sectors.map((sector: { name: string }) => sector.name)).toContain("Central de Serviços");
     expect(exported).not.toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
     expect(exported).not.toContain("passwordHash");

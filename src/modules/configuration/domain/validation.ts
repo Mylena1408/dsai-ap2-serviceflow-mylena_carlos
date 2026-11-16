@@ -26,7 +26,7 @@ import { MAX_ACTIVE_SERVICE_STAGES, serviceStageInputSchema, serviceStageSetting
 import { assertApprovalLevels, parseSlaHours, serviceApprovalInputSchema, serviceInputSchema } from "@/modules/services";
 import { MAX_ACTIVE_TAGS_PER_SECTOR, tagInputSchema } from "@/modules/tags";
 import { ApplicationError, ValidationError } from "@/server/errors";
-import { announcementKey, keyOf, type AnnouncementItem, type ConfigurationData, type FieldItem, type ServiceItem } from "./format";
+import { announcementKey, keyOf, offeredToOf, type AnnouncementItem, type ConfigurationData, type FieldItem, type ServiceItem } from "./format";
 import { byKey, classify, pathOf, type PreviewMessage } from "./preview";
 
 // The import's preview checks the file with the same rules as each configuration screen (SPEC
@@ -271,7 +271,7 @@ export function validateConfiguration(file: ConfigurationData, destination: Conf
           slaHours: service.slaHours,
           requiresApproval: service.requiresApproval,
           slaBusinessHours: service.slaBusinessHours,
-          ...(service.offeredTo ? { audience: service.offeredTo } : {}),
+          ...(offeredToOf(service) ? { offeredTo: offeredToOf(service) } : {}),
         },
         path,
       );

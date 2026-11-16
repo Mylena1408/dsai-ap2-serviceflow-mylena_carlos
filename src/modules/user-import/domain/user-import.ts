@@ -204,7 +204,7 @@ export function classifyImportRows(rows: readonly ImportRow[], facts: ImportFact
       else errors.push("sector_unknown");
     }
 
-    // Decision T7: "aluno" or "público geral" for a requester; empty is a student; for another role it stays empty.
+    // Decision T7: "aluno" or "público geral" for a requester (professores e técnicos, P3: also "professor" and "técnico"); empty is a student; for another role it stays empty.
     const kind = requesterKindFromText(row.kindText);
     if (kind === undefined) errors.push("kind_invalid");
     else if (kind !== null && role !== null && role !== "REQUESTER") errors.push("kind_not_allowed");
@@ -259,7 +259,7 @@ export const IMPORT_LINE_ERROR_LABELS: Record<ImportLineError, string> = {
   sector_required: "setor obrigatório para atendente e gestor",
   sector_not_allowed: "solicitante e administrador não têm setor",
   sector_unknown: "setor não encontrado entre os ativos",
-  kind_invalid: "tipo desconhecido (use aluno ou público geral)",
+  kind_invalid: "tipo desconhecido (use aluno, professor, técnico ou público geral)",
   kind_not_allowed: "só o solicitante tem tipo",
 };
 

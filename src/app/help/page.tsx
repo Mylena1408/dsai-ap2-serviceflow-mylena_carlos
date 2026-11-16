@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
 import { SignOutButton } from "@/modules/auth";
-import { STUDENT_GUIDE_PATH, STUDENT_GUIDE_TITLE, searchHelp, type HelpRole } from "@/modules/help";
+import { STAFF_GUIDE_PATH, STAFF_GUIDE_TITLE, STUDENT_GUIDE_PATH, STUDENT_GUIDE_TITLE, searchHelp, type HelpRole } from "@/modules/help";
 import { getCurrentUser } from "@/server/auth";
 import { HelpContent } from "@/app/_components/help";
 
@@ -47,6 +47,10 @@ export default async function HelpPage({ searchParams }: HelpPageProps) {
             {/* SPEC 2026-11-16-guia-do-estudante, 2 item 7. */}
             <p>
               Estudante? Veja o <Link href={STUDENT_GUIDE_PATH}>{STUDENT_GUIDE_TITLE}</Link>, do primeiro acesso à avaliação.
+            </p>
+            {/* SPEC 2026-11-16-professores-e-tecnicos, part B item 3. */}
+            <p>
+              Professor ou técnico? Veja o <Link href={STAFF_GUIDE_PATH}>{STAFF_GUIDE_TITLE}</Link>, com reservas de espaços e provas.
             </p>
           </div>
         </header>

@@ -1,4 +1,4 @@
-import type { ServiceAudience } from "@/shared/requester-kinds";
+import type { RequesterKind } from "@/shared/requester-kinds";
 import type { ServicePriority } from "./sla-config";
 
 export interface ServiceRecord {
@@ -26,8 +26,8 @@ export interface ServiceRecord {
   approvalConditionValue?: string | null;
   /** 4.3.6: days to decide each level. */
   approvalDeadlineDays?: number | null;
-  /** SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 3. Optional so older doubles stay valid (they mean both). */
-  audience?: ServiceAudience;
+  /** SPEC 2026-11-16-professores-e-tecnicos, P1. Optional so older doubles stay valid (they mean every kind). */
+  offeredTo?: RequesterKind[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -52,8 +52,8 @@ export interface ServiceData {
   approvalConditionValue?: string | null;
   /** 4.3.6: days to decide each level. */
   approvalDeadlineDays?: number | null;
-  /** SPEC 2026-11-16-tipos-de-solicitante: omitted keeps the current value (create: both). */
-  audience?: ServiceAudience;
+  /** SPEC 2026-11-16-professores-e-tecnicos, P1: omitted keeps the current value (create: every kind). */
+  offeredTo?: RequesterKind[];
 }
 
 export interface PublishedService extends ServiceRecord {

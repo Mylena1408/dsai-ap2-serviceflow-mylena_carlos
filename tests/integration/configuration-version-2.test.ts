@@ -51,7 +51,8 @@ describe("the portable configuration's version 2 (CA-CMP-01)", () => {
   it("exports the sectors' tags and the services' checklists, without ids", async () => {
     const { content, file, sector, service, system, urgent, check } = await scenario();
     // Version 4 since SF-277 (it was 3 since SF-257); its tags and checklists are the same.
-    expect(file.version).toBe(4);
+    // Version 5 since SPEC 2026-11-16-professores-e-tecnicos (P4).
+    expect(file.version).toBe(5);
     for (const id of [system.id, urgent.id, check.id]) expect(content).not.toContain(id);
     expect(file.data.sectors.find(({ name }) => name === sector.name)?.tags).toEqual([
       { name: "Antiga", color: "gray", isActive: false },

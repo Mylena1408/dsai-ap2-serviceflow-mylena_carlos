@@ -1,5 +1,6 @@
 "use server";
 
+import { offeredToFromForm } from "../../requester-kind-fields";
 import {
   configureServiceApproval,
   createService,
@@ -59,8 +60,8 @@ function slaFields(formData: FormData) {
     ...(formData.has("slaHours") ? { slaHours: field(formData, "slaHours") } : {}),
     // SPEC 2026-11-08-atendimento-dia-a-dia, 13.2 item 1.
     ...(formData.has("estimatedHours") ? { estimatedHours: field(formData, "estimatedHours") } : {}),
-    // SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 3.
-    ...(formData.has("audience") ? { audience: field(formData, "audience") } : {}),
+    // SPEC 2026-11-16-professores-e-tecnicos, P1: the checked kinds, when the form has the list.
+    ...offeredToFromForm(formData),
     // A checkbox is absent when unchecked; the marker says the form has it (SPEC de aprovações, 5.2).
     ...(formData.has("requiresApprovalField") ? { requiresApproval: formData.get("requiresApproval") === "on" } : {}),
     // SPEC 2026-11-03-pausa-sla-calendario, 5.2: an unexpected value goes on, for the server to refuse.

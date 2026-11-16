@@ -29,3 +29,12 @@ export {
   type GuideStep,
   type GuideViewer,
 } from "./domain/student-guide";
+// The quick guide of professors and technicians (SPEC 2026-11-16-professores-e-tecnicos, part B; SF-293).
+export {
+  STAFF_GUIDE_PATH,
+  STAFF_GUIDE_STEPS,
+  STAFF_GUIDE_TITLE,
+  staffGuideNoticeFor,
+  staffGuideScreenLabels,
+  type StaffGuideStep,
+} from "./domain/staff-guide";

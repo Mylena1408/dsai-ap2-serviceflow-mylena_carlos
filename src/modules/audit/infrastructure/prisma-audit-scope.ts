@@ -54,7 +54,7 @@ async function loadState(
           defaultPriority: true,
           slaHours: true,
           requiresApproval: true,
-          audience: true,
+          offeredTo: true,
           slaBusinessHours: true,
           isActive: true,
           // SPEC 2026-11-08-atendimento-dia-a-dia, 13.2 item 1.
@@ -67,9 +67,9 @@ async function loadState(
         },
       });
       if (!row) return null;
-      // SPEC 2026-11-16-tipos-de-solicitante: the audience is recorded as "serviceAudience".
-      const { audience, ...rest } = row;
-      return { label: row.name, state: { ...rest, serviceAudience: audience } };
+      // SPEC 2026-11-16-professores-e-tecnicos, P1: the list of kinds, as "offeredTo" (records before it kept
+      // "serviceAudience").
+      return { label: row.name, state: row };
     }
     case "DOCUMENT_REQUIREMENT": {
       const row = await transaction.serviceDocumentRequirement.findUnique({
@@ -300,6 +300,26 @@ async function loadState(
           },
         }
       );
+    }
+    // SPEC 2026-11-16-professores-e-tecnicos, part C item 1: the space's kind as "spaceKind".
+    case "SPACE": {
+      const row = await transaction.space.findUnique({
+        where: { id },
+        select: {
+          name: true,
+          kind: true,
+          sectorId: true,
+          capacity: true,
+          location: true,
+          resources: true,
+          confirmation: true,
+          isActive: true,
+          sector: { select: { name: true } },
+        },
+      });
+      if (!row) return null;
+      const { kind, sector, ...rest } = row;
+      return { label: `${row.name} (${sector.name})`, state: { ...rest, spaceKind: kind } };
     }
     case "SECTOR_HOLIDAY": {
       const row = await transaction.sectorHoliday.findUnique({

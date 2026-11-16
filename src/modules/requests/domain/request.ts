@@ -1,3 +1,4 @@
+import type { RequesterKind } from "@/shared/requester-kinds";
 export type RequestStatus = "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
 export type RequestPriority = "LOW" | "NORMAL" | "HIGH" | "URGENT";
 
@@ -27,7 +28,7 @@ export interface RequestRecord {
   /** SPEC 2026-11-01-fluxos-configuraveis: flow copy taken at the start and current stage. */
   stageNamesSnapshot: string[];
   /** SPEC 2026-11-16-tipos-de-solicitante, rule 4: the kind of who opened it. Optional for older doubles. */
-  requesterKindSnapshot?: "STUDENT" | "PUBLIC";
+  requesterKindSnapshot?: RequesterKind;
   stageIndex: number | null;
   /** SPEC 2026-11-01-aprovacoes: null when the service did not require approval. */
   approvalState: "PENDING" | "APPROVED" | "REJECTED" | null;

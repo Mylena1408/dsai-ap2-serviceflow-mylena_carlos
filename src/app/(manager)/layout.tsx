@@ -42,6 +42,8 @@ export default function ManagerLayout({
           <Link href="/approvals/checklists">Checklists</Link>
           {/* SPEC 2026-11-09-comunicacao-e-calendarios, 6.3 item 1 (decision K9). */}
           <Link href="/approvals/calendar">Calendário</Link>
+          {/* SPEC 2026-11-16-professores-e-tecnicos, part D item 3. */}
+          <Link href="/approvals/reservations">Reservas</Link>
           <NotificationsLink href="/approvals/notifications" />
           {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 4: only with announcements. */}
           <AnnouncementsLink />

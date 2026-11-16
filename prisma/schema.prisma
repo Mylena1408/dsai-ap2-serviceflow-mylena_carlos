@@ -15,17 +15,53 @@ enum Role {
 }
 
 /// SPEC 2026-11-16-tipos-de-solicitante, 1 and 5: a requester is a student (internal, as the requesters before) or
-/// the general public (external, only as to the services offered).
+/// the general public (external, only as to the services offered). SPEC 2026-11-16-professores-e-tecnicos (P2): also
+/// a professor or an administrative technician.
 enum RequesterKind {
   STUDENT
+  PROFESSOR
+  TECHNICIAN
   PUBLIC
 }
 
-/// SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 3: who a service is offered to.
-enum ServiceAudience {
-  STUDENTS
-  PUBLIC
-  BOTH
+/// SPEC 2026-11-16-professores-e-tecnicos, P5: the kinds of space.
+enum SpaceKind {
+  CLASSROOM
+  LABORATORY
+  AUDITORIUM
+  OTHER
+}
+
+/// P5: a reservation of the space is confirmed at once or by the sector's team.
+enum SpaceConfirmation {
+  AUTOMATIC
+  SECTOR
+}
+
+/// P7 and P13 (EXAM only through an exam allocation).
+enum ReservationPurpose {
+  CLASS
+  LAB_USE
+  MEETING
+  EVENT
+  EXAM
+  OTHER
+}
+
+/// P10.
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  REFUSED
+  CANCELLED
+}
+
+/// P13.
+enum ExamRequestStatus {
+  PENDING
+  ALLOCATED
+  REFUSED
+  CANCELLED
 }
 
 enum ApprovalState {
@@ -121,6 +157,8 @@ enum AuditEntityType {
   /// SPEC 2026-11-09-comunicacao-e-calendarios, 6.3 item 1.
   SECTOR_CALENDAR
   SECTOR_HOLIDAY
+  /// SPEC 2026-11-16-professores-e-tecnicos, part C item 1.
+  SPACE
 }
 
 /// SPEC 2026-11-02-api-externa-webhooks, 5.2 (decision A2).
@@ -220,6 +258,9 @@ model Sector {
   /// 6.3 item 3: requests whose deadline was counted with this sector's calendar.
   slaCalendarRequests Request[]              @relation("RequestSlaCalendarSector")
   lastDistributedTo   User?                  @relation("SectorLastDistributedTo", fields: [lastDistributedToId], references: [id], onDelete: SetNull)
+  /// SPEC 2026-11-16-professores-e-tecnicos, parts C and E.
+  spaces              Space[]
+  examRequests        ExamRequest[]
 }
 
 model Category {
@@ -248,96 +289,103 @@ model User {
   /// gives STUDENT to a requester saved without one and clears it when the role changes.
   requesterKind RequesterKind?
 
-  sector                   Sector?                    @relation(fields: [sectorId], references: [id], onDelete: Restrict)
-  requests                 Request[]                  @relation("UserRequests")
-  requestStatusEvents      RequestStatusEvent[]       @relation("RequestStatusEventActor")
-  uploadedAttachments      RequestAttachment[]        @relation("RequestAttachmentUploader")
-  assignedRequests         Request[]                  @relation("RequestAssignee")
-  assignmentEventsActed    RequestAssignmentEvent[]   @relation("RequestAssignmentEventActor")
-  assignmentEventsFrom     RequestAssignmentEvent[]   @relation("RequestAssignmentEventFrom")
-  assignmentEventsTo       RequestAssignmentEvent[]   @relation("RequestAssignmentEventTo")
-  comments                 RequestComment[]           @relation("RequestCommentAuthor")
-  notifications            RequestNotification[]      @relation("NotificationRecipient")
-  priorityEvents           RequestPriorityEvent[]     @relation("RequestPriorityEventActor")
-  stageEvents              RequestStageEvent[]        @relation("RequestStageEventActor")
-  sectorEvents             RequestSectorEvent[]       @relation("RequestSectorEventActor")
-  commentFiles             RequestCommentFile[]       @relation("RequestCommentFileUploader")
-  approvalsDecided         RequestApproval[]          @relation("RequestApprovalDecider")
-  permissions              UserPermission[]           @relation("UserPermissionHolder")
-  permissionsGranted       UserPermission[]           @relation("UserPermissionGrantor")
-  permissionEvents         UserPermissionEvent[]      @relation("UserPermissionEventUser")
-  permissionEventsActed    UserPermissionEvent[]      @relation("UserPermissionEventActor")
-  notificationPrefs        NotificationPreference[]
-  emailDeliveries          EmailDelivery[]
-  apiTokens                ApiToken[]                 @relation("ApiTokenOwner")
-  apiTokensRevoked         ApiToken[]                 @relation("ApiTokenRevoker")
-  slaPauses                RequestSlaPause[]          @relation("RequestSlaPauseActor")
-  slaResumes               RequestSlaPause[]          @relation("RequestSlaResumeActor")
-  holidaysCreated          BusinessHoliday[]          @relation("BusinessHolidayCreator")
-  sectorCalendarsUpdated   SectorCalendar[]           @relation("SectorCalendarUpdater")
-  sectorHolidaysCreated    SectorHoliday[]            @relation("SectorHolidayCreator")
-  calendarUpdates          BusinessCalendar[]         @relation("BusinessCalendarUpdater")
-  fieldValuesUpdated       RequestFieldValue[]        @relation("RequestFieldValueUpdater")
-  fieldUpdateEvents        RequestFieldUpdateEvent[]  @relation("RequestFieldUpdateEventActor")
-  satisfactionRatings      RequestSatisfaction[]      @relation("RequestSatisfactionRequester")
-  satisfactionEvents       RequestSatisfactionEvent[] @relation("RequestSatisfactionEventActor")
-  cannedResponsesCreated   CannedResponse[]           @relation("CannedResponseCreator")
-  cannedResponsesUpdated   CannedResponse[]           @relation("CannedResponseUpdater")
-  knowledgeCreated         KnowledgeArticle[]         @relation("KnowledgeArticleCreator")
-  knowledgeUpdated         KnowledgeArticle[]         @relation("KnowledgeArticleUpdater")
+  sector                     Sector?                    @relation(fields: [sectorId], references: [id], onDelete: Restrict)
+  requests                   Request[]                  @relation("UserRequests")
+  requestStatusEvents        RequestStatusEvent[]       @relation("RequestStatusEventActor")
+  uploadedAttachments        RequestAttachment[]        @relation("RequestAttachmentUploader")
+  assignedRequests           Request[]                  @relation("RequestAssignee")
+  assignmentEventsActed      RequestAssignmentEvent[]   @relation("RequestAssignmentEventActor")
+  assignmentEventsFrom       RequestAssignmentEvent[]   @relation("RequestAssignmentEventFrom")
+  assignmentEventsTo         RequestAssignmentEvent[]   @relation("RequestAssignmentEventTo")
+  comments                   RequestComment[]           @relation("RequestCommentAuthor")
+  notifications              RequestNotification[]      @relation("NotificationRecipient")
+  priorityEvents             RequestPriorityEvent[]     @relation("RequestPriorityEventActor")
+  stageEvents                RequestStageEvent[]        @relation("RequestStageEventActor")
+  sectorEvents               RequestSectorEvent[]       @relation("RequestSectorEventActor")
+  commentFiles               RequestCommentFile[]       @relation("RequestCommentFileUploader")
+  approvalsDecided           RequestApproval[]          @relation("RequestApprovalDecider")
+  permissions                UserPermission[]           @relation("UserPermissionHolder")
+  permissionsGranted         UserPermission[]           @relation("UserPermissionGrantor")
+  permissionEvents           UserPermissionEvent[]      @relation("UserPermissionEventUser")
+  permissionEventsActed      UserPermissionEvent[]      @relation("UserPermissionEventActor")
+  notificationPrefs          NotificationPreference[]
+  emailDeliveries            EmailDelivery[]
+  apiTokens                  ApiToken[]                 @relation("ApiTokenOwner")
+  apiTokensRevoked           ApiToken[]                 @relation("ApiTokenRevoker")
+  slaPauses                  RequestSlaPause[]          @relation("RequestSlaPauseActor")
+  slaResumes                 RequestSlaPause[]          @relation("RequestSlaResumeActor")
+  holidaysCreated            BusinessHoliday[]          @relation("BusinessHolidayCreator")
+  sectorCalendarsUpdated     SectorCalendar[]           @relation("SectorCalendarUpdater")
+  sectorHolidaysCreated      SectorHoliday[]            @relation("SectorHolidayCreator")
+  calendarUpdates            BusinessCalendar[]         @relation("BusinessCalendarUpdater")
+  fieldValuesUpdated         RequestFieldValue[]        @relation("RequestFieldValueUpdater")
+  fieldUpdateEvents          RequestFieldUpdateEvent[]  @relation("RequestFieldUpdateEventActor")
+  satisfactionRatings        RequestSatisfaction[]      @relation("RequestSatisfactionRequester")
+  satisfactionEvents         RequestSatisfactionEvent[] @relation("RequestSatisfactionEventActor")
+  cannedResponsesCreated     CannedResponse[]           @relation("CannedResponseCreator")
+  cannedResponsesUpdated     CannedResponse[]           @relation("CannedResponseUpdater")
+  knowledgeCreated           KnowledgeArticle[]         @relation("KnowledgeArticleCreator")
+  knowledgeUpdated           KnowledgeArticle[]         @relation("KnowledgeArticleUpdater")
   /// SPEC 2026-11-06-aprofundamento-configurabilidade, 4.3.5.
-  absences                 ManagerAbsence[]           @relation("ManagerAbsenceManager")
-  substitutions            ManagerAbsence[]           @relation("ManagerAbsenceSubstitute")
-  absencesCreated          ManagerAbsence[]           @relation("ManagerAbsenceCreator")
-  approvalsOnBehalf        RequestApproval[]          @relation("RequestApprovalOnBehalfOf")
+  absences                   ManagerAbsence[]           @relation("ManagerAbsenceManager")
+  substitutions              ManagerAbsence[]           @relation("ManagerAbsenceSubstitute")
+  absencesCreated            ManagerAbsence[]           @relation("ManagerAbsenceCreator")
+  approvalsOnBehalf          RequestApproval[]          @relation("RequestApprovalOnBehalfOf")
   /// SPEC 2026-11-06-aprofundamento-configurabilidade, 5.3.1.
-  stagesAssigned           ServiceStage[]             @relation("ServiceStageAssignee")
+  stagesAssigned             ServiceStage[]             @relation("ServiceStageAssignee")
   /// SPEC 2026-11-06-aprofundamento-configurabilidade, 6.3.
-  accessRoles              UserAccessRole[]           @relation("UserAccessRoleHolder")
-  accessRolesAssigned      UserAccessRole[]           @relation("UserAccessRoleAssigner")
-  accessRoleEvents         UserAccessRoleEvent[]      @relation("UserAccessRoleEventUser")
-  accessRoleEventsActed    UserAccessRoleEvent[]      @relation("UserAccessRoleEventActor")
+  accessRoles                UserAccessRole[]           @relation("UserAccessRoleHolder")
+  accessRolesAssigned        UserAccessRole[]           @relation("UserAccessRoleAssigner")
+  accessRoleEvents           UserAccessRoleEvent[]      @relation("UserAccessRoleEventUser")
+  accessRoleEventsActed      UserAccessRoleEvent[]      @relation("UserAccessRoleEventActor")
   /// SPEC 2026-11-06-aprofundamento-configurabilidade, 7.
-  escalationRulesAssigned  SectorEscalationRule[]     @relation("SectorEscalationRuleAssignee")
-  escalationsAssigned      RequestEscalation[]        @relation("RequestEscalationAssignee")
+  escalationRulesAssigned    SectorEscalationRule[]     @relation("SectorEscalationRuleAssignee")
+  escalationsAssigned        RequestEscalation[]        @relation("RequestEscalationAssignee")
   /// SPEC 2026-11-07-operacao-e-automacao, 3.3 item 1.
-  requestLinksCreated      RequestLink[]              @relation("RequestLinkCreator")
-  requestLinkEvents        RequestLinkEvent[]         @relation("RequestLinkEventActor")
+  requestLinksCreated        RequestLink[]              @relation("RequestLinkCreator")
+  requestLinkEvents          RequestLinkEvent[]         @relation("RequestLinkEventActor")
   /// SPEC 2026-11-07-operacao-e-automacao, 3.3 item 3.
-  requestGroups            RequestGroup[]
+  requestGroups              RequestGroup[]
   /// SPEC 2026-11-07-operacao-e-automacao, 4.
-  sectorsLastDistributed   Sector[]                   @relation("SectorLastDistributedTo")
-  attendantAbsences        AttendantAbsence[]         @relation("AttendantAbsenceUser")
-  attendantAbsencesCreated AttendantAbsence[]         @relation("AttendantAbsenceCreator")
+  sectorsLastDistributed     Sector[]                   @relation("SectorLastDistributedTo")
+  attendantAbsences          AttendantAbsence[]         @relation("AttendantAbsenceUser")
+  attendantAbsencesCreated   AttendantAbsence[]         @relation("AttendantAbsenceCreator")
   /// SPEC 2026-11-07-operacao-e-automacao, 5.
-  recurringRequestsFor     RecurringRequest[]         @relation("RecurringRequestRequester")
-  recurringRequestsCreated RecurringRequest[]         @relation("RecurringRequestCreator")
+  recurringRequestsFor       RecurringRequest[]         @relation("RecurringRequestRequester")
+  recurringRequestsCreated   RecurringRequest[]         @relation("RecurringRequestCreator")
   /// SPEC 2026-11-07-operacao-e-automacao, 7.4.
-  savedViews               SavedView[]
+  savedViews                 SavedView[]
   /// SPEC 2026-11-08-atendimento-dia-a-dia, 3.4.
-  tagsAdded                RequestTag[]
-  tagEvents                RequestTagEvent[]
+  tagsAdded                  RequestTag[]
+  tagEvents                  RequestTagEvent[]
   /// SPEC 2026-11-08-atendimento-dia-a-dia, 4.4.
-  checklistItemsDone       RequestChecklistItem[]
-  checklistEvents          RequestChecklistEvent[]
+  checklistItemsDone         RequestChecklistItem[]
+  checklistEvents            RequestChecklistEvent[]
   /// SPEC 2026-11-08-atendimento-dia-a-dia, 5.4.
-  timeEntries              RequestTimeEntry[]
-  timeEntryEvents          RequestTimeEntryEvent[]
+  timeEntries                RequestTimeEntry[]
+  timeEntryEvents            RequestTimeEntryEvent[]
   /// SPEC 2026-11-08-atendimento-dia-a-dia, 6.4 and 13.3.
-  following                RequestFollower[]          @relation("RequestFollowerUser")
-  followersAdded           RequestFollower[]          @relation("RequestFollowerAddedBy")
-  followerEvents           RequestFollowerEvent[]     @relation("RequestFollowerEventUser")
-  followerEventsActed      RequestFollowerEvent[]     @relation("RequestFollowerEventActor")
-  followPreference         FollowPreference?
+  following                  RequestFollower[]          @relation("RequestFollowerUser")
+  followersAdded             RequestFollower[]          @relation("RequestFollowerAddedBy")
+  followerEvents             RequestFollowerEvent[]     @relation("RequestFollowerEventUser")
+  followerEventsActed        RequestFollowerEvent[]     @relation("RequestFollowerEventActor")
+  followPreference           FollowPreference?
   /// SPEC 2026-11-08-atendimento-dia-a-dia, 7.4.
-  mentions                 CommentMention[]
+  mentions                   CommentMention[]
   /// SPEC 2026-11-09-comunicacao-e-calendarios, 3.3.
-  announcementsCreated     Announcement[]             @relation("AnnouncementCreatedBy")
-  announcementDismissals   AnnouncementDismissal[]
+  announcementsCreated       Announcement[]             @relation("AnnouncementCreatedBy")
+  announcementDismissals     AnnouncementDismissal[]
   /// 4.1 item 4.
-  userImports              UserImport[]               @relation("UserImportActor")
+  userImports                UserImport[]               @relation("UserImportActor")
   /// 5.3 item 3.
-  periodicReportSettings   PeriodicReportSetting[]    @relation("PeriodicReportSettingUpdater")
+  periodicReportSettings     PeriodicReportSetting[]    @relation("PeriodicReportSettingUpdater")
+  /// SPEC 2026-11-16-professores-e-tecnicos, parts D and E.
+  spaceReservations          SpaceReservation[]         @relation("SpaceReservationRequester")
+  spaceReservationsDecided   SpaceReservation[]         @relation("SpaceReservationDecider")
+  spaceReservationsCancelled SpaceReservation[]         @relation("SpaceReservationCanceller")
+  examRequests               ExamRequest[]              @relation("ExamRequestProfessor")
+  examRequestsDecided        ExamRequest[]              @relation("ExamRequestDecider")
+  examRequestsCancelled      ExamRequest[]              @relation("ExamRequestCanceller")
 }
 
 model Service {
@@ -364,8 +412,9 @@ model Service {
   approvalConditionValue   String?
   /// 4.3.6: days to decide each level (1 to 30), or null without a deadline.
   approvalDeadlineDays     Int?
-  /// SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 3 (decision T5): BOTH for the services before the change.
-  audience                 ServiceAudience @default(BOTH)
+  /// SPEC 2026-11-16-professores-e-tecnicos, P1: the kinds the service is offered to, at least one; the services
+  /// "for both" before the change are offered to every kind.
+  offeredTo                RequesterKind[] @default([STUDENT, PROFESSOR, TECHNICIAN, PUBLIC])
 
   category               Category                     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   sector                 Sector                       @relation(fields: [sectorId], references: [id], onDelete: Restrict)
@@ -658,27 +707,34 @@ model OutboxEvent {
   @@index([processedAt, failedAt, availableAt])
 }
 
-/// A notice points to a request or, since SF-250, to a periodic report: exactly one of the two (CHECK in the migration).
+/// A notice points to a request or, since SF-250, to a periodic report, or, since SPEC 2026-11-16-professores-e-tecnicos
+/// (P14), to a space reservation or an exam request: exactly one of them (CHECK in the migration).
 model RequestNotification {
-  id          String    @id @default(uuid()) @db.Uuid
-  recipientId String    @db.Uuid
-  requestId   String?   @db.Uuid
-  reportId    String?   @db.Uuid
-  eventId     String?   @db.Uuid
-  type        String
-  createdAt   DateTime  @db.Timestamptz
-  readAt      DateTime? @db.Timestamptz
+  id            String    @id @default(uuid()) @db.Uuid
+  recipientId   String    @db.Uuid
+  requestId     String?   @db.Uuid
+  reportId      String?   @db.Uuid
+  reservationId String?   @db.Uuid
+  examRequestId String?   @db.Uuid
+  eventId       String?   @db.Uuid
+  type          String
+  createdAt     DateTime  @db.Timestamptz
+  readAt        DateTime? @db.Timestamptz
 
-  recipient User            @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Restrict)
-  request   Request?        @relation(fields: [requestId], references: [id], onDelete: Restrict)
-  report    PeriodicReport? @relation(fields: [reportId], references: [id], onDelete: Restrict)
-  event     OutboxEvent?    @relation(fields: [eventId], references: [id], onDelete: SetNull)
-  email     EmailDelivery?
+  recipient   User              @relation("NotificationRecipient", fields: [recipientId], references: [id], onDelete: Restrict)
+  request     Request?          @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  report      PeriodicReport?   @relation(fields: [reportId], references: [id], onDelete: Restrict)
+  reservation SpaceReservation? @relation(fields: [reservationId], references: [id], onDelete: Restrict)
+  examRequest ExamRequest?      @relation(fields: [examRequestId], references: [id], onDelete: Restrict)
+  event       OutboxEvent?      @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  email       EmailDelivery?
 
   @@unique([eventId, recipientId])
   /// One notice per report and person (SF-250).
   @@unique([reportId, recipientId])
   @@index([recipientId, readAt, createdAt])
+  @@index([reservationId])
+  @@index([examRequestId])
 }
 
 /// Email choice per user and category (SPEC 2026-11-01-notificacoes-email-preferencias, 5.1).
@@ -1863,4 +1919,96 @@ model SectorHoliday {
   createdBy User   @relation("SectorHolidayCreator", fields: [createdById], references: [id], onDelete: Restrict)
 
   @@unique([sectorId, day])
+}
+
+/// SPEC 2026-11-16-professores-e-tecnicos, part C (P5 and P6): a classroom, laboratory, auditorium or other space of a
+/// sector. The name is unique in the sector; deactivating keeps the history (rule 6.2.2).
+model Space {
+  id           String            @id @default(uuid()) @db.Uuid
+  name         String
+  kind         SpaceKind
+  sectorId     String            @db.Uuid
+  /// Rule 6.2.1: 1 to 1,000 people (CHECK in the migration).
+  capacity     Int
+  location     String            @default("")
+  resources    String            @default("")
+  confirmation SpaceConfirmation @default(SECTOR)
+  isActive     Boolean           @default(true)
+  createdAt    DateTime          @default(now()) @db.Timestamptz
+  updatedAt    DateTime          @updatedAt @db.Timestamptz
+
+  sector       Sector             @relation(fields: [sectorId], references: [id], onDelete: Restrict)
+  reservations SpaceReservation[]
+
+  @@unique([sectorId, name])
+  @@index([isActive, kind])
+}
+
+/// Part D (P7 to P11): a use of a space from `startsAt` to `endsAt`. Two pending or confirmed reservations of the same
+/// space never overlap: an exclusion constraint in the migration (P11). A weekly series shares `seriesId` (P8); an
+/// exam's allocation has `examRequestId` (P13).
+model SpaceReservation {
+  id            String             @id @default(uuid()) @db.Uuid
+  spaceId       String             @db.Uuid
+  requesterId   String             @db.Uuid
+  purpose       ReservationPurpose
+  description   String
+  attendees     Int
+  startsAt      DateTime           @db.Timestamptz
+  endsAt        DateTime           @db.Timestamptz
+  status        ReservationStatus  @default(PENDING)
+  seriesId      String?            @db.Uuid
+  examRequestId String?            @db.Uuid
+  decidedById   String?            @db.Uuid
+  decidedAt     DateTime?          @db.Timestamptz
+  decisionNote  String?
+  cancelledById String?            @db.Uuid
+  cancelledAt   DateTime?          @db.Timestamptz
+  cancelNote    String?
+  createdAt     DateTime           @default(now()) @db.Timestamptz
+
+  space         Space                 @relation(fields: [spaceId], references: [id], onDelete: Restrict)
+  requester     User                  @relation("SpaceReservationRequester", fields: [requesterId], references: [id], onDelete: Restrict)
+  decidedBy     User?                 @relation("SpaceReservationDecider", fields: [decidedById], references: [id], onDelete: Restrict)
+  cancelledBy   User?                 @relation("SpaceReservationCanceller", fields: [cancelledById], references: [id], onDelete: Restrict)
+  examRequest   ExamRequest?          @relation(fields: [examRequestId], references: [id], onDelete: Restrict)
+  notifications RequestNotification[]
+
+  @@index([spaceId, startsAt])
+  @@index([requesterId, startsAt])
+  @@index([status, startsAt])
+  @@index([seriesId])
+  @@index([examRequestId])
+}
+
+/// Part E (P13): a professor asks a sector to allocate one or more spaces for an exam.
+model ExamRequest {
+  id            String            @id @default(uuid()) @db.Uuid
+  professorId   String            @db.Uuid
+  sectorId      String            @db.Uuid
+  course        String
+  classGroup    String
+  startsAt      DateTime          @db.Timestamptz
+  endsAt        DateTime          @db.Timestamptz
+  students      Int
+  spaceKind     SpaceKind
+  notes         String            @default("")
+  status        ExamRequestStatus @default(PENDING)
+  decidedById   String?           @db.Uuid
+  decidedAt     DateTime?         @db.Timestamptz
+  refusalNote   String?
+  cancelledById String?           @db.Uuid
+  cancelledAt   DateTime?         @db.Timestamptz
+  cancelNote    String?
+  createdAt     DateTime          @default(now()) @db.Timestamptz
+
+  professor     User                  @relation("ExamRequestProfessor", fields: [professorId], references: [id], onDelete: Restrict)
+  sector        Sector                @relation(fields: [sectorId], references: [id], onDelete: Restrict)
+  decidedBy     User?                 @relation("ExamRequestDecider", fields: [decidedById], references: [id], onDelete: Restrict)
+  cancelledBy   User?                 @relation("ExamRequestCanceller", fields: [cancelledById], references: [id], onDelete: Restrict)
+  reservations  SpaceReservation[]
+  notifications RequestNotification[]
+
+  @@index([sectorId, status, startsAt])
+  @@index([professorId, startsAt])
 }

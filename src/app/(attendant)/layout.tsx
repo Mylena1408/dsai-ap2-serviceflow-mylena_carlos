@@ -27,6 +27,8 @@ export default function AttendantLayout({
           <Link href="/queue/responses">Respostas prontas</Link>
           {/* SPEC 2026-11-07-operacao-e-automacao, 4.3 item 7. */}
           <Link href="/queue/absences">Minhas ausências</Link>
+          {/* SPEC 2026-11-16-professores-e-tecnicos, part D item 3. */}
+          <Link href="/queue/reservations">Reservas</Link>
           <NotificationsLink href="/queue/notifications" />
           {/* SPEC 2026-11-09-comunicacao-e-calendarios, 3.1 item 4: only with announcements. */}
           <AnnouncementsLink />

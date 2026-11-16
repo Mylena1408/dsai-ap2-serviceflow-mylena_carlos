@@ -1,5 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
-import type { RequesterKind, ServiceAudience } from "@/shared/requester-kinds";
+import type { RequesterKind } from "@/shared/requester-kinds";
 import type { MapService } from "../domain/service-map";
 
 // SPEC 2026-11-15-mapa-de-servicos, rule 1 (SF-273): only what the requester can ask for. Services active with an
@@ -13,11 +13,11 @@ export async function readRequesterKind(database: PrismaClient, userId: string):
   return user?.requesterKind ?? null;
 }
 
-export async function readPublishedMapServices(database: PrismaClient, audiences?: readonly ServiceAudience[]): Promise<MapService[]> {
+export async function readPublishedMapServices(database: PrismaClient, kind?: RequesterKind): Promise<MapService[]> {
   const [services, sectors] = await Promise.all([
     database.service.findMany({
       // SPEC 2026-11-16-tipos-de-solicitante, rule 2: only the services offered to the reader's kind.
-      where: { isActive: true, category: { isActive: true }, sector: { isActive: true }, ...(audiences ? { audience: { in: [...audiences] } } : {}) },
+      where: { isActive: true, category: { isActive: true }, sector: { isActive: true }, ...(kind ? { offeredTo: { has: kind } } : {}) },
       select: {
         id: true,
         name: true,

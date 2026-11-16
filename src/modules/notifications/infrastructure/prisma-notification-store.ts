@@ -19,9 +19,14 @@ const dayOf = (date: Date) => date.toISOString().slice(0, 10);
 export function noticeSubject(row: {
   request: { serviceNameSnapshot: string } | null;
   report: { kind: "WEEKLY" | "MONTHLY"; periodStart: Date; periodEnd: Date } | null;
+  /** SPEC 2026-11-16-professores-e-tecnicos, P14: the reservation's space, or the exam's course and class. */
+  reservation?: { space: { name: string } } | null;
+  examRequest?: { course: string; classGroup: string } | null;
 }): string {
   if (row.request) return row.request.serviceNameSnapshot;
   if (row.report) return periodicReportLabel(row.report.kind, { firstDay: dayOf(row.report.periodStart), lastDay: dayOf(row.report.periodEnd) });
+  if (row.reservation) return row.reservation.space.name;
+  if (row.examRequest) return `${row.examRequest.course} — ${row.examRequest.classGroup}`;
   return "";
 }
 
@@ -204,6 +209,8 @@ export function createPrismaNotificationStore(database: PrismaClient): Notificat
           readAt: true,
           request: { select: { serviceNameSnapshot: true } },
           report: REPORT_OF_NOTICE,
+          reservation: { select: { space: { select: { name: true } } } },
+          examRequest: { select: { course: true, classGroup: true } },
           event: { select: { payload: true } },
         },
       });
@@ -233,7 +240,7 @@ export function createPrismaNotificationStore(database: PrismaClient): Notificat
     async markRead(notificationId, recipientId) {
       const notification = await database.requestNotification.findFirst({
         where: { id: notificationId, recipientId },
-        select: { requestId: true, reportId: true, readAt: true },
+        select: { requestId: true, reportId: true, reservationId: true, examRequestId: true, readAt: true },
       });
 
       if (!notification) return null;
@@ -241,6 +248,8 @@ export function createPrismaNotificationStore(database: PrismaClient): Notificat
         await database.requestNotification.update({ where: { id: notificationId }, data: { readAt: new Date() } });
       }
       if (notification.requestId) return { kind: "request", id: notification.requestId };
+      if (notification.reservationId) return { kind: "reservation", id: notification.reservationId };
+      if (notification.examRequestId) return { kind: "exam", id: notification.examRequestId };
       return notification.reportId ? { kind: "report", id: notification.reportId } : null;
     },
     async purgeRead(before) {

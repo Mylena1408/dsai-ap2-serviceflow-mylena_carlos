@@ -3403,3 +3403,13 @@ Padrão a replicar nas SF-039 e SF-040:
 - **Teste da API em arquivo próprio:** no arquivo que simula a sessão, a API respondia 500, porque a simulação do módulo de autenticação tira dele o que a API usa para ler o token. O teste da API ficou sem simulação de sessão, como os outros da API.
 - **Medição:** `next start` contra o `serviceflow_perf` (migrations locais de 47 para 63; permissão concedida ao gestor só nesse banco). O primeiro login falhou por `UntrustedHost` do Auth.js em `next start` local; resolvido com `AUTH_TRUST_HOST=true` só no processo da medição. Resultado: 105 a 253 ms em todas as páginas, inclusive as últimas.
 - **Resultados:** unitários 2.081/2.081; lint e typecheck OK; integração nova 4/4 e as 6 suítes do gestor (35); E2E do gestor e das aprovações 4/4.
+
+## SF-285 a SF-294 — Área de professores e técnicos (2026-11-16)
+
+- **Pedido:** "faça todas as etapas e depois termine com o push", depois da revisão das decisões P1 a P17 (P17: sem segurança nova, por ser didático).
+- **Tipos e lista:** o público do serviço virou a lista "Oferecido a" (enum de tipos em coluna de lista, com CHECK); a conversão da migration foi provada no próprio banco contra a regra antiga.
+- **Reservas:** a regra "sem dois usos ao mesmo tempo" fica numa restrição de exclusão por intervalo (`btree_gist`), e o teste dispara quatro reservas iguais ao mesmo tempo: uma passa. A série semanal é tudo ou nada.
+- **Provas:** a sugestão procura combinações (menos salas, depois menor sobra) e para depois de 200 mil combinações; a escolha final é da equipe.
+- **Memória do typecheck:** o projeto passou de 2 GB no `tsc`; o build verifica só a aplicação (`tsconfig.build.json`) e o `npm run typecheck` usa 4 GB (seção 11 item 6 da SPEC). Falha minha registrada: filtros de saída do `tsc` podiam esconder o estouro.
+- **Heredoc com barra invertida:** escorreguei de novo num teste do CSV (o `\n` virou quebra de linha); pego pelo `cat -A`, corrigido com Edit; memória atualizada.
+- **Resultados:** unitários 2.116; integração 841; lint, typecheck e build OK; E2E completo 85/85 (com o novo professors-technicians.spec.ts e as páginas novas na verificação de largura e na varredura axe).

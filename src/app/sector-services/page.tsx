@@ -11,12 +11,14 @@ import { listServices } from "@/modules/services";
 import { requireCatalogEditor } from "@/server/authorization";
 import { listArticlesForEditor } from "@/modules/knowledge";
 import { KnowledgeEditor } from "@/app/_components/knowledge-editor";
+import { SpacesPanel } from "@/app/_components/spaces-panel";
+import { listSpacesForEditor } from "@/modules/spaces";
 import { AuthenticationError, AuthorizationError } from "@/server/errors";
 import { ServicesSection } from "@/app/(admin)/admin/_sections/services/services-section";
 import { announcement } from "@/app/(admin)/admin/_shared/announcement";
 
 type SectorServicesPageProps = {
-  searchParams: Promise<{ error?: string; entity?: string; notice?: string; knowledge?: string }>;
+  searchParams: Promise<{ error?: string; entity?: string; notice?: string; knowledge?: string; spaceError?: string; spaceNotice?: string }>;
 };
 
 // Services of the own sector for holders of "Gerir serviços do setor" (SPEC
@@ -35,7 +37,7 @@ export default async function SectorServicesPage({ searchParams }: SectorService
     throw error;
   }
 
-  const [{ error, entity, notice, knowledge }, services, categories, sectors, documentRequirements, serviceFields, serviceStages, knowledgeServices, approvalSectors, stageAssignees] =
+  const [{ error, entity, notice, knowledge, spaceError, spaceNotice }, services, categories, sectors, documentRequirements, serviceFields, serviceStages, knowledgeServices, approvalSectors, stageAssignees, spaceEditor] =
     await Promise.all([
       searchParams,
       listServices(),
@@ -50,6 +52,8 @@ export default async function SectorServicesPage({ searchParams }: SectorService
       listApprovalSectorChoices(),
       // SPEC 2026-11-06-aprofundamento-configurabilidade, 5.3.1.
       listStageAssigneeChoices(),
+      // SPEC 2026-11-16-professores-e-tecnicos, P6: the spaces of the holder's sector.
+      listSpacesForEditor(),
     ]);
   const message = announcement(error, notice, entity);
 
@@ -75,7 +79,7 @@ export default async function SectorServicesPage({ searchParams }: SectorService
           <div className="page-intro">
             <p className="eyebrow">Permissão adicional</p>
             <h1>Serviços do setor</h1>
-            <p>Configure os serviços do seu setor: dados, prazo, aprovação, documentos, campos e etapas.</p>
+            <p>Configure os serviços do seu setor: dados, prazo, aprovação, documentos, campos e etapas; e os espaços que o setor reserva.</p>
           </div>
         </header>
         {message ? (
@@ -96,6 +100,7 @@ export default async function SectorServicesPage({ searchParams }: SectorService
             services={services}
           />
           <KnowledgeEditor services={knowledgeServices} returnTo="/sector-services" notice={knowledge} />
+          <SpacesPanel area="sector" error={spaceError} notice={spaceNotice} view={spaceEditor} />
         </div>
       </main>
     </>

@@ -1,4 +1,10 @@
-import { SERVICE_AUDIENCES } from "@/shared/requester-kinds";
+import {
+  LEGACY_SERVICE_AUDIENCES,
+  REQUESTER_KINDS,
+  normalizeOfferedTo,
+  offeredToFromLegacy,
+  type RequesterKind,
+} from "@/shared/requester-kinds";
 import { z } from "zod";
 
 // The portable configuration file (SPEC 2026-11-07-operacao-e-automacao, 6.3 items 2 and 3; decisions H13
@@ -19,10 +25,12 @@ import { z } from "zod";
 export const CONFIGURATION_FORMAT = "serviceflow-config";
 // Version 4 (SPEC 2026-11-16-tipos-de-solicitante, decision T8) adds each service's audience. A version 1 to 3 file
 // has none: the destination's services keep theirs and a new one is for both (as the services before the change).
+// Version 5 (SPEC 2026-11-16-professores-e-tecnicos, P4) writes it as the list of kinds; a version 4 value is
+// converted as the migration did (P1).
 /** The version the export writes. */
-export const CONFIGURATION_VERSION = 4;
+export const CONFIGURATION_VERSION = 5;
 /** The versions the import accepts. */
-export const CONFIGURATION_VERSIONS = [1, 2, 3, 4] as const;
+export const CONFIGURATION_VERSIONS = [1, 2, 3, 4, 5] as const;
 export const MAX_CONFIGURATION_BYTES = 2 * 1024 * 1024;
 
 // Generous bounds that only stop abuse; the screens' limits are checked by the preview. Lists also hold the
@@ -154,8 +162,11 @@ const serviceSchema = z
     articles: list(articleSchema, 500),
     /** Version 2 and later. */
     checklist: list(checklistItemSchema, 500).optional(),
-    /** Version 4 and later: who the service is offered to ("audience" already names who fills a field). */
-    offeredTo: z.enum(SERVICE_AUDIENCES).optional(),
+    /**
+     * Version 4: who the service is offered to ("audience" already names who fills a field); version 5: the list of
+     * kinds (P4).
+     */
+    offeredTo: z.union([z.enum(LEGACY_SERVICE_AUDIENCES), list(z.enum(REQUESTER_KINDS), 8).min(1)]).optional(),
   })
   .strict();
 
@@ -243,11 +254,23 @@ export const configurationFileSchema = z
     file.data.services.forEach((service, index) => {
       expect(service.checklist !== undefined, 2, ["services", index, "checklist"]);
       expect(service.offeredTo !== undefined, 4, ["services", index, "offeredTo"]);
+      // P4: version 4 writes one value, version 5 the list.
+      if (service.offeredTo !== undefined && Array.isArray(service.offeredTo) !== file.version >= 5) {
+        context.addIssue({ code: "custom", path: ["data", "services", index, "offeredTo"], message: `Version ${file.version} writes another form.` });
+      }
     });
     expect(file.data.announcements !== undefined, 3, ["announcements"]);
   });
 
 export type ConfigurationFile = z.infer<typeof configurationFileSchema>;
+
+/** The kinds a service of the file is offered to, whatever the version wrote; undefined before version 4 (P4). */
+export function offeredToOf(service: { offeredTo?: string | readonly string[] }): RequesterKind[] | undefined {
+  const value = service.offeredTo;
+  if (value === undefined) return undefined;
+  if (typeof value === "string") return offeredToFromLegacy(value as (typeof LEGACY_SERVICE_AUDIENCES)[number]);
+  return normalizeOfferedTo(value as RequesterKind[]);
+}
 export type ConfigurationData = ConfigurationFile["data"];
 export type SectorItem = ConfigurationData["sectors"][number];
 export type ServiceItem = ConfigurationData["services"][number];

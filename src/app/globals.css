@@ -2454,6 +2454,92 @@ main[tabindex="-1"]:focus {
   }
 }
 
+/* SPEC 2026-11-16-professores-e-tecnicos: "Oferecido a", the spaces' forms, the week of a space and the team's
+   decisions. Only the existing tokens, so the high contrast theme covers them. */
+.offered-to {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+}
+
+.offered-to legend {
+  padding: 0 4px;
+  font-weight: 600;
+}
+
+.offered-to label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+}
+
+.stacked-form {
+  display: grid;
+  gap: 10px;
+  max-width: 560px;
+}
+
+.stacked-form fieldset {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+}
+
+.stacked-form fieldset label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.agenda-days {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agenda-days > li {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-small);
+}
+
+.agenda-days h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.agenda-days ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.decision-forms {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px 16px;
+}
+
+.guide-audience {
+  margin-left: 8px;
+  font-size: 13px;
+}
+
+.space-entities details {
+  margin: 6px 0;
+}
+
 /* SPEC 2026-11-15-acessibilidade, part B (SF-264; decision L4): the high contrast theme, on when the page carries
    data-contrast="high" (SF-265 sets it). Black background, white text, links and focus in yellow, every border
    visible, links always underlined, no gradient nor shadow. Text tokens reach at least 7:1 on black (AAA, 1.4.6) and

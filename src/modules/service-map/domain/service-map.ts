@@ -1,3 +1,4 @@
+import type { RequesterKind } from "@/shared/requester-kinds";
 // SPEC 2026-11-15-mapa-de-servicos, sections 3 and 4 (SF-273; decisions M1 to M3): the requester's map of the
 // organization's services. Pure rules: how many processes a service takes to finish, its group (attendance or
 // specialized attendance), the reasons in words, the links between sectors drawn on the map and what the person
@@ -71,7 +72,7 @@ export interface SectorLink {
 
 export interface ServiceMap {
   /** SPEC 2026-11-16-tipos-de-solicitante: the kind whose services the map shows (absent: all, as before). */
-  readonly requesterKind?: "STUDENT" | "PUBLIC";
+  readonly requesterKind?: RequesterKind;
   readonly sectors: ReadonlyArray<{ readonly name: string; readonly services: number }>;
   readonly links: readonly SectorLink[];
   readonly selfService: {

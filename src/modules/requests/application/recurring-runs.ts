@@ -1,4 +1,4 @@
-import { DEFAULT_REQUESTER_KIND, DEFAULT_SERVICE_AUDIENCE, isOfferedTo } from "@/shared/requester-kinds";
+import { DEFAULT_REQUESTER_KIND, isOfferedTo } from "@/shared/requester-kinds";
 import { randomUUID } from "node:crypto";
 import { FAILURES_TO_PAUSE, dueOccurrence, type ScheduleTiming, type SkipReason } from "@/modules/recurring-requests";
 import { collectFieldAnswers } from "@/modules/service-fields";
@@ -69,7 +69,7 @@ async function skipReason(transaction: RequestTransaction, schedule: ScheduleFor
   if (!requester || !requester.isActive || requester.role !== "REQUESTER") return "REQUESTER_INACTIVE";
   // SPEC 2026-11-16-tipos-de-solicitante, rule 2: a service no longer offered to the requester's kind is unavailable to
   // that person (the run is skipped, as for an inactive service).
-  if (!isOfferedTo(service.audience ?? DEFAULT_SERVICE_AUDIENCE, requester.requesterKind ?? DEFAULT_REQUESTER_KIND)) return "SERVICE_UNAVAILABLE";
+  if (!isOfferedTo(service.offeredTo, requester.requesterKind ?? DEFAULT_REQUESTER_KIND)) return "SERVICE_UNAVAILABLE";
   if ((await transaction.listActiveRequirements(schedule.serviceId)).length > 0) return "DOCUMENT_REQUIRED";
   const fields = await transaction.listActiveFields(schedule.serviceId);
   if (!collectFieldAnswers(fields, new Map(Object.entries(schedule.answers))).ok) return "FORM_CHANGED";

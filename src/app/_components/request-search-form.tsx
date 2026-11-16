@@ -1,3 +1,4 @@
+import { OFFERED_TO_LABELS, REQUESTER_KINDS } from "@/shared/requester-kinds";
 import Link from "next/link";
 import { MAX_SEARCH_TERM, type RequestStatus } from "@/modules/requests";
 import { REQUEST_STATUS_LABELS } from "./request-status";
@@ -122,8 +123,12 @@ export function RequestSearchForm({ basePath, params, showAssignee, showSla = fa
           <label htmlFor="search-kind">Tipo de solicitante</label>
           <select id="search-kind" name="kind" defaultValue={first(params.kind)}>
             <option value="">Todos</option>
-            <option value="STUDENT">Alunos</option>
-            <option value="PUBLIC">Público geral</option>
+            {/* SPEC 2026-11-16-professores-e-tecnicos, part A item 4: the four kinds. */}
+            {REQUESTER_KINDS.map((kind) => (
+              <option key={kind} value={kind}>
+                {OFFERED_TO_LABELS[kind]}
+              </option>
+            ))}
           </select>
         </div>
       ) : null}

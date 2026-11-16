@@ -76,7 +76,7 @@ export async function readSnapshot(client: Prisma.TransactionClient): Promise<Co
           approvalConditionFieldId: true,
           approvalConditionValue: true,
           approvalDeadlineDays: true,
-          audience: true,
+          offeredTo: true,
         },
       }),
       client.serviceField.findMany({

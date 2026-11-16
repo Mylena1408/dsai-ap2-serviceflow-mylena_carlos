@@ -19,7 +19,7 @@ async function serviceStates(client: Client, serviceIds?: readonly string[]): Pr
       id: true,
       name: true,
       isActive: true,
-      audience: true,
+      offeredTo: true,
       category: { select: { isActive: true } },
       sector: { select: { name: true, isActive: true } },
       _count: { select: { documentRequirements: { where: { isActive: true } } } },
@@ -34,7 +34,7 @@ async function serviceStates(client: Client, serviceIds?: readonly string[]): Pr
     categoryActive: row.category.isActive,
     sectorActive: row.sector.isActive,
     activeRequirements: row._count.documentRequirements,
-    audience: row.audience,
+    offeredTo: row.offeredTo,
   }));
 }
 

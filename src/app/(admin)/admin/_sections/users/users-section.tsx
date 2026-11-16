@@ -1,3 +1,4 @@
+import { RequesterKindSelect } from "../../requester-kind-fields";
 import type { SectorRecord } from "@/modules/sectors";
 import type { ManagedUser } from "@/modules/users";
 import type { AccessRoleOverview, PermissionOverview } from "@/modules/permissions";
@@ -61,13 +62,7 @@ export function UsersSection({ section, users, sectors, permissions, roles }: Us
             </select>
             </label>
           {/* SPEC 2026-11-16-tipos-de-solicitante, 4.1 item 1: only for requesters (empty for the other roles). */}
-          <label>
-            Tipo de solicitante
-            <select name="requesterKind" defaultValue="STUDENT">
-              <option value="STUDENT">Aluno (interno)</option>
-              <option value="PUBLIC">Público geral (externo)</option>
-            </select>
-          </label>
+          <RequesterKindSelect />
         </AdminCreateForm>
         <ul className="entity-list">
           {users.map((user) =>

@@ -70,7 +70,8 @@ describe("the portable configuration's version 3 (CA-COM-01)", () => {
   it("exports each sector's own hours and holidays and only the announcements not started yet, without ids", async () => {
     const { content, file, sector, plain, future } = await scenario();
     // Version 4 since SF-277; the calendars, holidays and announcements are the same.
-    expect(file.version).toBe(4);
+    // Version 5 since SPEC 2026-11-16-professores-e-tecnicos (P4).
+    expect(file.version).toBe(5);
     expect(content).not.toContain(sector.id);
     expect(content).not.toContain(future.id);
     expect(file.data.sectors.find(({ name }) => name === sector.name)).toMatchObject({

@@ -31,11 +31,17 @@ describe("the tipo column", () => {
 
   it("refuses an unknown kind and a kind for another role, naming the error", () => {
     const lines = classify(
-      "nome;email;perfil;setor;tipo\nAna;ana@x.test;solicitante;;professor\nDiego;diego@x.test;atendente;Secretaria;aluno\nEva;eva@x.test;atendente;Secretaria;",
+      "nome;email;perfil;setor;tipo\nAna;ana@x.test;solicitante;;visitante\nDiego;diego@x.test;atendente;Secretaria;aluno\nEva;eva@x.test;atendente;Secretaria;",
     );
     expect(lines.map((line) => (line.outcome === "error" ? line.errors : line.outcome))).toEqual([["kind_invalid"], ["kind_not_allowed"], "create"]);
-    expect(IMPORT_LINE_ERROR_LABELS.kind_invalid).toBe("tipo desconhecido (use aluno ou público geral)");
+    // SPEC 2026-11-16-professores-e-tecnicos, P3: the message lists the four kinds.
+    expect(IMPORT_LINE_ERROR_LABELS.kind_invalid).toBe("tipo desconhecido (use aluno, professor, técnico ou público geral)");
     expect(IMPORT_LINE_ERROR_LABELS.kind_not_allowed).toBe("só o solicitante tem tipo");
+  });
+
+  it("reads professor and técnico (P3)", () => {
+    const lines = classify("nome;email;perfil;setor;tipo\nRui;rui@x.test;solicitante;;Professor\nTeo;teo@x.test;solicitante;;técnica-administrativa");
+    expect(lines.map((line) => line.outcome === "create" && line.person.requesterKind)).toEqual(["PROFESSOR", "TECHNICIAN"]);
   });
 
   it("accepts the header \"tipo de solicitante\" too", () => {

@@ -1,7 +1,7 @@
 # SPEC — Área de professores e técnicos: tipos, reservas de espaços e alocação de provas
 
 **Data:** 2026-11-16
-**Status:** Em definição. Pedido da responsável em 2026-11-16: "faça a área dos professores e técnicos, vamos definir a spec". Escolhas já feitas por ela: **professor e técnico são novos tipos de solicitante** (como o aluno; quem atende continua sendo atendente e gestor), **dois tipos separados**, e a área traz **guia rápido próprio**, **fila, painéis e análises**, **cadastro e importação CSV** e, acrescentado por ela, **"salas para uso de aula, laboratórios e alocação de aplicação de provas"**. Depois, a responsável definiu: "por ser didático a área de segurança esta área seguirá as demais, não terá segurança ou restrição de acesso a dados" (P17). **Revisada em 2026-11-16** ("vamos rever as specs"): a responsável escolheu P1 (lista; "ambos" vira os quatro tipos), P7 e P8 (07:00 às 23:00; semanal tudo ou nada) e P10 e P13 (a equipe do setor confirma e aloca); as demais decisões foram adotadas como propostas e podem ser revistas antes de cada parte. **Aprovada; começa depois da paginação de "Aprovações" (SF-284).**
+**Status:** Em definição. Pedido da responsável em 2026-11-16: "faça a área dos professores e técnicos, vamos definir a spec". Escolhas já feitas por ela: **professor e técnico são novos tipos de solicitante** (como o aluno; quem atende continua sendo atendente e gestor), **dois tipos separados**, e a área traz **guia rápido próprio**, **fila, painéis e análises**, **cadastro e importação CSV** e, acrescentado por ela, **"salas para uso de aula, laboratórios e alocação de aplicação de provas"**. Depois, a responsável definiu: "por ser didático a área de segurança esta área seguirá as demais, não terá segurança ou restrição de acesso a dados" (P17). **Revisada em 2026-11-16** ("vamos rever as specs"): a responsável escolheu P1 (lista; "ambos" vira os quatro tipos), P7 e P8 (07:00 às 23:00; semanal tudo ou nada) e P10 e P13 (a equipe do setor confirma e aloca); as demais decisões foram adotadas como propostas e podem ser revistas antes de cada parte. **Aprovada; começa depois da paginação de "Aprovações" (SF-284).** **Concluída em 2026-11-16** (SF-285 a SF-294; CA-PRT-01 a 12), a pedido da responsável ("faça todas as etapas e depois termine com o push").
 **Projeto:** ServiceFlow
 **Referências:** `SPEC/2026-11-16-tipos-de-solicitante.md` (tipos e público do serviço), `SPEC/2026-11-16-guia-do-estudante.md` (o guia), `SPEC/2026-11-09-comunicacao-e-calendarios.md` (calendário por setor), `SPEC/2026-11-15-mapa-de-servicos.md`.
 
@@ -54,10 +54,10 @@ Dar a professores e técnicos-administrativos uma área própria no ServiceFlow:
 
 ### 4.3 Critérios de aceitação
 
-- [ ] **CA-PRT-01** — O administrador cadastra professores e técnicos (tela e CSV); o serviço tem "Oferecido a" com os quatro tipos; a configuração v5 exporta e importa a lista, e as versões 1 a 4 continuam aceitas.
-- [ ] **CA-PRT-02** — Cada tipo vê no catálogo e no mapa só os serviços oferecidos a ele, na sua subseção; o de outro tipo é "não encontrado" na página, na abertura, na API e nos pacotes.
-- [ ] **CA-PRT-03** — Depois da migration, alunos e público geral veem exatamente os mesmos serviços de antes, e os serviços "Ambos" passam a valer também para professores e técnicos.
-- [ ] **CA-PRT-04** — A fila filtra e mostra os quatro tipos; painel, análises e CSV têm os quatro.
+- [x] **CA-PRT-01** — O administrador cadastra professores e técnicos (tela e CSV); o serviço tem "Oferecido a" com os quatro tipos; a configuração v5 exporta e importa a lista, e as versões 1 a 4 continuam aceitas. *Verificado em 2026-11-16 (SF-285 e SF-286): integração `professor-technician-kinds.test.ts` (cadastro de professor e técnico, lista "Oferecido a" normalizada, lista vazia e tipo desconhecido recusados, auditoria com `offeredTo`), unitários da coluna `tipo` (professor, professora, docente, técnico, técnica-administrativa) e integração `configuration-version-4.test.ts` (exportação v5 com a lista, importação de mudança, arquivo v4 convertido, forma errada recusada); E2E `professors-technicians.spec.ts` (o administrador muda Ana para professora).*
+- [x] **CA-PRT-02** — Cada tipo vê no catálogo e no mapa só os serviços oferecidos a ele, na sua subseção; o de outro tipo é "não encontrado" na página, na abertura, na API e nos pacotes. *Verificado em 2026-11-16: integração (cada um dos quatro tipos lista, abre no mapa e consegue abrir só os serviços oferecidos a ele; os outros são "não encontrado" na página e na abertura, que é o caminho da tela, da API e dos pacotes) e E2E (subseção "Serviços para professores").*
+- [x] **CA-PRT-03** — Depois da migration, alunos e público geral veem exatamente os mesmos serviços de antes, e os serviços "Ambos" passam a valer também para professores e técnicos. *Verificado em 2026-11-16: o teste de integração roda no próprio banco a expressão de conversão escrita na migration `20261116300100_service_offered_to` e compara com a regra antiga: para alunos e público geral, cada serviço continua visível exatamente como antes; "ambos" passa a incluir professores e técnicos. Na produção, os 9 serviços eram "ambos" (conferido no envio).*
+- [x] **CA-PRT-04** — A fila filtra e mostra os quatro tipos; painel, análises e CSV têm os quatro. *Verificado em 2026-11-16: integração (a solicitação guarda cada um dos quatro tipos; a fila filtra cada um; painel, análises e exportação contam os quatro).*
 
 ## 5. Parte B — Guia rápido de professores e técnicos
 
@@ -69,7 +69,7 @@ Dar a professores e técnicos-administrativos uma área própria no ServiceFlow:
 
 ### 5.2 Critérios de aceitação
 
-- [ ] **CA-PRT-05** — O guia abre sem login e com cada perfil, com o aviso certo para cada tipo; o passo da prova é apresentado aos professores; cada nome de tela citado existe no código.
+- [x] **CA-PRT-05** — O guia abre sem login e com cada perfil, com o aviso certo para cada tipo; o passo da prova é apresentado aos professores; cada nome de tela citado existe no código. *Verificado em 2026-11-16 (SF-293): unitário `staff-guide.test.ts` (passos, o da prova marcado para professores, aviso de cada perfil e tipo, links só para o solicitante, cada nome de tela citado existe no código; e o guia do estudante deixou de chamar professor de aluno) e E2E (o guia aberto pelo link do catálogo, com o aviso de professora).*
 
 ## 6. Parte C — Espaços (salas e laboratórios)
 
@@ -86,8 +86,8 @@ Dar a professores e técnicos-administrativos uma área própria no ServiceFlow:
 
 ### 6.3 Critérios de aceitação
 
-- [ ] **CA-PRT-06** — O administrador e quem gere serviços do setor cadastram, editam, desativam e reativam espaços (este último só do próprio setor); tudo entra na auditoria.
-- [ ] **CA-PRT-07** — A página "Espaços" lista os espaços ativos com filtros e a agenda da semana, com quem reservou e a finalidade.
+- [x] **CA-PRT-06** — O administrador e quem gere serviços do setor cadastram, editam, desativam e reativam espaços (este último só do próprio setor); tudo entra na auditoria. *Verificado em 2026-11-16 (SF-288): integração `spaces-reservations.test.ts` (o administrador cria, muda, desativa e reativa, com as quatro entradas de auditoria do tipo "Espaço"; nome repetido e capacidade fora do limite recusados; quem tem "Gerir serviços do setor" só mexe nos espaços do próprio setor) e E2E (a seção "Espaços" da administração).*
+- [x] **CA-PRT-07** — A página "Espaços" lista os espaços ativos com filtros e a agenda da semana, com quem reservou e a finalidade. *Verificado em 2026-11-16 (SF-289): integração (filtros de tipo e capacidade, espaço inativo fora da lista e da agenda do solicitante; a agenda mostra a outra pessoa quem reservou e a descrição) e E2E (a semana mostra a reserva feita).*
 
 ## 7. Parte D — Reservas
 
@@ -107,9 +107,9 @@ Dar a professores e técnicos-administrativos uma área própria no ServiceFlow:
 
 ### 7.3 Critérios de aceitação
 
-- [ ] **CA-PRT-08** — O solicitante reserva um espaço (simples e semanal); as regras de horário, capacidade, feriado e passado são conferidas; numa série com conflito, nada é gravado e as datas aparecem.
-- [ ] **CA-PRT-09** — O banco recusa a sobreposição mesmo com duas reservas gravadas ao mesmo tempo (teste de concorrência), e recusada ou cancelada libera o horário.
-- [ ] **CA-PRT-10** — A equipe do setor confirma, recusa e cancela com as regras de motivo; a confirmação automática nasce Confirmada; as notificações chegam a quem deve.
+- [x] **CA-PRT-08** — O solicitante reserva um espaço (simples e semanal); as regras de horário, capacidade, feriado e passado são conferidas; numa série com conflito, nada é gravado e as datas aparecem. *Verificado em 2026-11-16 (SF-290): integração (pendente e automática; capacidade, horário, passos de 15 minutos e passado recusados; série semanal com uma data ocupada e um feriado do setor: nada gravado e as duas datas listadas; série sem problema gravada com um só identificador de série) e E2E (reserva enviada ao setor; série sobre o mesmo horário recusada com a data).*
+- [x] **CA-PRT-09** — O banco recusa a sobreposição mesmo com duas reservas gravadas ao mesmo tempo (teste de concorrência), e recusada ou cancelada libera o horário. *Verificado em 2026-11-16: integração com quatro reservas do mesmo horário disparadas ao mesmo tempo (uma gravada, as outras recusadas como conflito) e uma gravação direta na tabela recusada pela restrição `SpaceReservation_no_overlap`; depois da recusa pelo setor, o horário volta a ficar livre.*
+- [x] **CA-PRT-10** — A equipe do setor confirma, recusa e cancela com as regras de motivo; a confirmação automática nasce Confirmada; as notificações chegam a quem deve. *Verificado em 2026-11-16 (SF-291): integração (confirmar, recusar e cancelar, com o motivo obrigatório; atendente de outro setor não age; o solicitante recebe as três notificações; a equipe recebe a de reserva pendente; cancelamento de uma data ou das próximas da série, só antes de começar) e E2E (o atendente confirma na página "Reservas").*
 
 ## 8. Parte E — Alocação de provas
 
@@ -127,8 +127,8 @@ Dar a professores e técnicos-administrativos uma área própria no ServiceFlow:
 
 ### 8.3 Critérios de aceitação
 
-- [ ] **CA-PRT-11** — O pedido de prova é feito na área do solicitante; a equipe vê a sugestão, aloca um ou mais espaços que cobrem os alunos e estão livres, ou recusa com motivo; o professor é notificado.
-- [ ] **CA-PRT-12** — Cancelar um pedido alocado libera as reservas; alocar um espaço ocupado é recusado pelo banco.
+- [x] **CA-PRT-11** — O pedido de prova é feito na área do solicitante; a equipe vê a sugestão, aloca um ou mais espaços que cobrem os alunos e estão livres, ou recusa com motivo; o professor é notificado. *Verificado em 2026-11-16 (SF-292): integração (a equipe recebe o pedido; o espaço ocupado sai dos candidatos; a sugestão cobre os alunos com o menor número de salas; alocar uma sala pequena demais é recusado, alocar uma ocupada também; a alocação grava reservas confirmadas de "Aplicação de prova" para a professora, com os alunos divididos; ela é notificada) e E2E (a sugestão já vem marcada e a prova aparece "Alocada" com as duas salas).*
+- [x] **CA-PRT-12** — Cancelar um pedido alocado libera as reservas; alocar um espaço ocupado é recusado pelo banco. *Verificado em 2026-11-16: integração (cancelar o pedido alocado cancela as duas reservas e o horário volta a aceitar reserva; recusa sem motivo recusada; outro setor não age).*
 
 ## 9. Testes
 
@@ -153,3 +153,14 @@ Dar a professores e técnicos-administrativos uma área própria no ServiceFlow:
 | **Total** | 10 tarefas | **23 a 31 h** | **6.300 a 9.200** |
 
 Cada parte com migration (A e C/D) segue a rotina de produção: backup cifrado conferido, migration, push.
+
+## 11. Esclarecimentos e revisão final (SF-285 a SF-294, 2026-11-16)
+
+1. **Migrations:** `20261116300000_professor_technician_kinds` (os dois valores do enum, sozinhos, porque um valor novo só pode ser usado depois da sua própria migration), `20261116300100_service_offered_to` (a lista, convertida como P1; CHECK de 1 a 4 tipos; a coluna antiga e o enum antigo saem) e `20261116300200_spaces_reservations_exams` (extensão `btree_gist`, tabelas, CHECKs, restrição de exclusão, colunas novas da notificação com o CHECK "exatamente um alvo" e o tipo auditado "Espaço").
+2. **Notificações (P14):** a notificação passou a poder apontar para uma reserva ou um pedido de prova; ao abrir, leva a "Minhas reservas", a "Alocação de provas" ou à página "Reservas" da equipe. Os oito tipos novos ficam na categoria "Situação" só para as listas: o módulo nunca grava e-mail para eles.
+3. **Sem restrição nova (P17):** a área usa só as verificações que já existiam: solicitante para reservar e pedir prova; atendente ou gestor do setor do espaço para decidir, como na fila; administrador ou "Gerir serviços do setor" para cadastrar espaços. A agenda mostra quem reservou a todos. O menu do solicitante ganhou "Espaços" para todos os tipos (P9: apresentada a professores e técnicos pelo catálogo e pelo guia, sem bloqueio).
+4. **LGPD (regra que já existia):** a anonimização de uma pessoa também troca os textos das suas reservas e pedidos de prova e os motivos que ela escreveu, como já fazia com solicitações e comentários; as reservas continuam. "Meus dados" ainda não inclui reservas e provas (fica para uma SPEC própria, se a responsável quiser).
+5. **Guia do estudante:** com os tipos novos, o aviso dele dizia "cadastrado como aluno" a um professor; agora diz o tipo certo e aponta para o guia de professores e técnicos.
+6. **Memória da verificação de tipos:** com as tabelas e os testes novos, o `tsc` do projeto inteiro passou de 2 GB (2,25 GB medidos), o limite padrão do Node nesta máquina, e o `next build` também verificava os testes. O build passou a verificar só a aplicação (`tsconfig.build.json`, 1,28 GB) e o `npm run typecheck` (CI) verifica tudo com 4 GB. Nenhuma dependência mudou. Na mesma investigação achei uma falha minha: verificações anteriores filtravam a saída do `tsc` com `grep "^src"`, o que esconderia um estouro de memória; daqui em diante, o código de saída é conferido.
+7. **Exceções ao "sem mudar asserções" (consequências diretas desta SPEC):** a versão da configuração (4 → 5, e os exemplos de versão desconhecida 5 → 6); os testes que gravavam o público antigo (`audience`) passaram a gravar a lista; o exemplo de tipo desconhecido do CSV deixou de ser "professor"; a mensagem do tipo desconhecido do CSV lista os quatro; a lista completa dos tipos auditados e das categorias de notificação ganhou os itens novos; o E2E dos tipos de solicitante marca as caixas de "Oferecido a" em vez do seletor.
+8. **Resultados:** unitários 2.116/2.116; integração 841/841 (191 arquivos, com os novos `professor-technician-kinds` e `spaces-reservations`); lint, typecheck e build OK; E2E completo 85/85 (com o novo professors-technicians.spec.ts e as páginas novas na verificação de largura e na varredura axe).

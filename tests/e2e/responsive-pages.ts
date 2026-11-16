@@ -15,7 +15,14 @@ export type CheckedPage = { path: string } | { from: string; link: RegExp; name:
 const ID = "[0-9a-f-]{36}";
 
 // SPEC 2026-11-16-guia-do-estudante, rule 3: the student's guide, without a session and as a requester.
-export const PUBLIC_PAGES: CheckedPage[] = [{ path: "/" }, { path: "/login" }, { path: "/help" }, { path: "/help/aluno" }];
+export const PUBLIC_PAGES: CheckedPage[] = [
+  { path: "/" },
+  { path: "/login" },
+  { path: "/help" },
+  { path: "/help/aluno" },
+  // SPEC 2026-11-16-professores-e-tecnicos, part B.
+  { path: "/help/servidores" },
+];
 
 const ACCOUNT_PAGES: CheckedPage[] = [
   { path: "/help" },
@@ -28,6 +35,8 @@ const ADMIN_SECTIONS = [
   "overview", "users", "user-import", "roles", "sectors", "tags", "categories", "services", "checklists", "bundles",
   "knowledge", "calendar", "absences", "attendant-absences", "recurring", "configuration", "announcements", "emails",
   "dashboard", "analytics", "time", "periodic-reports", "audit", "api-tokens", "webhooks",
+  // SPEC 2026-11-16-professores-e-tecnicos, part C item 1.
+  "spaces",
 ] as const;
 
 export const PROFILE_PAGES: Record<Profile, CheckedPage[]> = {
@@ -37,6 +46,12 @@ export const PROFILE_PAGES: Record<Profile, CheckedPage[]> = {
     // SPEC 2026-11-15-mapa-de-servicos, CA-MAP-05.
     { path: "/catalog/map" },
     { path: "/help/aluno" },
+    // SPEC 2026-11-16-professores-e-tecnicos, parts B to E.
+    { path: "/help/servidores" },
+    { path: "/spaces" },
+    { from: "/spaces", link: new RegExp(`^/spaces/${ID}$`), name: "/spaces/{id}" },
+    { path: "/spaces/reservations" },
+    { path: "/spaces/exams" },
     { path: "/requests" },
     { from: "/requests", link: new RegExp(`^/requests/${ID}$`), name: "/requests/{id}" },
     { path: "/requests/following" },
@@ -50,6 +65,8 @@ export const PROFILE_PAGES: Record<Profile, CheckedPage[]> = {
     { path: "/queue/dashboard" },
     { path: "/queue/responses" },
     { path: "/queue/absences" },
+    // SPEC 2026-11-16-professores-e-tecnicos, part D item 3.
+    { path: "/queue/reservations" },
     { path: "/queue/mentions" },
     { path: "/queue/notifications" },
     { path: "/queue/notifications/preferences" },
@@ -67,6 +84,7 @@ export const PROFILE_PAGES: Record<Profile, CheckedPage[]> = {
     { path: "/approvals/tags" },
     { path: "/approvals/checklists" },
     { path: "/approvals/calendar" },
+    { path: "/approvals/reservations" },
     { path: "/approvals/notifications" },
     { path: "/approvals/notifications/preferences" },
     ...ACCOUNT_PAGES,

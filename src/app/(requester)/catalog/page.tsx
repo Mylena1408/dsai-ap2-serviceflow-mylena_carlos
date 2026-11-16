@@ -1,9 +1,17 @@
 import Link from "next/link";
 import { getCatalogReaderKind, groupPublishedServices, listPublishedServices } from "@/modules/services";
-import { CATALOG_SECTION_TITLES } from "@/shared/requester-kinds";
+import { CATALOG_SECTION_TITLES, type RequesterKind } from "@/shared/requester-kinds";
 import { listCatalogBundles } from "@/modules/service-bundles";
-import { STUDENT_GUIDE_PATH, STUDENT_GUIDE_TITLE } from "@/modules/help";
+import { STAFF_GUIDE_PATH, STAFF_GUIDE_TITLE, STUDENT_GUIDE_PATH, STUDENT_GUIDE_TITLE } from "@/modules/help";
 import { requireRequesterPageAccess } from "../page-access";
+
+// SPEC 2026-11-16-tipos-de-solicitante, 4.2 item 1, and professores e técnicos, part A item 3.
+const CATALOG_AUDIENCE_PHRASES: Record<RequesterKind, string> = {
+  STUDENT: "aos alunos",
+  PROFESSOR: "aos professores",
+  TECHNICIAN: "aos técnicos-administrativos",
+  PUBLIC: "ao público geral",
+};
 
 export default async function CatalogPage() {
   await requireRequesterPageAccess();
@@ -31,14 +39,19 @@ export default async function CatalogPage() {
       <section aria-labelledby="catalog-audience" className="audience-note">
         <h2 id="catalog-audience">{CATALOG_SECTION_TITLES[kind]}</h2>
         <p>
-          {kind === "PUBLIC"
-            ? "Você vê os serviços oferecidos ao público geral e os que valem para todos."
-            : "Você vê os serviços oferecidos aos alunos e os que valem para todos."}
+          Você vê os serviços oferecidos {CATALOG_AUDIENCE_PHRASES[kind]} e os que valem para todos.
         </p>
         {/* SPEC 2026-11-16-guia-do-estudante, 2 item 7: the guide for the students. */}
         {kind === "STUDENT" ? (
           <p>
             <Link href={STUDENT_GUIDE_PATH}>{STUDENT_GUIDE_TITLE}</Link>: como pedir, acompanhar e avaliar um serviço.
+          </p>
+        ) : null}
+        {/* SPEC 2026-11-16-professores-e-tecnicos, part B item 3 and P9: the guide and the spaces for professors and technicians. */}
+        {kind === "PROFESSOR" || kind === "TECHNICIAN" ? (
+          <p>
+            <Link href={STAFF_GUIDE_PATH}>{STAFF_GUIDE_TITLE}</Link>: serviços, reserva de <Link href="/spaces">espaços</Link>
+            {kind === "PROFESSOR" ? <> e <Link href="/spaces/exams">alocação de provas</Link></> : null}.
           </p>
         ) : null}
       </section>

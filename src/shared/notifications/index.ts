@@ -28,7 +28,16 @@ export type NotificationType =
   | "document.added"
   | "sla.paused"
   // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4 (SF-250): the only kind that points to a report, not a request.
-  | "report.ready";
+  | "report.ready"
+  // SPEC 2026-11-16-professores-e-tecnicos, P14: notices of a space reservation or of an exam request (no e-mail).
+  | "reservation.pending"
+  | "reservation.confirmed"
+  | "reservation.refused"
+  | "reservation.cancelled"
+  | "exam.pending"
+  | "exam.allocated"
+  | "exam.refused"
+  | "exam.cancelled";
 
 // Text of each notification (SPEC 2026-10-31-eventos-outbox-jobs, section 8.2), shared by the
 // in-app list and the emails (SPEC 2026-11-01-notificacoes-email-preferencias, 5.4). Messages are
@@ -61,6 +70,15 @@ const MESSAGES: Record<NotificationType, (service: string, stage?: string) => st
   "sla.paused": (service) => `Aguardando sua resposta: ${service}`,
   // SPEC 2026-11-09-comunicacao-e-calendarios, 5.1 item 4: here the "service" is the report's period.
   "report.ready": (period) => `Relatório disponível: ${period}`,
+  // SPEC 2026-11-16-professores-e-tecnicos, P14: here the "service" is the space, or the exam's course and class.
+  "reservation.pending": (space) => `Nova reserva para confirmar: ${space}`,
+  "reservation.confirmed": (space) => `Reserva confirmada: ${space}`,
+  "reservation.refused": (space) => `Reserva recusada: ${space}`,
+  "reservation.cancelled": (space) => `Reserva cancelada pelo setor: ${space}`,
+  "exam.pending": (exam) => `Novo pedido de alocação de prova: ${exam}`,
+  "exam.allocated": (exam) => `Prova alocada: ${exam}`,
+  "exam.refused": (exam) => `Pedido de prova recusado: ${exam}`,
+  "exam.cancelled": (exam) => `Pedido de prova cancelado pelo professor: ${exam}`,
   // The stage name is missing once the event is purged (after 30 days).
   "stage.changed": (service, stage) =>
     stage ? `Sua solicitação passou para a etapa ${stage}: ${service}` : `Sua solicitação mudou de etapa: ${service}`,
