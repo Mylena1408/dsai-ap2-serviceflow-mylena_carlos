@@ -1,0 +1,407 @@
+===============================================================================
+ SERVICEFLOW — RELATÓRIO DO PROJETO
+ Decisões, funcionalidades, tempo de desenvolvimento e recursos para colocar no ar
+===============================================================================
+
+Data do relatório: 16/11/2026
+Repositório: github.com/Mylena1408/dsai-ap2-serviceflow-mylena_carlos (branch main, commit d84c8a8)
+Endereço público: https://serviceflow-sand.vercel.app
+Fontes: as 52 SPECs da pasta SPEC/, TASKS.md, NOTES.md, diario/, prompts/sessoes/ e o histórico do git.
+Todos os números abaixo foram medidos no repositório na data do relatório.
+
+
+-------------------------------------------------------------------------------
+ 1. RESUMO
+-------------------------------------------------------------------------------
+
+O ServiceFlow é uma plataforma configurável de solicitações de serviços internos:
+a organização cadastra setores, categorias, serviços, pessoas, permissões, fluxos,
+aprovações e regras de atendimento; quem precisa de algo abre uma solicitação pelo
+catálogo e acompanha; a equipe do setor atende; o gestor aprova e acompanha os números.
+
+Situação em 16/11/2026:
+  - 294 tarefas registradas (SF-001 a SF-294), cada uma ligada a uma SPEC.
+  - Todas as SPECs de funcionalidade concluídas, com os critérios de aceitação marcados
+    e as evidências de teste escritas na própria SPEC. Só a SPEC de visão geral
+    (2026-09-30-visao-geral) tem 13 critérios nunca conferidos.
+  - Testes: 2.116 unitários (264 arquivos), 841 de integração (191 arquivos) e
+    85 cenários E2E (67 arquivos), mais a varredura de acessibilidade (axe-core) e a
+    verificação de largura de tela (360, 768 e 1280 px).
+  - CI do GitHub verde no último commit (segredos, typecheck, lint, build, unitários,
+    integração e E2E).
+  - Produção no ar, com 66 migrations aplicadas no banco e backup cifrado conferido
+    por restauração antes de cada envio com migration.
+  - Projeto recebido (tag baseline-ap2, 29/10/2026) com 11.641 linhas de código em
+    src, tests e scripts (10.743 pela medida do cloc --diff); hoje são 113.127.
+  - Meta acadêmica atingida: 102.594 linhas executáveis adicionadas sobre a linha de
+    base (meta: 100.000).
+
+
+-------------------------------------------------------------------------------
+ 2. TEMPO DE DESENVOLVIMENTO
+-------------------------------------------------------------------------------
+
+2.1 Linha do tempo (pelo histórico do git; 369 commits)
+
+  01/10/2026  Primeiro commit: SPECs iniciais (catálogo e visão geral) e tarefas.
+  01/10–06/10 Primeira entrega (AP1): catálogo, abertura e acompanhamento de
+              solicitações, fila do atendente, administração, autenticação.
+              23 commits.
+  20/10       1 commit.
+  29/10       Linha de base da AP2 (tag baseline-ap2): a partir daqui se mede a meta
+              de 100.000 linhas. Triagem, plano de escala e refatoração em camadas.
+  29/10–16/11 Fase intensiva: 340 commits desde a linha de base.
+
+  Commits por dia: 01/10 (9), 05/10 (10), 06/10 (4), 20/10 (1), 29/10 (19),
+  30/10 (11), 31/10 (35), 01/11 (42), 02/11 (32), 03/11 (28), 04/11 (2), 05/11 (8),
+  06/11 (21), 07/11 (29), 08/11 (32), 09/11 (26), 14/11 (30), 15/11 (21), 16/11 (9).
+  Dias com commits: 19. Entre 10/11 e 13/11 não houve commits.
+
+  Do primeiro ao último commit: 01/10/2026 a 16/11/2026 (47 dias de calendário).
+
+2.2 Tempo por funcionalidade (primeiro e último commit das tarefas de cada SPEC)
+
+  Limite da medida: é tempo de calendário, não de esforço; inclui noites e pausas.
+  Não há registro de horas por tarefa.
+
+  SPEC                                      Tarefas  Período dos commits
+  ----------------------------------------  -------  -----------------------------------
+  Atendimento do dia a dia                       40  08/11 a 14/11 (trabalho em 08, 09
+                                                     e 14/11; a maior de todas)
+  Catálogo e solicitações (base)                  7  29/10 a 02/11, com pausas
+  Aprofundamento da configurabilidade            14  ~18 h (06/11 a 07/11)
+  Operação e automação                           19  ~14 h (07/11 a 08/11)
+  Comunicação e calendários                      26  ~13,5 h (14/11 a 15/11)
+  Auditoria e LGPD                                7  ~10 h (02/11)
+  Acessibilidade                                 11  ~5 h (15/11)
+  Notificações por e-mail                         5  ~3 h (01/11 a 02/11)
+  Aprovações                                      6  ~3 h (01/11)
+  API externa e webhooks                          5  ~2,6 h (02/11)
+  Área de professores e técnicos                 10  uma sessão contínua em 16/11
+                                                     (um commit só para as 10 tarefas)
+
+2.3 Projeto recebido (linha de base da AP2)
+
+  O projeto foi recebido no estado da tag baseline-ap2 (commit 410c07b, 29/10/2026),
+  com o que a primeira entrega (AP1) tinha construído. Medição com o cloc sobre esse
+  commit:
+
+    Código das pastas da meta (src, tests e scripts): 11.641 linhas
+      TypeScript   10.764 linhas em 113 arquivos
+      CSS             877 linhas em 1 arquivo
+    Pela mesma medida da meta (cloc --diff), a base conta 10.743 linhas:
+      7.722 continuam iguais hoje, 535 foram modificadas e 2.486 removidas.
+
+    Repositório inteiro no recebimento (175 arquivos versionados, sem dependências):
+      TypeScript 10.844 | SQL 175 (5 migrations) | schema Prisma 137
+      JavaScript 8 | CSS 877 | Markdown 2.632 (37 documentos)
+      (O JSON de 367.272 linhas é quase todo o package-lock.json, lista gerada de
+      dependências, não código do projeto.)
+
+  Comparação com hoje (mesmas pastas, cloc simples):
+      Recebido: 11.641 linhas de código em 114 arquivos.
+      Hoje:     113.127 linhas de código em 1.201 arquivos
+                (TypeScript 110.872 + CSS 2.234); 1.402 arquivos versionados.
+      O código cresceu cerca de 9,7 vezes; as linhas adicionadas sobre a base
+      (102.594, seção 2.4) são cerca de 9,5 vezes o tamanho da base.
+
+2.4 Evolução das linhas executáveis adicionadas (cloc --diff contra baseline-ap2)
+
+  06/11: 51.293   (registro da memória do projeto)
+  15/11: 93.724 a 97.168
+  16/11: 98.027 (tipos de solicitante) -> 98.593 (guia do estudante e CI)
+         -> 98.875 (paginação) -> 102.594 (área de professores e técnicos)
+
+  Medição final (commit d84c8a8):
+    src      51.710 linhas adicionadas
+    tests    50.632
+    scripts     252
+    total   102.594 adicionadas; 2.486 removidas; saldo 100.108
+    Linhas da linha de base que ficaram iguais (não contam): 7.722
+
+
+-------------------------------------------------------------------------------
+ 3. FUNCIONALIDADES (por SPEC, em ordem cronológica)
+-------------------------------------------------------------------------------
+
+Base (setembro a outubro)
+  - Catálogo configurável e ciclo de solicitações: setores, categorias, serviços,
+    abertura, acompanhamento, fila do atendente, documentos exigidos por serviço
+    (PDF, DOCX, TXT, conferidos pelo conteúdo), entrada por perfil de demonstração.
+  - Refatoração arquitetural: 40 módulos em camadas (domínio, aplicação,
+    infraestrutura), acessados só pelo index de cada módulo.
+
+Núcleo de atendimento (31/10)
+  - Atribuição, transferência, cancelamento e reabertura.
+  - Busca, filtros e paginação das listas.
+  - Comentários e notas internas.
+  - Eventos de domínio com outbox e job diário.
+
+Configurabilidade (01/11)
+  - Aprovações com o perfil Gestor.
+  - Campos personalizados por serviço.
+  - Fluxos (etapas) configuráveis.
+  - Notificações por e-mail com preferências.
+  - Permissões configuráveis.
+  - SLA e prioridades.
+
+Transversais (02/11 a 05/11)
+  - API externa com tokens e webhooks; ações pela API; webhooks por setor.
+  - Auditoria administrativa e dados pessoais (LGPD: "Meus dados", anonimização,
+    prazos de guarda).
+  - Política de backup e recuperação.
+  - Painel, indicadores e exportação CSV.
+  - Anexos em comentários; documento enviado depois da abertura.
+  - Campos condicionais, seleção múltipla e campos do atendimento.
+  - Pausa do prazo e calendário de horas úteis.
+  - Transferência entre setores.
+  - Integração contínua no GitHub Actions.
+  - Ferramentas MCP para assistentes de IA consultarem documentos.
+
+Leva de 06/11
+  - Análises operacionais (painel do atendente, tendências, SLA, equipe).
+  - Base de conhecimento por serviço.
+  - Escalonamento automático de vencidas.
+  - Pesquisa de satisfação.
+  - Respostas prontas.
+  - Manutenção: contraste dos textos, desempenho com 98 mil solicitações,
+    formulários que mantêm o que foi digitado, transações de escrita mais curtas.
+  - Aprofundamento da configurabilidade: formatos de campo, até 3 níveis de
+    aprovação, gestor substituto, prazos de etapa, papéis, regras de escalonamento.
+
+Operação (07/11 a 09/11)
+  - Operação e automação: vínculos e pacotes de serviços, distribuição automática
+    na fila, solicitações recorrentes, configuração portátil (exportar/importar),
+    visões salvas e ações em lote.
+  - Atendimento do dia a dia: etiquetas, checklist, apontamento de horas,
+    seguidores, menções, encerrar como duplicada.
+  - Comunicação e calendários: avisos e manutenção programada, importação de
+    usuários por CSV, relatórios periódicos, calendário por setor.
+
+Experiência do usuário (15/11)
+  - Acessibilidade: telas responsivas, menu recolhível, tabelas roláveis pelo
+    teclado, tema de alto contraste, leitura em voz alta, painel "Acessibilidade".
+  - Ajuda e perguntas frequentes.
+  - Mapa de serviços do solicitante.
+
+Último dia (16/11)
+  - Tipos de solicitante: aluno (interno) e público geral (externo).
+  - Guia rápido do estudante.
+  - Paginação de "Aprovações" (de 4,3 s e 13,8 s para até 0,25 s com 98 mil
+    solicitações).
+  - Área de professores e técnicos: tipos Professor e Técnico-administrativo,
+    lista "Oferecido a" nos serviços, espaços (salas, laboratórios, auditórios),
+    reservas simples e semanais, agenda da semana, confirmação pela equipe,
+    alocação de provas com sugestão de salas, guia próprio.
+
+
+-------------------------------------------------------------------------------
+ 4. TOMADAS DE DECISÃO
+-------------------------------------------------------------------------------
+
+4.1 Como as decisões foram tomadas
+
+  - Regra do projeto (AGENTS.md): a SPEC é a fonte de verdade; nada é implementado
+    antes da SPEC registrada; mudança de escopo é registrada antes.
+  - Cada SPEC trouxe uma tabela de decisões com a opção recomendada e a alternativa.
+    A responsável escolheu as decisões principais (por perguntas ou revisão) e as
+    demais foram adotadas como propostas, revisáveis antes de cada parte.
+  - Decisões técnicas e incidentes ficaram em NOTES.md; as sessões e os pedidos,
+    em prompts/sessoes/; o andamento, em diario/.
+
+4.2 Decisões de arquitetura e tecnologia
+
+  - Next.js (App Router) com TypeScript; PostgreSQL com Prisma; Auth.js com
+    credenciais locais e senhas em Argon2id; Vitest e Playwright (Chromium).
+  - Módulos em camadas, um index por módulo, sem dependência de domínio em
+    infraestrutura (refatoração de 27/10).
+  - Regra de não acrescentar dependências sem necessidade: gráficos em SVG no
+    servidor, e-mail por fetch, servidor MCP próprio, axe-core já presente.
+  - Node 24 igual em todos os ambientes (Vercel, máquina e CI), decidido em 06/11
+    depois que uma diferença de versão escondeu um defeito.
+  - Regras de integridade no próprio banco (CHECKs, gatilhos, restrição de
+    exclusão), e não só na tela.
+
+4.3 Decisões de produto, por SPEC (opção escolhida)
+
+  Atribuição e reabertura (D1–D5): só o responsável transfere; com responsável, só
+    ele inicia e conclui; o solicitante cancela só aberta; reabertura em até 7 dias
+    com justificativa; o responsável é mantido na reabertura.
+  Busca (B1–B4): 20 por página; busca na descrição e no serviço; filtros de status,
+    responsável e período; listas da administração fora.
+  Comentários (C1–C3): comentar em aberta, em atendimento e concluída; comentários
+    imutáveis; nota interna só da equipe.
+  Eventos (E1–E4): primeiro consumidor as notificações; processamento logo após a
+    ação e job diário de recuperação; limpeza de órfãos no job.
+  Aprovações (A1–A4): aprovação antes do atendimento; um nível (depois até 3);
+    prazo conta da aprovação; gestor vê só o que exige aprovação.
+  Campos (F1–F4): seis tipos; respostas em tabela com cópia do rótulo; imutáveis;
+    até 10 por serviço.
+  Fluxos (W1–W4): etapas dentro de "Em atendimento"; avançar uma por vez; cópia do
+    fluxo no início; notificação a cada etapa.
+  E-mail (N1–N5): por categoria, tudo desligado no começo; provedor por API HTTP
+    (Resend) via fetch; e-mail só com o aviso e o link.
+  Permissões (K1–K4): concedidas por pessoa; três permissões; valem no setor atual;
+    histórico de concessões.
+  SLA (P1, S1–S3): prioridade padrão do serviço; horas corridas; prazo ajustado pela
+    prioridade (25/50/100/200%); alertas ao responsável.
+  API e webhooks (A1–A6): tokens pessoais com escopo leitura ou escrita e validade;
+    só o hash guardado; webhooks assinados (HMAC-SHA256), só https; 60 chamadas por
+    minuto por token.
+  Auditoria e LGPD (D1–D5): auditar mudanças administrativas; prazos de guarda pelo
+    job diário; "Meus dados" em JSON; anonimização de pessoas desativadas; registro
+    na mesma transação.
+  Painel (R1–R5): administrador e gestor; períodos de 7/30/90 dias ou até 366;
+    barras em HTML/CSS; CSV sem dados do solicitante; cálculo sob demanda.
+  Anexos (X1–X7): até 3 arquivos de 2 MiB por comentário; mesmos formatos; texto
+    obrigatório; só o dono envia documento depois.
+  Pausa e calendário (H1–H9): um calendário da organização; opção por serviço;
+    pausa só "aguardando o solicitante"; retomada automática pela resposta.
+  Transferência (T1–T7): só aberta; prazo e prioridade mantidos; recusada com
+    aprovação pendente; o novo setor vê as notas internas.
+  Integração contínua: GitHub Actions com banco PostgreSQL em contêiner, busca de
+    segredos (gitleaks), typecheck, lint, build, unitários, integração e E2E.
+  MCP (M1–M9): mesmo token da API, só leitura, implementação própria sem SDK,
+    arquivo inteiro sem extração de texto.
+  Análises (A1–A9): painel do atendente sem números de colegas; SVG no servidor;
+    equipe em ordem alfabética, sem ranking; aviso fixo sobre o uso dos números.
+  Base de conhecimento (K1–K7): mesmos responsáveis do catálogo; texto simples;
+    nasce como rascunho; auditada.
+  Escalonamento (E1–E7): desligado por padrão; sobe um nível; só no vencimento.
+  Satisfação (P1–P7): nota de 1 a 5; até 30 dias; sem nota por pessoa; a
+    anonimização mantém a nota.
+  Respostas prontas (R1–R6): por setor; desativar em vez de excluir; só preenchem o
+    campo, o atendente revisa.
+  Configurabilidade (G1–G20): prazos em dias; formatos fixos (e-mail, telefone, CPF,
+    CNPJ, CEP); 1 a 3 níveis de aprovação; substituto em ausência; papéis como
+    conjuntos das permissões existentes; até 5 regras de escalonamento por setor.
+  Operação (H1–H22): pacote abre uma solicitação por serviço; distribuição por
+    rodízio ou menor carga; recorrência semanal e mensal; importação com prévia e
+    tudo ou nada; ações em lote item a item.
+  Dia a dia (I1–I24, J1–J2): etiquetas por setor, só a equipe vê, paleta de 8 cores
+    com contraste conferido; checklist copiado ao iniciar; horas até 7 dias depois;
+    seguidor só lê; menções só em notas internas; duplicada cancelada e o
+    solicitante passa a seguir a original.
+  Comunicação (K1–K9): importados entram inativos e sem senha (escolha da
+    responsável); manutenção só avisa; relatório com página e e-mail opcional;
+    calendário do setor só para as solicitações novas.
+  Acessibilidade (L1–L7): escolhas guardadas em cookie; leitura em voz alta da tela
+    e do trecho selecionado; alto contraste escuro (preto, branco, amarelo);
+    axe-core sem dependência nova; larguras 360/768/1280.
+  Mapa de serviços (M1–M3): no menu do solicitante; a partir dos dados reais; sem
+    campo novo.
+  Tipos de solicitante (T1–T9): campo no cadastro; subseção no catálogo, no mapa,
+    na fila e nos painéis; o público geral restrito só aos serviços do seu público.
+  Guia do estudante (G1–G6): genérico, sem citar serviços que a instituição possa
+    não ter; links só para o solicitante; sem busca própria.
+  Paginação de Aprovações (Q1–Q4): mesma ordem; 20 por página; sem migration.
+  Professores e técnicos (P1–P17): "Oferecido a" vira lista ("ambos" = os quatro
+    tipos); espaços com confirmação pelo setor ou automática; reservas das 07:00 às
+    23:00, semanal tudo ou nada; banco impede sobreposição (restrição de exclusão);
+    a equipe aloca as provas com sugestão; P17 — por decisão da responsável, por ser
+    didático, a área não ganhou nenhuma restrição de acesso nova.
+
+4.4 Decisões de operação e segurança
+
+  - Entrada por perfis de demonstração, sem tela de login (seções 24 e 25 da SPEC
+    principal); contas fictícias sem senha utilizável.
+  - A responsável decidiu não mexer na segurança das contas ("não desejo mexer na
+    segurança e ferir algum princípio de acesso").
+  - Backup: "semanal e antes de cada envio com migration" (escolha da responsável);
+    pg_dump do PostgreSQL 18 pela conexão direta do Neon, arquivo cifrado pelo EFS
+    do Windows, conferido por restauração completa num banco local separado.
+  - Ordem de todo envio com migration: backup conferido -> migration no Neon -> push.
+  - Nenhum segredo no repositório; o gitleaks roda no CI e antes dos commits
+    (dois alarmes falsos de senhas sintéticas de teste registrados em .gitleaksignore).
+  - Documentos em armazenamento privado do Supabase, com projeto exclusivo para
+    produção, separado do de teste e desenvolvimento (a chave secreta acessa todos
+    os buckets de um projeto).
+  - Verificação de tipos: o build verifica só a aplicação (tsconfig.build.json) e o
+    typecheck do CI verifica tudo com 4 GB, porque o projeto passou de 2 GB de
+    memória na verificação (16/11).
+
+
+-------------------------------------------------------------------------------
+ 5. RECURSOS ENVOLVIDOS
+-------------------------------------------------------------------------------
+
+5.1 Pessoas e ferramentas de desenvolvimento
+
+  - Commits no histórico (autores do git): MylenaReis (343), Necy Trindade (23),
+    Carlos Pires (2), necita (1).
+  - Assistente de programação: Claude Code (modelo Claude), trabalhando pelas SPECs
+    e pelas regras do AGENTS.md, com as sessões registradas em prompts/sessoes/.
+  - Máquina local Windows com Git Bash e PowerShell; Node 24 (Volta); PostgreSQL 17
+    portátil para os testes (pasta pgtest, porta 54329); binários do PostgreSQL 18
+    para backup e restauração; gitleaks 8.30.1 (soma de verificação conferida);
+    cloc para a contagem de linhas.
+
+5.2 Tecnologias da aplicação
+
+  Next.js 16 (App Router), React 19, TypeScript 5, Prisma 6.16, PostgreSQL,
+  Auth.js (credenciais) com Argon2id, Zod, Vitest, Playwright (Chromium), axe-core.
+  Banco: 74 modelos no schema Prisma, 66 migrations. Código: 40 módulos, 51 páginas.
+
+5.3 Serviços em nuvem usados para colocar no ar
+
+  - GitHub: repositório e GitHub Actions (CI a cada push).
+  - Vercel (plano Hobby, gratuito): hospedagem do Next.js, região gru1 (São Paulo),
+    publicação automática a cada push na main, build "prisma generate && next build",
+    cron diário /api/cron/daily às 06:00 UTC (no plano Hobby, roda uma vez por dia).
+  - Neon (PostgreSQL 18, região sa-east-1), criado pelo painel da Vercel (Storage):
+    a aplicação usa a URL com pooling; backup e migrations usam a conexão direta.
+  - Supabase Storage: buckets privados de documentos, com projetos separados para
+    produção e para teste/desenvolvimento.
+  - Resend (API HTTP) escolhido como provedor de e-mail; o envio só acontece com as
+    variáveis configuradas. Na verificação de 15/11, nenhum e-mail tinha sido
+    enviado em produção.
+  O custo dos planos do Neon e do Supabase não está registrado no repositório.
+
+5.4 Variáveis de ambiente de produção (nomes, nunca os valores)
+
+  DATABASE_URL (Neon), AUTH_SECRET, CRON_SECRET, DOCUMENT_STORAGE_* (Supabase),
+  WEBHOOK_ENCRYPTION_KEY, e as do e-mail (opcionais). Cadastradas na Vercel, fora do
+  repositório.
+
+
+-------------------------------------------------------------------------------
+ 6. COMO O PROJETO FOI COLOCADO NO AR
+-------------------------------------------------------------------------------
+
+  1. Repositório no GitHub e projeto na Vercel ligado a ele (publicação a cada push).
+  2. Banco Neon criado pelo painel da Vercel (Storage), região sa-east-1; a
+     integração cadastrou a DATABASE_URL em Production.
+  3. vercel.json com o comando de build (prisma generate && next build), a região
+     gru1 e o cron diário.
+  4. Variáveis de ambiente cadastradas na Vercel (seção 5.4), com as chaves como
+     Secret e só em Production.
+  5. Armazenamento de documentos: projeto Supabase exclusivo de produção, bucket
+     privado, chave só na Vercel; leitura anônima negada e conferida.
+  6. Migrations aplicadas no Neon pela conexão direta (prisma migrate deploy),
+     sempre depois de um backup cifrado e conferido.
+  7. Dados de demonstração carregados no primeiro clique de um perfil na entrada
+     (ou por npm run seed:demo).
+  8. A cada envio: CI no GitHub (segredos, tipos, lint, build e as três suítes de
+     testes) e publicação automática pela Vercel.
+
+Estado da produção em 16/11/2026: site no ar; 66 de 66 migrations; último backup
+serviceflow-2026-11-16-pre-deploy-2.dump (310.134 bytes, cifrado, conferido com
+72 de 72 tabelas iguais); CI verde no commit d84c8a8.
+
+
+-------------------------------------------------------------------------------
+ 7. PENDÊNCIAS E PRÓXIMOS PASSOS POSSÍVEIS
+-------------------------------------------------------------------------------
+
+  - Conferir os 13 critérios da SPEC de visão geral com as evidências dos testes.
+  - "Meus dados" ainda não inclui reservas e provas (registrado como SPEC futura).
+  - Rever as conexões do Neon (com e sem pooling), como a responsável pediu ao
+    chegar a 99% da meta.
+  - Atualizar actions/checkout e actions/setup-node no workflow (o GitHub avisa que
+    as versões usadas foram feitas para o Node 20, que está sendo descontinuado).
+  - Propostas sem decisão: microsserviços (opção A recomendada: despachante de
+    eventos), Robo Flow e Gestão de Ativos.
+
+===============================================================================
+ Fim do relatório
+===============================================================================
